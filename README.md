@@ -17,6 +17,30 @@ Application web de gestion de livraison de colis développée avec Symfony 7.1.
 - Forum communautaire
 - Gestion des incidents
 
+# 📦 Base de données TrackPack
+
+## Structure de la base de données
+
+Ce dossier contient les scripts SQL pour initialiser la base de données du projet PackTrack.
+
+## Fichiers
+
+- `trackpackdb.sql` : Script complet de création de la base de données avec structure et données de test
+
+## Tables principales
+
+- **utilisateurs** : Gestion des utilisateurs (Admin, Livreur, Entreprise, Client)
+- **colis** : Gestion des colis
+- **livraisons** : Gestion des livraisons
+- **factures** : Gestion des factures
+- **vehicules** : Gestion des véhicules
+- **recompenses** : Système de récompenses pour les livreurs
+- **devis** : Gestion des devis
+- **publications** : Forum/Publications
+- **commentaires** : Commentaires sur les publications
+- **reclamations** : Gestion des réclamations
+- **reponses** : Réponses aux réclamations
+
 ## 🛠️ Technologies
 
 - **Backend** : Symfony 7.1
