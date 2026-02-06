@@ -1,0 +1,41 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Parcels - PackTrack{% endblock %}
+
+{% block body %}
+    <div class="topbar">
+        <input type="text" placeholder="Search parcels...">
+        <div class="user">
+            <img src="https://i.pravatar.cc/40?img=3" alt="Admin">
+            <span>Admin</span>
+        </div>
+    </div>
+
+    <div class="table-section">
+        <h3>Parcels List</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Client</th>
+                    <th>Status</th>
+                    <th>Destination</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><i class="fa-solid fa-box"></i> PKT-1001</td>
+                    <td>Ali Ben Salah</td>
+                    <td class="status transit">In Transit</td>
+                    <td>Tunis</td>
+                </tr>
+                <tr>
+                    <td><i class="fa-solid fa-box"></i> PKT-1002</td>
+                    <td>Sara Mezni</td>
+                    <td class="status delivered">Delivered</td>
+                    <td>Sfax</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

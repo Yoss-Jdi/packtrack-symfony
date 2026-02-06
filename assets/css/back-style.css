@@ -1,0 +1,130 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: "Segoe UI", sans-serif;
+}
+
+body{
+    background:#f5f7fb;
+}
+
+.layout{
+    display:flex;
+    min-height:100vh;
+}
+
+/* SIDEBAR */
+.sidebar{
+    width:250px;
+    background:#0f172a;
+    color:white;
+    padding:25px;
+}
+
+.sidebar h2{
+    margin-bottom:30px;
+}
+
+.sidebar ul{
+    list-style:none;
+}
+
+.sidebar li{
+    padding:12px;
+    border-radius:8px;
+    margin-bottom:10px;
+}
+
+.sidebar li a{
+    color:white;
+    text-decoration:none;
+    display:flex;
+    gap:12px;
+    align-items:center;
+}
+
+.sidebar li.active,
+.sidebar li:hover{
+    background:#2563eb;
+}
+
+/* MAIN */
+.main{
+    flex:1;
+    padding:25px;
+}
+
+/* TOPBAR */
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.topbar input{
+    padding:10px;
+    width:300px;
+    border-radius:8px;
+    border:1px solid #ccc;
+}
+
+.user{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.user img{
+    width:40px;
+    border-radius:50%;
+}
+
+/* CARDS */
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+}
+
+.card i{
+    font-size:25px;
+    margin-bottom:10px;
+    color:#2563eb;
+}
+
+/* TABLE */
+.table-section{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    padding:12px;
+    border-bottom:1px solid #eee;
+}
+
+/* STATUS */
+.status{
+    padding:5px 12px;
+    border-radius:20px;
+    font-size:12px;
+}
+
+.transit{background:#bfdbfe;}
+.delivered{background:#bbf7d0;}
+.processing{background:#fde68a;}
+.issue{background:#fecaca;}
