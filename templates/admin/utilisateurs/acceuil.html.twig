@@ -1,6 +1,379 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block title %}Dashboard - PackTrack{% endblock %}
+{% block title %}Gestion des Utilisateurs - PackTrack{% endblock %}
+
+{% block stylesheets %}
+<style>
+    /* === PAGE HEADER === */
+    .page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        animation: slideDown 0.5s ease;
+    }
+    
+    .page-header h1 {
+        color: white;
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .page-header h1 i {
+        font-size: 2.5rem;
+        animation: bounce 2s infinite;
+    }
+    
+    /* === STATS CARDS === */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.6s ease forwards;
+        opacity: 0;
+    }
+    
+    .stat-card:nth-child(1) { animation-delay: 0.1s; }
+    .stat-card:nth-child(2) { animation-delay: 0.2s; }
+    .stat-card:nth-child(3) { animation-delay: 0.3s; }
+    .stat-card:nth-child(4) { animation-delay: 0.4s; }
+    
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--card-color), transparent);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+        transform-origin: left;
+    }
+    
+    .stat-card:hover::before {
+        transform: scaleX(1);
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    }
+    
+    .stat-card.admin { --card-color: #e74c3c; }
+    .stat-card.gestionnaire { --card-color: #f39c12; }
+    .stat-card.livreur { --card-color: #2ecc71; }
+    .stat-card.client { --card-color: #3498db; }
+    
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+        background: var(--card-color);
+        color: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0.5rem 0;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+    
+    /* === ALERTS === */
+    .custom-alert {
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        border: none;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        animation: slideInRight 0.5s ease;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .custom-alert i {
+        font-size: 1.5rem;
+    }
+    
+    /* === ACTION BUTTONS === */
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn-modern {
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        border: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .btn-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-modern i {
+        font-size: 1.1rem;
+    }
+    
+    .btn-add {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    /* === TABLE CONTAINER === */
+    .table-container {
+        background: white;
+        border-radius: 15px;
+        padding: 0;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        animation: fadeInUp 0.7s ease;
+    }
+    
+    .table-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 1.5rem;
+        color: white;
+    }
+    
+    .table-header h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    /* === TABLE STYLING === */
+    .modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    
+    .modern-table thead th {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        color: white;
+        padding: 1.2rem 1rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        border: none;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+    
+    .modern-table tbody tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid #ecf0f1;
+        animation: fadeIn 0.5s ease;
+    }
+    
+    .modern-table tbody tr:hover {
+        background: linear-gradient(90deg, #f8f9fa 0%, #e3f2fd 100%);
+        transform: scale(1.01);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+    
+    .modern-table tbody td {
+        padding: 1.2rem 1rem;
+        vertical-align: middle;
+        border: none;
+        color: #2c3e50;
+    }
+    
+    .modern-table tbody td:first-child {
+        font-weight: 600;
+        color: #667eea;
+    }
+    
+    /* === BADGES === */
+    .role-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+    }
+    
+    .role-badge:hover {
+        transform: scale(1.05);
+    }
+    
+    .role-badge i {
+        font-size: 1rem;
+    }
+    
+    .role-badge.admin {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+    }
+    
+    .role-badge.gestionnaire {
+        background: linear-gradient(135deg, #f39c12 0%, #d68910 100%);
+        color: white;
+    }
+    
+    .role-badge.livreur {
+        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        color: white;
+    }
+    
+    .role-badge.client {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        color: white;
+    }
+    
+    /* === ACTION BUTTONS IN TABLE === */
+    .action-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin: 0 0.25rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        cursor: pointer;
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-view {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        color: white;
+    }
+    
+    .btn-edit {
+        background: linear-gradient(135deg, #f39c12 0%, #d68910 100%);
+        color: white;
+    }
+    
+    .btn-delete {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+    }
+    
+    /* === EMPTY STATE === */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #95a5a6;
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    .empty-state p {
+        font-size: 1.2rem;
+        margin: 0;
+    }
+    
+    /* === ANIMATIONS === */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+</style>
+{% endblock %}
 
 {% block body %}
     {# TOPBAR #}
@@ -12,70 +385,137 @@
         </div>
     </div>
 
-    {# GESTION DES UTILISATEURS #}
-    <section class="table-section" style="margin-top:25px;">
-        <h3>Gestion des Utilisateurs</h3>
+    {# PAGE HEADER #}
+    <div class="page-header">
+        <h1>
+            <i class="fa-solid fa-users"></i>
+            Gestion des Utilisateurs
+        </h1>
+    </div>
 
-        {% for message in app.flashes('success') %}
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        {% endfor %}
-
-        <div class="mb-3">
-            <a href="{{ path('app_utilisateurs_new') }}" class="btn btn-primary">
-                ➕ Créer un nouvel utilisateur
-            </a>
+    {# SUCCESS ALERTS #}
+    {% for message in app.flashes('success') %}
+        <div class="custom-alert">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>{{ message }}</span>
         </div>
+    {% endfor %}
 
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>ID</th>
-                                <th>Email</th>
-                                <th>Nom</th>
-                                <th>Prénom</th>
-                                <th>Téléphone</th>
-                                <th>Rôle</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% for utilisateur in utilisateurs %}
-                            <tr>
-                                <td>{{ utilisateur.id }}</td>
-                                <td>{{ utilisateur.email }}</td>
-                                <td>{{ utilisateur.nom }}</td>
-                                <td>{{ utilisateur.prenom }}</td>
-                                <td>{{ utilisateur.telephone ?? 'N/A' }}</td>
-                                <td>
-                                    <span class="badge bg-{{ utilisateur.role.value == 'ADMIN' ? 'danger' : (utilisateur.role.value == 'GESTIONNAIRE' ? 'warning' : (utilisateur.role.value == 'LIVREUR' ? 'success' : 'info')) }}">
-                                        {{ utilisateur.role.value }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <a href="{{ path('app_utilisateurs_show', {'id': utilisateur.id}) }}" class="btn btn-sm btn-info">👁️ Voir</a>
-                                    <a href="{{ path('app_utilisateurs_edit', {'id': utilisateur.id}) }}" class="btn btn-sm btn-warning">✏️ Modifier</a>
-                                    <form method="post" action="{{ path('app_utilisateurs_delete', {'id': utilisateur.id}) }}" style="display:inline-block;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ utilisateur.id) }}">
-                                        <button class="btn btn-sm btn-danger">🗑️ Supprimer</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        {% else %}
-                            <tr>
-                                <td colspan="7" class="text-center">Aucun utilisateur trouvé</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+    {# STATS CARDS #}
+    <div class="stats-grid">
+        <div class="stat-card admin">
+            <div class="stat-icon">
+                <i class="fa-solid fa-user-shield"></i>
             </div>
+            <div class="stat-value">{{ utilisateurs|filter(u => u.role.value == 'ADMIN')|length }}</div>
+            <div class="stat-label">Administrateurs</div>
         </div>
-    </section>
+        
+        <div class="stat-card gestionnaire">
+            <div class="stat-icon">
+                <i class="fa-solid fa-user-tie"></i>
+            </div>
+            <div class="stat-value">{{ utilisateurs|filter(u => u.role.value == 'GESTIONNAIRE')|length }}</div>
+            <div class="stat-label">Gestionnaires</div>
+        </div>
+        
+        <div class="stat-card livreur">
+            <div class="stat-icon">
+                <i class="fa-solid fa-truck"></i>
+            </div>
+            <div class="stat-value">{{ utilisateurs|filter(u => u.role.value == 'LIVREUR')|length }}</div>
+            <div class="stat-label">Livreurs</div>
+        </div>
+        
+        <div class="stat-card client">
+            <div class="stat-icon">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <div class="stat-value">{{ utilisateurs|filter(u => u.role.value == 'CLIENT')|length }}</div>
+            <div class="stat-label">Clients</div>
+        </div>
+    </div>
+
+    {# ACTION BUTTONS #}
+    <div class="action-buttons">
+        <a href="{{ path('app_utilisateurs_new') }}" class="btn-modern btn-add">
+            <i class="fa-solid fa-user-plus"></i>
+            Créer un nouvel utilisateur
+        </a>
+    </div>
+
+    {# USERS TABLE #}
+    <div class="table-container">
+        <div class="table-header">
+            <h2>
+                <i class="fa-solid fa-list"></i>
+                Liste des Utilisateurs ({{ utilisateurs|length }})
+            </h2>
+        </div>
+        
+        <div style="overflow-x: auto;">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Email</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Téléphone</th>
+                        <th>Rôle</th>
+                        <th style="text-align: center;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for utilisateur in utilisateurs %}
+                    <tr>
+                        <td>#{{ utilisateur.id }}</td>
+                        <td>{{ utilisateur.email }}</td>
+                        <td>{{ utilisateur.nom }}</td>
+                        <td>{{ utilisateur.prenom }}</td>
+                        <td>{{ utilisateur.telephone ?? 'N/A' }}</td>
+                        <td>
+                            <span class="role-badge {{ utilisateur.role.value|lower }}">
+                                {% if utilisateur.role.value == 'ADMIN' %}
+                                    <i class="fa-solid fa-user-shield"></i>
+                                {% elseif utilisateur.role.value == 'GESTIONNAIRE' %}
+                                    <i class="fa-solid fa-user-tie"></i>
+                                {% elseif utilisateur.role.value == 'LIVREUR' %}
+                                    <i class="fa-solid fa-truck"></i>
+                                {% else %}
+                                    <i class="fa-solid fa-user"></i>
+                                {% endif %}
+                                {{ utilisateur.role.value }}
+                            </span>
+                        </td>
+                        <td style="text-align: center; white-space: nowrap;">
+                            <a href="{{ path('app_utilisateurs_show', {'id': utilisateur.id}) }}" class="action-btn btn-view">
+                                <i class="fa-solid fa-eye"></i> Voir
+                            </a>
+                            <a href="{{ path('app_utilisateurs_edit', {'id': utilisateur.id}) }}" class="action-btn btn-edit">
+                                <i class="fa-solid fa-pen"></i> Modifier
+                            </a>
+                            <form method="post" action="{{ path('app_utilisateurs_delete', {'id': utilisateur.id}) }}" style="display:inline-block;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ utilisateur.id) }}">
+                                <button type="submit" class="action-btn btn-delete">
+                                    <i class="fa-solid fa-trash"></i> Supprimer
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <i class="fa-solid fa-users-slash"></i>
+                                <p>Aucun utilisateur trouvé</p>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
 {% endblock %}

@@ -2,166 +2,555 @@
 
 {% block title %}Modifier un utilisateur - PackTrack{% endblock %}
 
+{% block stylesheets %}
+<style>
+    /* === PAGE HEADER === */
+    .page-header {
+        background: linear-gradient(135deg, #f39c12 0%, #d68910 100%);
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(243, 156, 18, 0.2);
+        animation: slideDown 0.5s ease;
+    }
+    
+    .page-header h1 {
+        color: white;
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .page-header h1 i {
+        font-size: 2.5rem;
+    }
+    
+    /* === FORM CONTAINER === */
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+        animation: fadeInUp 0.6s ease;
+    }
+    
+    .form-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-card-header {
+        background: linear-gradient(135deg, #f39c12 0%, #d68910 100%);
+        color: white;
+        padding: 1.5rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .form-card-header h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+    
+    .form-card-header i {
+        font-size: 1.8rem;
+    }
+    
+    .form-card-body {
+        padding: 2.5rem;
+    }
+    
+    /* === FORM GROUPS === */
+    .form-group {
+        margin-bottom: 1.8rem;
+        animation: fadeIn 0.5s ease;
+    }
+    
+    .form-group:nth-child(1) { animation-delay: 0.1s; }
+    .form-group:nth-child(2) { animation-delay: 0.2s; }
+    .form-group:nth-child(3) { animation-delay: 0.3s; }
+    .form-group:nth-child(4) { animation-delay: 0.4s; }
+    .form-group:nth-child(5) { animation-delay: 0.5s; }
+    
+    .form-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+    }
+    
+    .form-label i {
+        color: #f39c12;
+        font-size: 1.1rem;
+    }
+    
+    .required-asterisk {
+        color: #e74c3c;
+        margin-left: 0.25rem;
+    }
+    
+    /* === FORM CONTROLS === */
+    .form-control, .form-select {
+        width: 100%;
+        padding: 0.85rem 1.2rem;
+        border: 2px solid #e0e6ed;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        outline: none;
+        border-color: #f39c12;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(243, 156, 18, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    .form-control:hover, .form-select:hover {
+        border-color: #a8b3cf;
+    }
+    
+    /* === VALIDATION STATES === */
+    .form-control.is-valid, .form-select.is-valid {
+        border-color: #2ecc71 !important;
+        background-color: #f0fdf4 !important;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%232ecc71' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.5rem) center;
+        background-size: calc(0.75em + 0.5rem) calc(0.75em + 0.5rem);
+        padding-right: calc(1.5em + 1.5rem);
+    }
+    
+    .form-control.is-invalid, .form-select.is-invalid {
+        border-color: #e74c3c !important;
+        background-color: #fef2f2 !important;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23e74c3c'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23e74c3c' stroke='none'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.5rem) center;
+        background-size: calc(0.75em + 0.5rem) calc(0.75em + 0.5rem);
+        padding-right: calc(1.5em + 1.5rem);
+    }
+    
+    .valid-feedback {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #2ecc71 !important;
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-top: 0.5rem;
+        animation: slideInLeft 0.3s ease;
+    }
+    
+    .valid-feedback i {
+        font-size: 1rem;
+    }
+    
+    .invalid-feedback {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #e74c3c !important;
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-top: 0.5rem;
+        animation: shake 0.5s ease;
+    }
+    
+    .invalid-feedback i {
+        font-size: 1rem;
+    }
+    
+    /* === ROW LAYOUT === */
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    /* === ACTION BUTTONS === */
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 2.5rem;
+        padding-top: 2rem;
+        border-top: 2px solid #f0f3f7;
+    }
+    
+    .btn-modern {
+        padding: 0.9rem 2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        border: none;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .btn-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-modern i {
+        font-size: 1.1rem;
+    }
+    
+    .btn-cancel {
+        background: #95a5a6;
+        color: white;
+    }
+    
+    .btn-cancel:hover {
+        background: #7f8c8d;
+    }
+    
+    .btn-submit {
+        background: linear-gradient(135deg, #f39c12 0%, #d68910 100%);
+        color: white;
+    }
+    
+    .btn-submit:hover {
+        background: linear-gradient(135deg, #d68910 0%, #bf6e0a 100%);
+    }
+    
+    /* === FORM HELP TEXT === */
+    .form-help {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        color: #7f8c8d;
+        margin-top: 0.5rem;
+    }
+    
+    .form-help i {
+        color: #3498db;
+    }
+    
+    /* === INFO BANNER === */
+    .info-banner {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+        animation: slideInRight 0.5s ease;
+    }
+    
+    .info-banner i {
+        font-size: 1.5rem;
+    }
+    
+    /* === ANIMATIONS === */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+</style>
+{% endblock %}
+
 {% block body %}
     {# TOPBAR #}
     <div class="topbar">
-        <input type="text" placeholder="Rechercher un utilisateur...">
+        <input type="text" placeholder="Rechercher...">
         <div class="user">
             <img src="https://i.pravatar.cc/40?img=12" alt="Admin">
             <span>Admin</span>
         </div>
     </div>
 
-    {# FORMULAIRE DE MODIFICATION UTILISATEUR #}
-    <section class="table-section" style="margin-top:25px;">
-        <h3>Modifier l'utilisateur</h3>
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header bg-warning text-dark">
-                        <h3 class="mb-0">Modifier l'utilisateur</h3>
+    {# PAGE HEADER #}
+    <div class="page-header">
+        <h1>
+            <i class="fa-solid fa-user-pen"></i>
+            Modifier l'Utilisateur
+        </h1>
+    </div>
+
+    {# INFO BANNER #}
+    <div class="info-banner">
+        <i class="fa-solid fa-info-circle"></i>
+        <span>Vous modifiez l'utilisateur <strong>{{ utilisateur.prenom }} {{ utilisateur.nom }}</strong> ({{ utilisateur.email }})</span>
+    </div>
+
+    {# FORM CONTAINER #}
+    <div class="form-container">
+        <div class="form-card">
+            <div class="form-card-header">
+                <i class="fa-solid fa-user-circle"></i>
+                <h2>Informations de l'utilisateur</h2>
+            </div>
+            
+            <div class="form-card-body">
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+                {# Email #}
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fa-solid fa-envelope"></i>
+                        Email
+                        <span class="required-asterisk">*</span>
+                    </label>
+                    {{ form_widget(form.Email, {
+                        'attr': {
+                            'class': 'form-control' ~ (submitted and form.Email.vars.errors|length > 0 ? ' is-invalid' : (submitted and form.Email.vars.errors|length == 0 ? ' is-valid' : '')),
+                            'placeholder': 'exemple@email.com'
+                        }
+                    }) }}
+                    {% if submitted %}
+                        {% if form.Email.vars.errors|length == 0 %}
+                            <div class="valid-feedback">
+                                <i class="fa-solid fa-circle-check"></i>
+                                Email valide
+                            </div>
+                        {% else %}
+                            <div class="invalid-feedback">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                                {{ form_errors(form.Email) }}
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+                {# Mot de passe #}
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fa-solid fa-lock"></i>
+                        Mot de passe
+                    </label>
+                    {{ form_widget(form.plainPassword, {
+                        'attr': {
+                            'class': 'form-control' ~ (submitted and form.plainPassword.vars.errors|length > 0 ? ' is-invalid' : (submitted and form.plainPassword.vars.errors|length == 0 and form.plainPassword.vars.value ? ' is-valid' : '')),
+                            'placeholder': '••••••••'
+                        }
+                    }) }}
+                    {% if submitted %}
+                        {% if form.plainPassword.vars.errors|length == 0 and form.plainPassword.vars.value %}
+                            <div class="valid-feedback">
+                                <i class="fa-solid fa-circle-check"></i>
+                                Nouveau mot de passe défini
+                            </div>
+                        {% elseif form.plainPassword.vars.errors|length > 0 %}
+                            <div class="invalid-feedback">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                                {{ form_errors(form.plainPassword) }}
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="form-help">
+                            <i class="fa-solid fa-info-circle"></i>
+                            Laissez vide pour conserver le mot de passe actuel
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# Nom et Prénom #}
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fa-solid fa-user"></i>
+                            Nom
+                            <span class="required-asterisk">*</span>
+                        </label>
+                        {{ form_widget(form.Nom, {
+                            'attr': {
+                                'class': 'form-control' ~ (submitted and form.Nom.vars.errors|length > 0 ? ' is-invalid' : (submitted and form.Nom.vars.errors|length == 0 ? ' is-valid' : '')),
+                                'placeholder': 'Nom de famille'
+                            }
+                        }) }}
+                        {% if submitted %}
+                            {% if form.Nom.vars.errors|length == 0 %}
+                                <div class="valid-feedback">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    Nom valide
+                                </div>
+                            {% else %}
+                                <div class="invalid-feedback">
+                                    <i class="fa-solid fa-circle-xmark"></i>
+                                    {{ form_errors(form.Nom) }}
+                                </div>
+                            {% endif %}
+                        {% endif %}
                     </div>
-                    <div class="card-body">
-                        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
 
-                        {# Email #}
-                        <div class="mb-3">
-                            {{ form_label(form.Email, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
-                            {{ form_widget(form.Email, {
-                                'attr': {
-                                    'class': 'form-control' ~ (submitted and form.Email.vars.errors|length > 0 ? ' is-invalid' : (submitted and form.Email.vars.errors|length == 0 ? ' is-valid' : ''))
-                                }
-                            }) }}
-                            {% if submitted %}
-                                {% if form.Email.vars.errors|length == 0 %}
-                                    <div class="valid-feedback d-block mt-1">✓ Email valide</div>
-                                {% else %}
-                                    <div class="invalid-feedback d-block mt-1">{{ form_errors(form.Email) }}</div>
-                                {% endif %}
-                            {% endif %}
-                        </div>
-
-                        {# Mot de passe #}
-                        <div class="mb-3">
-                            {{ form_label(form.plainPassword, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
-                            {{ form_widget(form.plainPassword, {
-                                'attr': {
-                                    'class': 'form-control' ~ (submitted and form.plainPassword.vars.errors|length > 0 ? ' is-invalid' : (submitted and form.plainPassword.vars.errors|length == 0 and form.plainPassword.vars.value ? ' is-valid' : ''))
-                                }
-                            }) }}
-                            {% if submitted %}
-                                {% if form.plainPassword.vars.errors|length == 0 and form.plainPassword.vars.value %}
-                                    <div class="valid-feedback d-block mt-1">✓ Mot de passe valide</div>
-                                {% elseif form.plainPassword.vars.errors|length > 0 %}
-                                    <div class="invalid-feedback d-block mt-1">{{ form_errors(form.plainPassword) }}</div>
-                                {% endif %}
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fa-solid fa-user"></i>
+                            Prénom
+                            <span class="required-asterisk">*</span>
+                        </label>
+                        {{ form_widget(form.Prenom, {
+                            'attr': {
+                                'class': 'form-control' ~ (submitted and form.Prenom.vars.errors|length > 0 ? ' is-invalid' : (submitted and form.Prenom.vars.errors|length == 0 ? ' is-valid' : '')),
+                                'placeholder': 'Prénom'
+                            }
+                        }) }}
+                        {% if submitted %}
+                            {% if form.Prenom.vars.errors|length == 0 %}
+                                <div class="valid-feedback">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    Prénom valide
+                                </div>
                             {% else %}
-                                <div class="form-text text-muted">Laissez vide pour conserver le mot de passe actuel</div>
+                                <div class="invalid-feedback">
+                                    <i class="fa-solid fa-circle-xmark"></i>
+                                    {{ form_errors(form.Prenom) }}
+                                </div>
                             {% endif %}
-                        </div>
-
-                        {# Nom et Prénom #}
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                {{ form_label(form.Nom, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
-                                {{ form_widget(form.Nom, {
-                                    'attr': {
-                                        'class': 'form-control' ~ (submitted and form.Nom.vars.errors|length > 0 ? ' is-invalid' : (submitted and form.Nom.vars.errors|length == 0 ? ' is-valid' : ''))
-                                    }
-                                }) }}
-                                {% if submitted %}
-                                    {% if form.Nom.vars.errors|length == 0 %}
-                                        <div class="valid-feedback d-block mt-1">✓ Nom valide</div>
-                                    {% else %}
-                                        <div class="invalid-feedback d-block mt-1">{{ form_errors(form.Nom) }}</div>
-                                    {% endif %}
-                                {% endif %}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                {{ form_label(form.Prenom, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
-                                {{ form_widget(form.Prenom, {
-                                    'attr': {
-                                        'class': 'form-control' ~ (submitted and form.Prenom.vars.errors|length > 0 ? ' is-invalid' : (submitted and form.Prenom.vars.errors|length == 0 ? ' is-valid' : ''))
-                                    }
-                                }) }}
-                                {% if submitted %}
-                                    {% if form.Prenom.vars.errors|length == 0 %}
-                                        <div class="valid-feedback d-block mt-1">✓ Prénom valide</div>
-                                    {% else %}
-                                        <div class="invalid-feedback d-block mt-1">{{ form_errors(form.Prenom) }}</div>
-                                    {% endif %}
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        {# Téléphone #}
-                        <div class="mb-3">
-                            {{ form_label(form.Telephone, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
-                            {{ form_widget(form.Telephone, {
-                                'attr': {
-                                    'class': 'form-control' ~ (submitted and form.Telephone.vars.errors|length > 0 ? ' is-invalid' : (submitted and form.Telephone.vars.errors|length == 0 ? ' is-valid' : ''))
-                                }
-                            }) }}
-                            {% if submitted %}
-                                {% if form.Telephone.vars.errors|length == 0 %}
-                                    <div class="valid-feedback d-block mt-1">✓ Téléphone valide</div>
-                                else %}
-                                    <div class="invalid-feedback d-block mt-1">{{ form_errors(form.Telephone) }}</div>
-                                {% endif %}
-                            {% else %}
-                                <div class="form-text">Format: 8 chiffres (ex: 12345678)</div>
-                            {% endif %}
-                        </div>
-
-                        {# Rôle #}
-                        <div class="mb-3">
-                            {{ form_label(form.role, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
-                            {{ form_widget(form.role, {
-                                'attr': {
-                                    'class': 'form-select' ~ (submitted and form.role.vars.errors|length > 0 ? ' is-invalid' : (submitted and form.role.vars.errors|length == 0 ? ' is-valid' : ''))
-                                }
-                            }) }}
-                            {% if submitted %}
-                                {% if form.role.vars.errors|length == 0 %}
-                                    <div class="valid-feedback d-block mt-1">✓ Rôle sélectionné</div>
-                                {% else %}
-                                    <div class="invalid-feedback d-block mt-1">{{ form_errors(form.role) }}</div>
-                                {% endif %}
-                            {% endif %}
-                        </div>
-
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                            <a href="{{ path('app_utilisateurs') }}" class="btn btn-secondary me-2">Annuler</a>
-                            <button type="submit" class="btn btn-primary">Modifier</button>
-                        </div>
-
-                        {{ form_end(form) }}
+                        {% endif %}
                     </div>
                 </div>
+
+                {# Téléphone #}
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fa-solid fa-phone"></i>
+                        Téléphone
+                    </label>
+                    {{ form_widget(form.Telephone, {
+                        'attr': {
+                            'class': 'form-control' ~ (submitted and form.Telephone.vars.errors|length > 0 ? ' is-invalid' : (submitted and form.Telephone.vars.errors|length == 0 ? ' is-valid' : '')),
+                            'placeholder': '12345678'
+                        }
+                    }) }}
+                    {% if submitted %}
+                        {% if form.Telephone.vars.errors|length == 0 %}
+                            <div class="valid-feedback">
+                                <i class="fa-solid fa-circle-check"></i>
+                                Téléphone valide
+                            </div>
+                        {% else %}
+                            <div class="invalid-feedback">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                                {{ form_errors(form.Telephone) }}
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="form-help">
+                            <i class="fa-solid fa-info-circle"></i>
+                            Format: 8 chiffres
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# Rôle #}
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fa-solid fa-user-shield"></i>
+                        Rôle
+                        <span class="required-asterisk">*</span>
+                    </label>
+                    {{ form_widget(form.role, {
+                        'attr': {
+                            'class': 'form-select' ~ (submitted and form.role.vars.errors|length > 0 ? ' is-invalid' : (submitted and form.role.vars.errors|length == 0 ? ' is-valid' : ''))
+                        }
+                    }) }}
+                    {% if submitted %}
+                        {% if form.role.vars.errors|length == 0 %}
+                            <div class="valid-feedback">
+                                <i class="fa-solid fa-circle-check"></i>
+                                Rôle sélectionné
+                            </div>
+                        {% else %}
+                            <div class="invalid-feedback">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                                {{ form_errors(form.role) }}
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+                {# ACTION BUTTONS #}
+                <div class="form-actions">
+                    <a href="{{ path('app_utilisateurs') }}" class="btn-modern btn-cancel">
+                        <i class="fa-solid fa-xmark"></i>
+                        Annuler
+                    </a>
+                    <button type="submit" class="btn-modern btn-submit">
+                        <i class="fa-solid fa-check"></i>
+                        Enregistrer les modifications
+                    </button>
+                </div>
+
+                {{ form_end(form) }}
             </div>
         </div>
-    </section>
+    </div>
 
-    {# STYLE VALIDATION #}
-    <style>
-        .valid-feedback { font-size: 0.875rem; font-weight: 500; color: #198754 !important; padding-left: 5px; }
-        .invalid-feedback { font-size: 0.875rem; font-weight: 500; color: #dc3545 !important; padding-left: 5px; }
-        .form-text { font-size: 0.875rem; color: #6c757d !important; padding-left: 5px; }
-        .invalid-feedback ul { list-style-type: none; padding-left: 0; margin-bottom: 0; }
-        .form-control.is-valid, .form-select.is-valid {
-            border-color: #198754 !important;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
-            background-repeat: no-repeat; background-position: right calc(0.375em + 0.1875rem) center;
-            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
-        }
-        .form-control.is-invalid, .form-select.is-invalid {
-            border-color: #dc3545 !important;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
-            background-repeat: no-repeat; background-position: right calc(0.375em + 0.1875rem) center;
-            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
-        }
-        .form-control.is-valid:focus { border-color: #198754; box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25); }
-        .form-control.is-invalid:focus { border-color: #dc3545; box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25); }
-        .is-invalid ~ .form-text { display: none; }
-    </style>
 {% endblock %}
