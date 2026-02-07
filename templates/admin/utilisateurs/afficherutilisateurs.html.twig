@@ -1,0 +1,62 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Détails de l'utilisateur - PackTrack{% endblock %}
+
+{% block body %}
+    {# TOPBAR #}
+    <div class="topbar">
+        <input type="text" placeholder="Search parcels...">
+        <div class="user">
+            <img src="https://i.pravatar.cc/40?img=12" alt="Admin">
+            <span>Admin</span>
+        </div>
+    </div>
+
+    {# SECTION DÉTAIL UTILISATEUR #}
+    <section class="table-section" style="margin-top:25px;">
+        <h3>Détails de l'utilisateur</h3>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h3 class="mb-0">Détails de l'utilisateur</h3>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row">
+                            <dt class="col-sm-4">ID :</dt>
+                            <dd class="col-sm-8">{{ utilisateur.id }}</dd>
+
+                            <dt class="col-sm-4">Email :</dt>
+                            <dd class="col-sm-8">{{ utilisateur.email }}</dd>
+
+                            <dt class="col-sm-4">Nom :</dt>
+                            <dd class="col-sm-8">{{ utilisateur.nom }}</dd>
+
+                            <dt class="col-sm-4">Prénom :</dt>
+                            <dd class="col-sm-8">{{ utilisateur.prenom }}</dd>
+
+                            <dt class="col-sm-4">Téléphone :</dt>
+                            <dd class="col-sm-8">{{ utilisateur.telephone ?? 'N/A' }}</dd>
+
+                            <dt class="col-sm-4">Rôle :</dt>
+                            <dd class="col-sm-8">
+                                <span class="badge bg-{{ utilisateur.role.value == 'ADMIN' ? 'danger' : (utilisateur.role.value == 'GESTIONNAIRE' ? 'warning' : (utilisateur.role.value == 'LIVREUR' ? 'success' : 'info')) }}">
+                                    {{ utilisateur.role.value }}
+                                </span>
+                            </dd>
+                        </dl>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ path('app_utilisateurs') }}" class="btn btn-secondary">
+                                Retour à la liste
+                            </a>
+                            <a href="{{ path('app_utilisateurs_edit', {'id': utilisateur.id}) }}" class="btn btn-warning">
+                                Modifier
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
