@@ -34,6 +34,17 @@ class Utilisateurs implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::STRING, enumType: Role::class)]
     private ?Role $role = null;
 
+    // ====== NOUVEAU CHAMP ======
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    // ====== CONSTRUCTEUR ======
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable(); // date de création automatique
+    }
+
+    // ====== GETTERS ET SETTERS ======
     public function getId(): ?int
     {
         return $this->id;
@@ -61,7 +72,6 @@ class Utilisateurs implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    // Méthode requise pour PasswordAuthenticatedUserInterface
     public function getPassword(): ?string
     {
         return $this->MotDePasse;
@@ -111,16 +121,26 @@ class Utilisateurs implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    // Méthodes requises pour UserInterface
+    // ====== GETTER/SETTER POUR CREATEDAT ======
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
+    // ====== MÉTHODES UserInterface ======
     public function getRoles(): array
     {
-        // Retourne un tableau de rôles pour Symfony Security
         return ['ROLE_' . $this->role->value];
     }
 
     public function eraseCredentials(): void
     {
-        // Efface les données sensibles temporaires si nécessaire
     }
 
     public function getUserIdentifier(): string

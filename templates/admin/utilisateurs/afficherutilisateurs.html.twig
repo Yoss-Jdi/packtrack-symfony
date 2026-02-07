@@ -391,15 +391,6 @@
 {% endblock %}
 
 {% block body %}
-    {# TOPBAR #}
-    <div class="topbar">
-        <input type="text" placeholder="Rechercher...">
-        <div class="user">
-            <img src="https://i.pravatar.cc/40?img=12" alt="Admin">
-            <span>Admin</span>
-        </div>
-    </div>
-
     {# PAGE HEADER #}
     <div class="page-header">
         <h1>
@@ -434,7 +425,7 @@
                         <i class="fa-solid fa-calendar-check"></i>
                     </div>
                     <div class="stat-label">Membre depuis</div>
-                    <div class="stat-value">2024</div>
+                    <div class="stat-value"> {{ utilisateur.createdAt|date('d/m/Y') }} </div>
                 </div>
                 
                 <div class="stat-box">

@@ -185,7 +185,12 @@
                         </li>
                         <li class="{{ app.request.get('_route') == 'app_utilisateurs_new' ? 'active' }}">
                             <a href="{{ path('app_utilisateurs_new') }}">
-                                <i class="fa-solid fa-user-plus"></i> Ajouter
+                                <i class="fa-solid fa-user-plus"></i> Ajout
+                            </a>
+                        </li>
+                        <li class="{{ app.request.get('_route') == 'app_utilisateurs_stats' ? 'active' }}">
+                            <a href="{{ path('app_utilisateurs_stats') }}">
+                                <i class="fas fa-chart-bar"></i> Statistiques
                             </a>
                         </li>
                     </ul>

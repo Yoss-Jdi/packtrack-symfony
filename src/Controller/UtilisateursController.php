@@ -15,7 +15,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 final class UtilisateursController extends AbstractController
 {
     // Afficher la liste de tous les utilisateurs
-    #[Route('/utilisateurs', name: 'app_utilisateurs')]
+    #[Route('/admin/utilisateurs', name: 'app_utilisateurs')]
     public function index(UtilisateursRepository $repository): Response
     {
         $utilisateurs = $repository->findAll();
@@ -26,7 +26,7 @@ final class UtilisateursController extends AbstractController
     }
 
     // Afficher le formulaire et créer un nouvel utilisateur
-    #[Route('/ajouterutilisateur', name: 'app_utilisateurs_new')]
+    #[Route('/admin/ajouterutilisateur', name: 'app_utilisateurs_new')]
     public function new(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
     {
         $utilisateur = new Utilisateurs();
@@ -59,7 +59,7 @@ final class UtilisateursController extends AbstractController
     }
 
     // Afficher les détails d'un utilisateur
-    #[Route('/afficherutilisateur/{id}', name: 'app_utilisateurs_show')]
+    #[Route('/admin/afficherutilisateur/{id}', name: 'app_utilisateurs_show')]
     public function show(Utilisateurs $utilisateur): Response
     {
         return $this->render('admin/utilisateurs/afficherutilisateurs.html.twig', [
@@ -68,7 +68,7 @@ final class UtilisateursController extends AbstractController
     }
 
     // Modifier un utilisateur
-    #[Route('/modifierutilisateur/{id}', name: 'app_utilisateurs_edit')]
+    #[Route('/admin/modifierutilisateur/{id}', name: 'app_utilisateurs_edit')]
     public function edit(Request $request, Utilisateurs $utilisateur, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
     {
         $form = $this->createForm(UtilisateursType::class, $utilisateur, ['is_edit' => true]);
@@ -98,7 +98,7 @@ final class UtilisateursController extends AbstractController
     }
 
     // Supprimer un utilisateur
-    #[Route('/supprimerutilisateur/{id}', name: 'app_utilisateurs_delete', methods: ['POST'])]
+    #[Route('/admin/supprimerutilisateur/{id}', name: 'app_utilisateurs_delete', methods: ['POST'])]
     public function delete(Request $request, Utilisateurs $utilisateur, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$utilisateur->getId(), $request->request->get('_token'))) {
@@ -109,5 +109,16 @@ final class UtilisateursController extends AbstractController
         }
 
         return $this->redirectToRoute('app_utilisateurs');
+    }
+
+    // Afficher les statistiques des utilisateurs
+    #[Route('/admin/utilisateurs/statistiques', name: 'app_utilisateurs_stats')]
+    public function stats(UtilisateursRepository $repository): Response
+    {
+        $utilisateurs = $repository->findAll();
+        
+        return $this->render('admin/utilisateurs/statsutilisateurs.html.twig', [
+            'utilisateurs' => $utilisateurs,
+        ]);
     }
 }

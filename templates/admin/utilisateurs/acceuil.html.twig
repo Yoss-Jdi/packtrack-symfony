@@ -29,87 +29,6 @@
         animation: bounce 2s infinite;
     }
     
-    /* === STATS CARDS === */
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-    }
-    
-    .stat-card {
-        background: white;
-        border-radius: 12px;
-        padding: 1.5rem;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
-        animation: fadeInUp 0.6s ease forwards;
-        opacity: 0;
-    }
-    
-    .stat-card:nth-child(1) { animation-delay: 0.1s; }
-    .stat-card:nth-child(2) { animation-delay: 0.2s; }
-    .stat-card:nth-child(3) { animation-delay: 0.3s; }
-    .stat-card:nth-child(4) { animation-delay: 0.4s; }
-    
-    .stat-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 4px;
-        background: linear-gradient(90deg, var(--card-color), transparent);
-        transform: scaleX(0);
-        transition: transform 0.3s ease;
-        transform-origin: left;
-    }
-    
-    .stat-card:hover::before {
-        transform: scaleX(1);
-    }
-    
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-    }
-    
-    .stat-card.admin { --card-color: #e74c3c; }
-    .stat-card.gestionnaire { --card-color: #f39c12; }
-    .stat-card.livreur { --card-color: #2ecc71; }
-    .stat-card.client { --card-color: #3498db; }
-    
-    .stat-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.8rem;
-        margin-bottom: 1rem;
-        background: var(--card-color);
-        color: white;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-    
-    .stat-value {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #2c3e50;
-        margin: 0.5rem 0;
-    }
-    
-    .stat-label {
-        font-size: 0.9rem;
-        color: #7f8c8d;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-weight: 600;
-    }
-    
     /* === ALERTS === */
     .custom-alert {
         padding: 1rem 1.5rem;
@@ -129,17 +48,74 @@
         font-size: 1.5rem;
     }
     
-    /* === ACTION BUTTONS === */
-    .action-buttons {
+    /* === TOOLBAR === */
+    .toolbar {
         display: flex;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
         flex-wrap: wrap;
     }
     
+    .search-box {
+        flex: 1;
+        min-width: 300px;
+        position: relative;
+    }
+    
+    .search-input {
+        width: 100%;
+        padding: 0.9rem 1.2rem 0.9rem 3rem;
+        border: 2px solid #e0e6ed;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    .search-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+    
+    .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #95a5a6;
+        font-size: 1.2rem;
+    }
+    
+    .filter-group {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+    
+    .filter-select {
+        padding: 0.9rem 1.2rem;
+        border: 2px solid #e0e6ed;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-width: 150px;
+    }
+    
+    .filter-select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+    
     .btn-modern {
-        padding: 0.75rem 1.5rem;
-        border-radius: 10px;
+        padding: 0.9rem 1.5rem;
+        border-radius: 12px;
         font-weight: 600;
         border: none;
         transition: all 0.3s ease;
@@ -147,6 +123,8 @@
         align-items: center;
         gap: 0.5rem;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        cursor: pointer;
+        text-decoration: none;
     }
     
     .btn-modern:hover {
@@ -160,6 +138,11 @@
     
     .btn-add {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .btn-stats {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
         color: white;
     }
     
@@ -177,6 +160,9 @@
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         padding: 1.5rem;
         color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
     
     .table-header h2 {
@@ -186,6 +172,13 @@
         display: flex;
         align-items: center;
         gap: 10px;
+    }
+    
+    .result-count {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
     }
     
     /* === TABLE STYLING === */
@@ -207,93 +200,113 @@
         position: sticky;
         top: 0;
         z-index: 10;
+        cursor: pointer;
+        user-select: none;
+        transition: background 0.3s ease;
+    }
+    
+    .modern-table thead th:hover {
+        background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+    }
+    
+    .modern-table thead th.sortable {
+        position: relative;
+        padding-right: 2rem;
+    }
+    
+    .sort-icon {
+        position: absolute;
+        right: 0.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0.3;
+        transition: all 0.3s ease;
+    }
+    
+    .modern-table thead th.sortable:hover .sort-icon {
+        opacity: 0.7;
+    }
+    
+    .modern-table thead th.sorted .sort-icon {
+        opacity: 1;
+        color: #667eea;
     }
     
     .modern-table tbody tr {
+        border-bottom: 1px solid #e0e6ed;
         transition: all 0.3s ease;
-        border-bottom: 1px solid #ecf0f1;
-        animation: fadeIn 0.5s ease;
     }
     
     .modern-table tbody tr:hover {
-        background: linear-gradient(90deg, #f8f9fa 0%, #e3f2fd 100%);
+        background: linear-gradient(90deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
         transform: scale(1.01);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+    
+    .modern-table tbody tr.hidden {
+        display: none;
     }
     
     .modern-table tbody td {
         padding: 1.2rem 1rem;
-        vertical-align: middle;
-        border: none;
         color: #2c3e50;
+        font-size: 0.95rem;
     }
     
-    .modern-table tbody td:first-child {
-        font-weight: 600;
-        color: #667eea;
-    }
-    
-    /* === BADGES === */
+    /* === ROLE BADGES === */
     .role-badge {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
+        gap: 0.4rem;
         padding: 0.5rem 1rem;
         border-radius: 20px;
-        font-size: 0.85rem;
         font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        transition: all 0.3s ease;
-    }
-    
-    .role-badge:hover {
-        transform: scale(1.05);
-    }
-    
-    .role-badge i {
-        font-size: 1rem;
+        font-size: 0.85rem;
+        letter-spacing: 0.3px;
     }
     
     .role-badge.admin {
         background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
         color: white;
+        box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
     }
     
     .role-badge.gestionnaire {
-        background: linear-gradient(135deg, #f39c12 0%, #d68910 100%);
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
         color: white;
+        box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
     }
     
     .role-badge.livreur {
-        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
         color: white;
+        box-shadow: 0 4px 10px rgba(243, 156, 18, 0.3);
     }
     
     .role-badge.client {
-        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
         color: white;
+        box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3);
     }
     
-    /* === ACTION BUTTONS IN TABLE === */
+    /* === ACTION BUTTONS === */
     .action-btn {
         padding: 0.5rem 1rem;
         border-radius: 8px;
-        border: none;
-        font-size: 0.85rem;
         font-weight: 600;
+        font-size: 0.85rem;
+        border: none;
+        cursor: pointer;
         transition: all 0.3s ease;
-        margin: 0 0.25rem;
         display: inline-flex;
         align-items: center;
         gap: 0.4rem;
-        cursor: pointer;
+        text-decoration: none;
+        margin: 0 0.25rem;
     }
     
     .action-btn:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
     }
     
     .btn-view {
@@ -302,7 +315,7 @@
     }
     
     .btn-edit {
-        background: linear-gradient(135deg, #f39c12 0%, #d68910 100%);
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
         color: white;
     }
     
@@ -330,22 +343,6 @@
     }
     
     /* === ANIMATIONS === */
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    
     @keyframes slideDown {
         from {
             opacity: 0;
@@ -360,7 +357,7 @@
     @keyframes slideInRight {
         from {
             opacity: 0;
-            transform: translateX(50px);
+            transform: translateX(30px);
         }
         to {
             opacity: 1;
@@ -368,23 +365,157 @@
         }
     }
     
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
     @keyframes bounce {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+    
+    /* === MODAL DE CONFIRMATION PERSONNALISÉ === */
+    .delete-modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(5px);
+        animation: fadeIn 0.3s ease;
+    }
+    
+    .delete-modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .modal-content-custom {
+        background: white;
+        border-radius: 20px;
+        padding: 0;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: slideInModal 0.4s ease;
+        overflow: hidden;
+    }
+    
+    .modal-header-custom {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        padding: 2rem;
+        text-align: center;
+        color: white;
+    }
+    
+    .modal-header-custom i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        animation: shake 0.5s ease;
+    }
+    
+    .modal-header-custom h3 {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 700;
+    }
+    
+    .modal-body-custom {
+        padding: 2rem;
+        text-align: center;
+    }
+    
+    .modal-body-custom p {
+        font-size: 1.1rem;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        line-height: 1.6;
+    }
+    
+    .modal-body-custom .user-info {
+        font-weight: 700;
+        color: #e74c3c;
+        font-size: 1.2rem;
+        margin-top: 1rem;
+    }
+    
+    .modal-footer-custom {
+        padding: 1.5rem 2rem 2rem;
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+    
+    .modal-btn {
+        padding: 0.9rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-width: 140px;
+        justify-content: center;
+    }
+    
+    .modal-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-cancel {
+        background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+        color: white;
+    }
+    
+    .btn-confirm-delete {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes slideInModal {
+        from {
+            opacity: 0;
+            transform: scale(0.8) translateY(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+    
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        75% { transform: translateX(10px); }
     }
 </style>
 {% endblock %}
 
 {% block body %}
-    {# TOPBAR #}
-    <div class="topbar">
-        <input type="text" placeholder="Rechercher un utilisateur...">
-        <div class="user">
-            <img src="https://i.pravatar.cc/40?img=12" alt="Admin">
-            <span>Admin</span>
-        </div>
-    </div>
-
     {# PAGE HEADER #}
     <div class="page-header">
         <h1>
@@ -401,47 +532,32 @@
         </div>
     {% endfor %}
 
-    {# STATS CARDS #}
-    <div class="stats-grid">
-        <div class="stat-card admin">
-            <div class="stat-icon">
-                <i class="fa-solid fa-user-shield"></i>
-            </div>
-            <div class="stat-value">{{ utilisateurs|filter(u => u.role.value == 'ADMIN')|length }}</div>
-            <div class="stat-label">Administrateurs</div>
+    {# TOOLBAR #}
+    <div class="toolbar">
+        <div class="search-box">
+            <i class="fa-solid fa-search search-icon"></i>
+            <input type="text" id="searchInput" class="search-input" placeholder="Rechercher par nom, prénom, email...">
         </div>
         
-        <div class="stat-card gestionnaire">
-            <div class="stat-icon">
-                <i class="fa-solid fa-user-tie"></i>
-            </div>
-            <div class="stat-value">{{ utilisateurs|filter(u => u.role.value == 'GESTIONNAIRE')|length }}</div>
-            <div class="stat-label">Gestionnaires</div>
+        <div class="filter-group">
+            <select id="roleFilter" class="filter-select">
+                <option value="">Tous les rôles</option>
+                <option value="ADMIN">Administrateurs</option>
+                <option value="GESTIONNAIRE">Gestionnaires</option>
+                <option value="LIVREUR">Livreurs</option>
+                <option value="CLIENT">Clients</option>
+            </select>
+            
+            <a href="{{ path('app_utilisateurs_new') }}" class="btn-modern btn-add">
+                <i class="fa-solid fa-user-plus"></i>
+                Nouvel utilisateur
+            </a>
+            
+            <a href="{{ path('app_utilisateurs_stats') }}" class="btn-modern btn-stats">
+                <i class="fa-solid fa-chart-pie"></i>
+                Statistiques
+            </a>
         </div>
-        
-        <div class="stat-card livreur">
-            <div class="stat-icon">
-                <i class="fa-solid fa-truck"></i>
-            </div>
-            <div class="stat-value">{{ utilisateurs|filter(u => u.role.value == 'LIVREUR')|length }}</div>
-            <div class="stat-label">Livreurs</div>
-        </div>
-        
-        <div class="stat-card client">
-            <div class="stat-icon">
-                <i class="fa-solid fa-user"></i>
-            </div>
-            <div class="stat-value">{{ utilisateurs|filter(u => u.role.value == 'CLIENT')|length }}</div>
-            <div class="stat-label">Clients</div>
-        </div>
-    </div>
-
-    {# ACTION BUTTONS #}
-    <div class="action-buttons">
-        <a href="{{ path('app_utilisateurs_new') }}" class="btn-modern btn-add">
-            <i class="fa-solid fa-user-plus"></i>
-            Créer un nouvel utilisateur
-        </a>
     </div>
 
     {# USERS TABLE #}
@@ -449,32 +565,54 @@
         <div class="table-header">
             <h2>
                 <i class="fa-solid fa-list"></i>
-                Liste des Utilisateurs ({{ utilisateurs|length }})
+                Liste des Utilisateurs
             </h2>
+            <div class="result-count">
+                <span id="resultCount">{{ utilisateurs|length }}</span> résultat(s)
+            </div>
         </div>
         
         <div style="overflow-x: auto;">
-            <table class="modern-table">
+            <table class="modern-table" id="usersTable">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Email</th>
-                        <th>Nom</th>
-                        <th>Prénom</th>
-                        <th>Téléphone</th>
-                        <th>Rôle</th>
+                        <th class="sortable" data-column="id">
+                            ID
+                            <i class="fa-solid fa-sort sort-icon"></i>
+                        </th>
+                        <th class="sortable" data-column="email">
+                            Email
+                            <i class="fa-solid fa-sort sort-icon"></i>
+                        </th>
+                        <th class="sortable" data-column="nom">
+                            Nom
+                            <i class="fa-solid fa-sort sort-icon"></i>
+                        </th>
+                        <th class="sortable" data-column="prenom">
+                            Prénom
+                            <i class="fa-solid fa-sort sort-icon"></i>
+                        </th>
+                        <th class="sortable" data-column="telephone">
+                            Téléphone
+                            <i class="fa-solid fa-sort sort-icon"></i>
+                        </th>
+                        <th class="sortable" data-column="role">
+                            Rôle
+                            <i class="fa-solid fa-sort sort-icon"></i>
+                        </th>
                         <th style="text-align: center;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                 {% for utilisateur in utilisateurs %}
-                    <tr>
-                        <td>#{{ utilisateur.id }}</td>
-                        <td>{{ utilisateur.email }}</td>
-                        <td>{{ utilisateur.nom }}</td>
-                        <td>{{ utilisateur.prenom }}</td>
-                        <td>{{ utilisateur.telephone ?? 'N/A' }}</td>
-                        <td>
+                    <tr data-role="{{ utilisateur.role.value }}" 
+                        data-search="{{ utilisateur.email|lower }} {{ utilisateur.nom|lower }} {{ utilisateur.prenom|lower }} {{ utilisateur.telephone ?? '' }}">
+                        <td data-value="{{ utilisateur.id }}">#{{ utilisateur.id }}</td>
+                        <td data-value="{{ utilisateur.email }}">{{ utilisateur.email }}</td>
+                        <td data-value="{{ utilisateur.nom }}">{{ utilisateur.nom }}</td>
+                        <td data-value="{{ utilisateur.prenom }}">{{ utilisateur.prenom }}</td>
+                        <td data-value="{{ utilisateur.telephone ?? 'N/A' }}">{{ utilisateur.telephone ?? 'N/A' }}</td>
+                        <td data-value="{{ utilisateur.role.value }}">
                             <span class="role-badge {{ utilisateur.role.value|lower }}">
                                 {% if utilisateur.role.value == 'ADMIN' %}
                                     <i class="fa-solid fa-user-shield"></i>
@@ -495,9 +633,9 @@
                             <a href="{{ path('app_utilisateurs_edit', {'id': utilisateur.id}) }}" class="action-btn btn-edit">
                                 <i class="fa-solid fa-pen"></i> Modifier
                             </a>
-                            <form method="post" action="{{ path('app_utilisateurs_delete', {'id': utilisateur.id}) }}" style="display:inline-block;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+                            <form method="post" action="{{ path('app_utilisateurs_delete', {'id': utilisateur.id}) }}" style="display:inline-block;" class="delete-form" data-user-name="{{ utilisateur.nom }} {{ utilisateur.prenom }}" data-user-email="{{ utilisateur.email }}">
                                 <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ utilisateur.id) }}">
-                                <button type="submit" class="action-btn btn-delete">
+                                <button type="button" class="action-btn btn-delete delete-btn">
                                     <i class="fa-solid fa-trash"></i> Supprimer
                                 </button>
                             </form>
@@ -518,4 +656,169 @@
         </div>
     </div>
 
+    {# MODAL DE CONFIRMATION DE SUPPRESSION #}
+    <div id="deleteModal" class="delete-modal">
+        <div class="modal-content-custom">
+            <div class="modal-header-custom">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <h3>Confirmation de suppression</h3>
+            </div>
+            <div class="modal-body-custom">
+                <p>Êtes-vous sûr de vouloir supprimer cet utilisateur ?</p>
+                <p>Cette action est irréversible.</p>
+                <div class="user-info" id="userInfo"></div>
+            </div>
+            <div class="modal-footer-custom">
+                <button type="button" class="modal-btn btn-cancel" id="cancelDelete">
+                    <i class="fa-solid fa-xmark"></i>
+                    Annuler
+                </button>
+                <button type="button" class="modal-btn btn-confirm-delete" id="confirmDelete">
+                    <i class="fa-solid fa-trash"></i>
+                    Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+// Search functionality
+const searchInput = document.getElementById('searchInput');
+const roleFilter = document.getElementById('roleFilter');
+const table = document.getElementById('usersTable');
+const tbody = table.querySelector('tbody');
+const rows = tbody.querySelectorAll('tr');
+const resultCount = document.getElementById('resultCount');
+
+function filterTable() {
+    const searchTerm = searchInput.value.toLowerCase();
+    const selectedRole = roleFilter.value;
+    let visibleCount = 0;
+    
+    rows.forEach(row => {
+        if (row.querySelector('.empty-state')) return;
+        
+        const searchData = row.getAttribute('data-search') || '';
+        const role = row.getAttribute('data-role') || '';
+        
+        const matchesSearch = searchData.includes(searchTerm);
+        const matchesRole = !selectedRole || role === selectedRole;
+        
+        if (matchesSearch && matchesRole) {
+            row.classList.remove('hidden');
+            visibleCount++;
+        } else {
+            row.classList.add('hidden');
+        }
+    });
+    
+    resultCount.textContent = visibleCount;
+}
+
+searchInput.addEventListener('input', filterTable);
+roleFilter.addEventListener('change', filterTable);
+
+// Sorting functionality
+let sortDirection = {};
+const headers = table.querySelectorAll('th.sortable');
+
+headers.forEach(header => {
+    const column = header.getAttribute('data-column');
+    sortDirection[column] = 'asc';
+    
+    header.addEventListener('click', () => {
+        // Remove sorted class from all headers
+        headers.forEach(h => h.classList.remove('sorted'));
+        header.classList.add('sorted');
+        
+        // Toggle sort direction
+        sortDirection[column] = sortDirection[column] === 'asc' ? 'desc' : 'asc';
+        
+        // Update icon
+        const icon = header.querySelector('.sort-icon');
+        icon.className = sortDirection[column] === 'asc' 
+            ? 'fa-solid fa-sort-up sort-icon' 
+            : 'fa-solid fa-sort-down sort-icon';
+        
+        // Sort rows
+        const rowsArray = Array.from(rows).filter(row => !row.querySelector('.empty-state'));
+        
+        rowsArray.sort((a, b) => {
+            const aValue = a.querySelector(`td[data-value]`).parentElement.children[Array.from(header.parentElement.children).indexOf(header)].getAttribute('data-value') || '';
+            const bValue = b.querySelector(`td[data-value]`).parentElement.children[Array.from(header.parentElement.children).indexOf(header)].getAttribute('data-value') || '';
+            
+            // Try to parse as number for ID column
+            const aNum = parseFloat(aValue);
+            const bNum = parseFloat(bValue);
+            
+            if (!isNaN(aNum) && !isNaN(bNum)) {
+                return sortDirection[column] === 'asc' ? aNum - bNum : bNum - aNum;
+            }
+            
+            // String comparison
+            return sortDirection[column] === 'asc' 
+                ? aValue.localeCompare(bValue)
+                : bValue.localeCompare(aValue);
+        });
+        
+        // Re-append rows in sorted order
+        rowsArray.forEach(row => tbody.appendChild(row));
+    });
+});
+
+// Delete confirmation modal functionality
+const deleteModal = document.getElementById('deleteModal');
+const cancelDeleteBtn = document.getElementById('cancelDelete');
+const confirmDeleteBtn = document.getElementById('confirmDelete');
+const userInfo = document.getElementById('userInfo');
+let currentForm = null;
+
+// Attach click event to all delete buttons
+document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        currentForm = this.closest('.delete-form');
+        const userName = currentForm.getAttribute('data-user-name');
+        const userEmail = currentForm.getAttribute('data-user-email');
+        
+        // Update modal with user info
+        userInfo.innerHTML = `<i class="fa-solid fa-user"></i> ${userName}<br><i class="fa-solid fa-envelope"></i> ${userEmail}`;
+        
+        // Show modal
+        deleteModal.classList.add('show');
+    });
+});
+
+// Cancel button
+cancelDeleteBtn.addEventListener('click', function() {
+    deleteModal.classList.remove('show');
+    currentForm = null;
+});
+
+// Confirm delete button
+confirmDeleteBtn.addEventListener('click', function() {
+    if (currentForm) {
+        currentForm.submit();
+    }
+});
+
+// Close modal when clicking outside
+deleteModal.addEventListener('click', function(e) {
+    if (e.target === deleteModal) {
+        deleteModal.classList.remove('show');
+        currentForm = null;
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && deleteModal.classList.contains('show')) {
+        deleteModal.classList.remove('show');
+        currentForm = null;
+    }
+});
+</script>
 {% endblock %}
