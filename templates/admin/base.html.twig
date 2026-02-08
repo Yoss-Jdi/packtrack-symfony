@@ -132,6 +132,41 @@
                 transform: translateX(0);
             }
         }
+
+        /* Style pour le bouton de déconnexion */
+        .logout-btn {
+            margin-top: auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 15px;
+        }
+
+        .logout-btn a {
+            color: #ff6b6b !important;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn a:hover {
+            background: rgba(255, 107, 107, 0.1) !important;
+            padding-left: 25px;
+        }
+
+        /* Informations utilisateur */
+        .user-info {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 10px;
+        }
+
+        .user-info p {
+            margin: 0;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .user-info strong {
+            color: #fff;
+            font-size: 15px;
+        }
     </style>
     
     {% block stylesheets %}{% endblock %}
@@ -141,6 +176,15 @@
         {# SIDEBAR #}
         <aside class="sidebar">
             <h2>📦 PackTrack</h2>
+
+            {# Informations utilisateur connecté #}
+            {% if app.user %}
+                <div class="user-info">
+                    <p><strong>{{ app.user.prenom }} {{ app.user.nom }}</strong></p>
+                    <p style="font-size: 12px;">{{ app.user.role.value }}</p>
+                </div>
+            {% endif %}
+
             <ul>
                 <li class="{{ app.request.get('_route') == 'admin_dashboard' ? 'active' }}">
                     <a href="{{ path('admin_dashboard') }}">
@@ -195,11 +239,27 @@
                         </li>
                     </ul>
                 </li>
+
+                {# Bouton de déconnexion #}
+                <li class="logout-btn">
+                    <a href="{{ path('app_logout') }}">
+                        <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+                    </a>
+                </li>
             </ul>
         </aside>
 
         {# MAIN CONTENT #}
         <main class="main">
+            {# Messages Flash #}
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+
             {% block body %}{% endblock %}
         </main>
     </div>
