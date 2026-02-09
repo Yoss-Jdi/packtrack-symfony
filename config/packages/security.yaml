@@ -25,26 +25,38 @@ security:
                 login_path: app_login
                 check_path: app_login
                 enable_csrf: true
-                username_parameter: email
-                password_parameter: password
+                username_parameter: email  # Changé pour correspondre au formulaire
+                password_parameter: password   # Changé pour correspondre au formulaire
                 # Handler de succès personnalisé
                 success_handler: App\Security\LoginSuccessHandler
+
+            # ====== CONFIGURATION REMEMBER ME ======
+            remember_me:
+                secret: '%kernel.secret%'          # Clé secrète pour signer les cookies
+                lifetime: 2592000                  # 30 jours (en secondes) - modifiable selon vos besoins
+                path: /                            # Cookie valide sur tout le site
+                always_remember_me: false          # Seulement si la checkbox est cochée
+                name: REMEMBERME                   # Nom du cookie
+                secure: auto                       # HTTPS uniquement en production
+                httponly: true                     # Protection XSS - empêche JS d'accéder au cookie
+                samesite: lax                      # Protection CSRF
+                signature_properties: [password]   # Invalider automatiquement si le mot de passe change
+                # token_provider: 'doctrine'       # Décommenter si vous voulez stocker en BDD
+            # ====== FIN CONFIGURATION REMEMBER ME ======
 
             # Configuration de la déconnexion
             logout:
                 path: app_logout
                 target: app_login
-
-            # Se souvenir de moi
-            remember_me:
-                secret: '%kernel.secret%'
-                lifetime: 604800 # 1 semaine en secondes
-                path: /
+                # Invalider le cookie remember_me à la déconnexion
+                invalidate_session: true
 
     # Note: Only the *first* matching rule is applied
     access_control:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/forgot-password, roles: PUBLIC_ACCESS }
+        - { path: ^/reset-password, roles: PUBLIC_ACCESS }
         - { path: ^/admin/redirect-choice, roles: ROLE_ADMIN }
         - { path: ^/admin/choose-redirect, roles: ROLE_ADMIN }
         - { path: ^/admin, roles: ROLE_ADMIN }
