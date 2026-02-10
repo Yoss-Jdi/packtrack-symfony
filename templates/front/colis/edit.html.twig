@@ -213,13 +213,16 @@
         
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">💾 Enregistrer</button>
-            <form method="post" action="{{ path('app_colis_delete', {id: colis.id}) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce colis ?');">
-                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ colis.id) }}">
-                <button type="submit" class="btn btn-danger">🗑️ Supprimer ce colis</button>
-            </form>
+            <a href="{{ path('app_colis_index') }}" class="btn btn-secondary">❌ Annuler</a>
         </div>
-        
+
         {{ form_end(form) }}
+
+        <form method="post" action="{{ path('app_colis_delete', {id: colis.id}) }}" style="display: inline; margin-left:12px;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce colis ?');">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ colis.id) }}">
+            <hr>
+            <button type="submit" class="btn btn-danger">🗑️ Supprimer ce colis</button>
+        </form>
     </div>
 </div>
 {% endblock %}
