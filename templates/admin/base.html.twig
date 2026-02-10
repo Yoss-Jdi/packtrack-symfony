@@ -193,7 +193,7 @@
                 </li>
                 <li class="{{ app.request.get('_route') starts with 'admin_parcels' ? 'active' }}">
                     <a href="{{ path('admin_parcels') }}">
-                        <i class="fa-solid fa-box"></i> Parcels
+                        <i class="fa-solid fa-box"></i> Colis
                     </a>
                 </li>
                 <li class="{{ app.request.get('_route') starts with 'admin_invoices' ? 'active' }}">
@@ -244,6 +244,9 @@
                 <li class="logout-btn">
                     <a href="{{ path('app_logout') }}">
                         <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+                <li class="{{ app.request.get('_route') starts with 'app_notifications' ? 'active' }}">
+                    <a href="{{ path('app_notifications_index') }}">
+                        <i class="fa-solid fa-bell"></i> Notifications
                     </a>
                 </li>
             </ul>
@@ -265,12 +268,51 @@
     </div>
 
     <script>
-        function toggleSubmenu(element) {
+    
+
+    {% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const tableContainer = document.getElementById('parcels-table-container');
+            const baseUrl = '{{ path('admin_parcels') }}';
+
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const status = btn.dataset.status;
+
+                    // UI : bouton actif
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    // Loader
+                    tableContainer.innerHTML = '<p style="text-align:center;padding:30px">Loading...</p>';
+
+                    // Requête AJAX
+                    fetch(`${baseUrl}?status=${status}`, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    })
+                    .then(res => {
+                        if (!res.ok) throw new Error('Network error');
+                        return res.text();
+                    })
+                    .then(html => {
+                        tableContainer.innerHTML = html;
+                    })
+                    .catch(() => {
+                        tableContainer.innerHTML = '<p style="color:red;text-align:center">Error loading data.</p>';
+                    });
+                });
+            });
+        });
+    </script>
+    
+    //yassine 
+    function toggleSubmenu(element) {
             const parentLi = element.parentElement;
             parentLi.classList.toggle('open');
         }
     </script>
-
-    {% block javascripts %}{% endblock %}
+{% endblock %}
 </body>
 </html>
