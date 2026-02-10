@@ -15,9 +15,9 @@ class Notification
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
+    #[ORM\ManyToOne(targetEntity: Utilisateurs::class)]
     #[ORM\JoinColumn(name: 'ID_Utilisateur', referencedColumnName: 'ID_Utilisateur', nullable: false)]
-    private ?Utilisateur $utilisateur = null;
+    private ?Utilisateurs $utilisateur = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $message = null;
@@ -47,12 +47,12 @@ class Notification
         return $this->id;
     }
 
-    public function getUtilisateur(): ?Utilisateur
+    public function getUtilisateur(): ?Utilisateurs
     {
         return $this->utilisateur;
     }
 
-    public function setUtilisateur(?Utilisateur $utilisateur): static
+    public function setUtilisateur(?Utilisateurs $utilisateur): static
     {
         $this->utilisateur = $utilisateur;
         return $this;

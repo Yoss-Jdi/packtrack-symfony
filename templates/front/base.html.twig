@@ -20,6 +20,12 @@
 
     <nav>
         <a href="{{ path('app_home') }}" class="{{ app.request.get('_route') == 'app_home' ? 'active' }}">Track Parcel</a>
+        {% if app.user and is_granted('ROLE_ENTREPRISE') %}
+            <a href="{{ path('app_colis_index') }}" class="{{ app.request.get('_route') in ['app_colis_index', 'app_colis_new', 'app_colis_show', 'app_colis_edit'] ? 'active' }}">Mes Colis</a>
+        {% endif %}
+        {% if app.user and is_granted('ROLE_LIVREUR') %}
+            <a href="{{ path('app_livraison_index') }}" class="{{ app.request.get('_route') in ['app_livraison_index', 'app_livraison_mes_livraisons', 'app_livraison_terminer', 'app_livraison_colis_details', 'app_livraison_details'] ? 'active' }}">Livraisons</a>
+        {% endif %}
         <a href="#">Community</a>
         <a href="#">Report Issue</a>
     </nav>

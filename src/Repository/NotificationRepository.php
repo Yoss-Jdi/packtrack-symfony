@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Notification;
-use App\Entity\Utilisateur;
+use App\Entity\Utilisateurs;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,7 +17,7 @@ class NotificationRepository extends ServiceEntityRepository
     /**
      * Récupérer les notifications non lues d'un utilisateur
      */
-    public function findNonLues(Utilisateur $utilisateur): array
+    public function findNonLues(Utilisateurs $utilisateur): array
     {
         return $this->createQueryBuilder('n')
             ->where('n.utilisateur = :user')
@@ -31,7 +31,7 @@ class NotificationRepository extends ServiceEntityRepository
     /**
      * Compter les notifications non lues
      */
-    public function countNonLues(Utilisateur $utilisateur): int
+    public function countNonLues(Utilisateurs $utilisateur): int
     {
         return $this->createQueryBuilder('n')
             ->select('COUNT(n.id)')
@@ -45,7 +45,7 @@ class NotificationRepository extends ServiceEntityRepository
     /**
      * Récupérer toutes les notifications d'un utilisateur
      */
-    public function findByUtilisateur(Utilisateur $utilisateur, int $limit = 20): array
+    public function findByUtilisateur(Utilisateurs $utilisateur, int $limit = 20): array
     {
         return $this->createQueryBuilder('n')
             ->where('n.utilisateur = :user')
@@ -59,7 +59,7 @@ class NotificationRepository extends ServiceEntityRepository
     /**
      * Marquer toutes les notifications comme lues
      */
-    public function marquerToutesCommeLues(Utilisateur $utilisateur): void
+    public function marquerToutesCommeLues(Utilisateurs $utilisateur): void
     {
         $this->createQueryBuilder('n')
             ->update()

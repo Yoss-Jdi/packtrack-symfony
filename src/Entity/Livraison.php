@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Entity;
 
 use App\Repository\LivraisonRepository;
@@ -57,19 +56,33 @@ class Livraison
     #[Assert\NotNull(message: "Le colis est obligatoire")]
     private ?Colis $colis = null;
 
-    #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
+
+
+    #[ORM\ManyToOne(targetEntity: Utilisateurs::class)]
     #[ORM\JoinColumn(name: 'ID_Livreur', referencedColumnName: 'ID_Utilisateur', nullable: false)]
-    #[Assert\NotNull(message: "Le livreur est obligatoire")]
-    private ?Utilisateur $livreur = null;
+    private ?Utilisateurs $livreur = null;
+
 
     public function __construct()
     {
         $this->dateDebut = new \DateTime();
         $this->statut = 'en_cours';
     }
+
     
 
-    public function getId(): ?int
+    public function getLivreur(): ?Utilisateurs
+    {
+        return $this->livreur;
+    }
+
+    public function setLivreur(?Utilisateurs $livreur): static
+    {
+        $this->livreur = $livreur;
+        return $this;
+    }
+
+     public function getId(): ?int
     {
         return $this->id;
     }
@@ -162,14 +175,5 @@ class Livraison
         return $this;
     }
 
-    public function getLivreur(): ?Utilisateur
-    {
-        return $this->livreur;
-    }
-
-    public function setLivreur(?Utilisateur $livreur): static
-    {
-        $this->livreur = $livreur;
-        return $this;
-    }
+   
 }

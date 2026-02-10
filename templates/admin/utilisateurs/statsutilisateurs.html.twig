@@ -94,7 +94,7 @@
     
     .stat-card.total { --card-color: #3498db; }
     .stat-card.admin { --card-color: #e74c3c; }
-    .stat-card.gestionnaire { --card-color: #f39c12; }
+    .stat-card.entreprise { --card-color: #f39c12; }
     .stat-card.livreur { --card-color: #2ecc71; }
     .stat-card.client { --card-color: #9b59b6; }
     
@@ -232,7 +232,7 @@
     }
     
     .role-color.admin { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); }
-    .role-color.gestionnaire { background: linear-gradient(135deg, #f39c12 0%, #d68910 100%); }
+    .role-color.entreprise { background: linear-gradient(135deg, #f39c12 0%, #d68910 100%); }
     .role-color.livreur { background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); }
     .role-color.client { background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); }
     
@@ -262,7 +262,7 @@
     }
     
     .role-bar-fill.admin { background: linear-gradient(90deg, #e74c3c, #c0392b); }
-    .role-bar-fill.gestionnaire { background: linear-gradient(90deg, #f39c12, #d68910); }
+    .role-bar-fill.entreprise { background: linear-gradient(90deg, #f39c12, #d68910); }
     .role-bar-fill.livreur { background: linear-gradient(90deg, #2ecc71, #27ae60); }
     .role-bar-fill.client { background: linear-gradient(90deg, #9b59b6, #8e44ad); }
     
@@ -535,7 +535,7 @@
             <div class="stat-percentage">{{ ((utilisateurs|filter(u => u.role.value == 'ADMIN')|length / utilisateurs|length) * 100)|round(1) }}%</div>
         </div>
         
-        <div class="stat-card gestionnaire">
+        <div class="stat-card entreprise">
             <div class="stat-header">
                 <div class="stat-icon">
                     <i class="fa-solid fa-user-tie"></i>
@@ -545,9 +545,9 @@
                     +8%
                 </div>
             </div>
-            <div class="stat-value">{{ utilisateurs|filter(u => u.role.value == 'GESTIONNAIRE')|length }}</div>
-            <div class="stat-label">Gestionnaires</div>
-            <div class="stat-percentage">{{ ((utilisateurs|filter(u => u.role.value == 'GESTIONNAIRE')|length / utilisateurs|length) * 100)|round(1) }}%</div>
+            <div class="stat-value">{{ utilisateurs|filter(u => u.role.value == 'ENTREPRISE')|length }}</div>
+            <div class="stat-label">Entreprises</div>
+            <div class="stat-percentage">{{ ((utilisateurs|filter(u => u.role.value == 'ENTREPRISE')|length / utilisateurs|length) * 100)|round(1) }}%</div>
         </div>
         
         <div class="stat-card livreur">
@@ -606,16 +606,16 @@
                 </div>
                 
                 <div class="role-item">
-                    <div class="role-color gestionnaire">
+                    <div class="role-color entreprise">
                         <i class="fa-solid fa-user-tie"></i>
                     </div>
                     <div class="role-details">
-                        <div class="role-name">Gestionnaires</div>
+                        <div class="role-name">Entreprises</div>
                         <div class="role-bar">
-                            <div class="role-bar-fill gestionnaire" style="width: {{ ((utilisateurs|filter(u => u.role.value == 'GESTIONNAIRE')|length / total) * 100) }}%"></div>
+                            <div class="role-bar-fill entreprise" style="width: {{ ((utilisateurs|filter(u => u.role.value == 'ENTREPRISE')|length / total) * 100) }}%"></div>
                         </div>
                     </div>
-                    <div class="role-count">{{ utilisateurs|filter(u => u.role.value == 'GESTIONNAIRE')|length }}</div>
+                    <div class="role-count">{{ utilisateurs|filter(u => u.role.value == 'ENTREPRISE')|length }}</div>
                 </div>
                 
                 <div class="role-item">

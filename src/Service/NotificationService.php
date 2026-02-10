@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Notification;
-use App\Entity\Utilisateur;
+use App\Entity\Utilisateurs;
 use App\Entity\Colis;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -20,7 +20,7 @@ class NotificationService
      * Créer une notification
      */
     public function creer(
-        Utilisateur $utilisateur,
+        Utilisateurs $utilisateur,
         string $message,
         string $type = 'info',
         ?Colis $colis = null
@@ -88,7 +88,7 @@ class NotificationService
     /**
      * Notifier l'admin des colis en attente depuis longtemps
      */
-    public function notifierColisEnAttente(Utilisateur $admin, array $colisEnAttente): void
+    public function notifierColisEnAttente(Utilisateurs $admin, array $colisEnAttente): void
     {
         if (empty($colisEnAttente)) {
             return;

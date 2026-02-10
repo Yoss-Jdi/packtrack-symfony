@@ -1,9 +1,8 @@
 <?php
-
 namespace App\Form;
 
 use App\Entity\Colis;
-use App\Entity\Utilisateur;
+use App\Entity\Utilisateurs; // ✅ CORRECTION
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -11,8 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use App\Repository\UtilisateurRepository;
-use Symfony\Component\Validator\Constraints as Assert;
+use App\Repository\UtilisateursRepository;
 
 class ColisType extends AbstractType
 {
@@ -36,7 +34,7 @@ class ColisType extends AbstractType
                     'placeholder' => 'Ex: 2 cartons, 1 palette...',
                     'novalidate' => 'novalidate'
                 ],
-                'help' => 'Maxium 1000 caractères (validation côté serveur)'
+                'help' => 'Maximum 1000 caractères (validation côté serveur)'
             ])
             ->add('adresseDestination', TextareaType::class, [
                 'label' => 'Adresse de destination',
@@ -67,29 +65,29 @@ class ColisType extends AbstractType
                 'help' => 'Chiffres, espaces et "x" uniquement (validation côté serveur)'
             ])
             ->add('destinataire', EntityType::class, [
-                'class' => Utilisateur::class,
-                'choice_label' => function(Utilisateur $user) {
+                'class' => Utilisateurs::class, // ✅ CORRECTION
+                'choice_label' => function(Utilisateurs $user) { // ✅ CORRECTION
                     return $user->getPrenom() . ' ' . $user->getNom() . ' (' . $user->getEmail() . ')';
                 },
                 'label' => 'Destinataire',
                 'placeholder' => 'Sélectionnez un destinataire',
                 'required' => true,
                 'attr' => ['novalidate' => 'novalidate'],
-                'query_builder' => function (UtilisateurRepository $repo) {
+                'query_builder' => function (UtilisateursRepository $repo) {
                     return $repo->createQueryBuilder('u')
                         ->where('u.role = :role')
                         ->setParameter('role', 'Client')
-                        ->orderBy('u.nom', 'ASC');
+                        ->orderBy('u.Nom', 'ASC');
                 },
             ])
         ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
-{
-    $resolver->setDefaults([
-        'data_class' => Colis::class,
-        'attr' => ['novalidate' => 'novalidate'], 
-    ]);
-}
+    {
+        $resolver->setDefaults([
+            'data_class' => Colis::class,
+            'attr' => ['novalidate' => 'novalidate'], 
+        ]);
+    }
 }

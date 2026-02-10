@@ -10,9 +10,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Repository\UtilisateurRepository;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Repository\UtilisateursRepository;
 
 #[Route('/colis')]
+#[IsGranted('ROLE_ENTREPRISE')]
 class ColisController extends AbstractController
 {
     #[Route('/', name: 'app_colis_index', methods: ['GET'])]
@@ -28,7 +30,7 @@ class ColisController extends AbstractController
     }
 
     #[Route('/new', name: 'app_colis_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, UtilisateurRepository $userRepo): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, UtilisateursRepository $userRepo): Response
     {
         $colis = new Colis();
         

@@ -237,3 +237,38 @@
 
     </style>
 {% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const tableContainer = document.getElementById('parcels-table-container');
+        const baseUrl = '{{ path('admin_parcels') }}';
+
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const status = btn.dataset.status;
+
+                filterButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                tableContainer.innerHTML = '<p style="text-align:center;padding:30px">⏳ Loading...</p>';
+
+                fetch(`${baseUrl}?status=${status}`, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error('Network error');
+                    return res.text();
+                })
+                .then(html => {
+                    tableContainer.innerHTML = html;
+                })
+                .catch(() => {
+                    tableContainer.innerHTML = '<p style="color:red;text-align:center">❌ Error loading data.</p>';
+                });
+            });
+        });
+    });
+    </script>
+{% endblock %}

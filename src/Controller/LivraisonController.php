@@ -10,12 +10,14 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Repository\UtilisateurRepository;
+use App\Repository\UtilisateursRepository;
 use App\Form\TerminerLivraisonType; 
 use Symfony\Component\HttpFoundation\Request;
 use App\Service\NotificationService;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/livraison')]
+#[IsGranted('ROLE_LIVREUR')]
 class LivraisonController extends AbstractController
 {
     #[Route('/', name: 'app_livraison_index', methods: ['GET'])]
@@ -42,7 +44,7 @@ class LivraisonController extends AbstractController
     }
 
     #[Route('/prendre/{id}', name: 'app_livraison_prendre', methods: ['POST'])]
-    public function prendreEnCharge(int $id, ColisRepository $colisRepository, EntityManagerInterface $entityManager,  UtilisateurRepository $userRepo, NotificationService $notificationService): Response
+    public function prendreEnCharge(int $id, ColisRepository $colisRepository, EntityManagerInterface $entityManager,  UtilisateursRepository $userRepo, NotificationService $notificationService): Response
     {
         $colis = $colisRepository->find($id);
 

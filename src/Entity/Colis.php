@@ -17,7 +17,7 @@ class Colis
     #[ORM\Column(name: 'ID_Colis')]
     private ?int $id = null;
 
-   #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Assert\Length(
         min: 5,
         max: 500,
@@ -31,7 +31,6 @@ class Colis
         max: 1000,
         maxMessage: "La liste d'articles ne peut pas dépasser {{ limit }} caractères"
     )]
-    
     private ?string $articles = null;
 
     #[ORM\Column(name: 'adresseDestination', type: Types::TEXT)]
@@ -64,7 +63,6 @@ class Colis
         max: 100,
         maxMessage: "Les dimensions ne peuvent pas dépasser {{ limit }} caractères"
     )]
-    
     private ?string $dimensions = null;
 
     #[ORM\Column(length: 50, nullable: true)]
@@ -74,15 +72,17 @@ class Colis
     )]
     private ?string $statut = null;
 
-    #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
+    // ✅ CORRECTION : Utilisateur → Utilisateurs
+    #[ORM\ManyToOne(targetEntity: Utilisateurs::class)]
     #[ORM\JoinColumn(name: 'ID_Expediteur', referencedColumnName: 'ID_Utilisateur', nullable: false)]
     #[Assert\NotNull(message: "L'expéditeur est obligatoire")]
-    private ?Utilisateur $expediteur = null;
+    private ?Utilisateurs $expediteur = null;
 
-    #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
+    // ✅ CORRECTION : Utilisateur → Utilisateurs
+    #[ORM\ManyToOne(targetEntity: Utilisateurs::class)]
     #[ORM\JoinColumn(name: 'ID_Destinataire', referencedColumnName: 'ID_Utilisateur', nullable: false)]
     #[Assert\NotNull(message: "Le destinataire est obligatoire")]
-    private ?Utilisateur $destinataire = null;
+    private ?Utilisateurs $destinataire = null;
 
     #[ORM\OneToMany(mappedBy: 'colis', targetEntity: Livraison::class)]
     private Collection $livraisons;
@@ -187,27 +187,28 @@ class Colis
         return $this;
     }
 
-    public function getExpediteur(): ?Utilisateur
+    public function getExpediteur(): ?Utilisateurs
     {
         return $this->expediteur;
     }
 
-    public function setExpediteur(?Utilisateur $expediteur): static
+    public function setExpediteur(?Utilisateurs $expediteur): static
     {
         $this->expediteur = $expediteur;
         return $this;
     }
 
-    public function getDestinataire(): ?Utilisateur
+    public function getDestinataire(): ?Utilisateurs
     {
         return $this->destinataire;
     }
 
-    public function setDestinataire(?Utilisateur $destinataire): static
+    public function setDestinataire(?Utilisateurs $destinataire): static
     {
         $this->destinataire = $destinataire;
         return $this;
     }
+
     public function getLivraisons(): Collection
     {
         return $this->livraisons;
@@ -217,6 +218,7 @@ class Colis
     {
         return $this->livraisons->isEmpty() && $this->statut === 'en_attente';
     }
+
     public function calculerMontant(): float
     {
         $poids = $this->poids ?? 0;
@@ -225,5 +227,4 @@ class Colis
         
         return $fraisDeBase + ($poids * $tarifParKg);
     }
-    
 }

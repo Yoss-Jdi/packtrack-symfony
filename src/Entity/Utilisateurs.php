@@ -35,7 +35,7 @@ class Utilisateurs implements UserInterface, PasswordAuthenticatedUserInterface
     private ?Role $role = null;
 
     // ====== NOUVEAU CHAMP ======
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $createdAt = null;
 
     // ====== CONSTRUCTEUR ======
