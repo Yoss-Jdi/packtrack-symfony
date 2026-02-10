@@ -225,4 +225,5 @@ class Colis
         
         return $fraisDeBase + ($poids * $tarifParKg);
     }
+    
 }

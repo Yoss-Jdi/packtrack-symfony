@@ -19,10 +19,10 @@ class ColisController extends AbstractController
     public function index(ColisRepository $colisRepository): Response
     {
         // Pour l'instant, on affiche tous les colis
-        // Plus tard, filtrerez par utilisateur connecté
+        // Plus tard, filtrerer par utilisateur connecté
         $colis = $colisRepository->findAll();
 
-        return $this->render('colis/index.html.twig', [
+        return $this->render('front/colis/index.html.twig', [
             'colis' => $colis,
         ]);
     }
@@ -32,8 +32,7 @@ class ColisController extends AbstractController
     {
         $colis = new Colis();
         
-        // IMPORTANT : Assigner l'expéditeur AVANT de créer le formulaire
-        // TEMPORAIRE : Prendre le premier utilisateur "Entreprise"
+        // temp : Prendre le premier utilisateur "Entreprise" (just for testing)
         $entreprise = $userRepo->findOneBy(['role' => 'Entreprise']);
         
         if (!$entreprise) {
@@ -45,7 +44,6 @@ class ColisController extends AbstractController
         // $colis->setExpediteur($this->getUser());
         $colis->setExpediteur($entreprise);
         
-        // Maintenant créer le formulaire avec l'expéditeur déjà assigné
         $form = $this->createForm(ColisType::class, $colis);
         $form->handleRequest($request);
 
@@ -60,16 +58,16 @@ class ColisController extends AbstractController
             return $this->redirectToRoute('app_colis_index');
         }
 
-        return $this->render('colis/new.html.twig', [
+        return $this->render('front/colis/new.html.twig', [
             'colis' => $colis,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 
     #[Route('/{id}', name: 'app_colis_show', methods: ['GET'])]
     public function show(Colis $colis): Response
     {
-        return $this->render('colis/show.html.twig', [
+        return $this->render('front/colis/show.html.twig', [
             'colis' => $colis,
         ]);
     }
@@ -77,20 +75,23 @@ class ColisController extends AbstractController
     #[Route('/{id}/edit', name: 'app_colis_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Colis $colis, EntityManagerInterface $entityManager): Response
     {
+        
         $form = $this->createForm(ColisType::class, $colis);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $montantCalcule = $colis->calculerMontant();
+            
             $entityManager->flush();
 
-            $this->addFlash('success', 'Colis modifié avec succès !');
+            $this->addFlash('success', 'Colis modifié avec succès ! Montant à payer : ' . number_format($montantCalcule, 2, ',', ' ') . ' €');
 
             return $this->redirectToRoute('app_colis_index');
         }
 
-        return $this->render('colis/edit.html.twig', [
+        return $this->render('front/colis/edit.html.twig', [
             'colis' => $colis,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 
@@ -106,4 +107,13 @@ class ColisController extends AbstractController
 
         return $this->redirectToRoute('app_colis_index');
     }
+
+
+
+
+
+
+
+
+
 }
