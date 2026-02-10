@@ -10,8 +10,6 @@
     {% block stylesheets %}{% endblock %}
 </head>
 <body>
-
-<!-- HEADER -->
 <header class="navbar">
     <div class="logo">
         <span class="icon">📦</span>
@@ -22,10 +20,13 @@
         <a href="{{ path('app_home') }}" class="{{ app.request.get('_route') == 'app_home' ? 'active' }}">Track Parcel</a>
         <a href="#">Community</a>
         <a href="#">Report Issue</a>
+       <a href="{{ path('front_factures') }}" class="{{ app.request.get('_route') == 'front_factures' ? 'active' }}">Factures</a>
+
     </nav>
 
     <a href="{{ path('admin_dashboard') }}" class="admin-btn">Admin Portal</a>
 </header>
+
 
 <!-- CONTENU DYNAMIQUE -->
 {% block body %}{% endblock %}
