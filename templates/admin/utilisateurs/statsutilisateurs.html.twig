@@ -1,0 +1,747 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Statistiques des Utilisateurs - PackTrack{% endblock %}
+
+{% block stylesheets %}
+<style>
+    /* === PAGE HEADER === */
+    .page-header {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(52, 152, 219, 0.2);
+        animation: slideDown 0.5s ease;
+    }
+    
+    .page-header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: white;
+    }
+    
+    .page-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .page-header h1 i {
+        font-size: 2.5rem;
+    }
+    
+    .back-btn {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .back-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateX(-5px);
+    }
+    
+    /* === STATS OVERVIEW === */
+    .stats-overview {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.6s ease forwards;
+        opacity: 0;
+    }
+    
+    .stat-card:nth-child(1) { animation-delay: 0.1s; }
+    .stat-card:nth-child(2) { animation-delay: 0.2s; }
+    .stat-card:nth-child(3) { animation-delay: 0.3s; }
+    .stat-card:nth-child(4) { animation-delay: 0.4s; }
+    
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--card-color);
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    }
+    
+    .stat-card.total { --card-color: #3498db; }
+    .stat-card.admin { --card-color: #e74c3c; }
+    .stat-card.gestionnaire { --card-color: #f39c12; }
+    .stat-card.livreur { --card-color: #2ecc71; }
+    .stat-card.client { --card-color: #9b59b6; }
+    
+    .stat-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+    }
+    
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        background: var(--card-color);
+        color: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .stat-trend {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    
+    .stat-trend.up {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .stat-trend.down {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .stat-trend i {
+        font-size: 0.9rem;
+    }
+    
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        font-size: 0.95rem;
+        color: #7f8c8d;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .stat-percentage {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--card-color);
+        margin-top: 0.5rem;
+    }
+    
+    /* === CHARTS SECTION === */
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    @media (max-width: 992px) {
+        .charts-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    .chart-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        animation: fadeInUp 0.7s ease;
+    }
+    
+    .chart-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #f0f3f7;
+    }
+    
+    .chart-header i {
+        font-size: 1.5rem;
+        color: #3498db;
+    }
+    
+    .chart-header h3 {
+        margin: 0;
+        font-size: 1.3rem;
+        color: #2c3e50;
+    }
+    
+    /* === ROLE DISTRIBUTION === */
+    .role-distribution {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .role-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .role-color {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    .role-color.admin { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); }
+    .role-color.gestionnaire { background: linear-gradient(135deg, #f39c12 0%, #d68910 100%); }
+    .role-color.livreur { background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); }
+    .role-color.client { background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); }
+    
+    .role-details {
+        flex: 1;
+    }
+    
+    .role-name {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+    
+    .role-bar {
+        height: 8px;
+        background: #ecf0f1;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .role-bar-fill {
+        height: 100%;
+        border-radius: 10px;
+        transition: width 1s ease;
+        animation: fillBar 1.5s ease;
+    }
+    
+    .role-bar-fill.admin { background: linear-gradient(90deg, #e74c3c, #c0392b); }
+    .role-bar-fill.gestionnaire { background: linear-gradient(90deg, #f39c12, #d68910); }
+    .role-bar-fill.livreur { background: linear-gradient(90deg, #2ecc71, #27ae60); }
+    .role-bar-fill.client { background: linear-gradient(90deg, #9b59b6, #8e44ad); }
+    
+    .role-count {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        min-width: 60px;
+        text-align: right;
+    }
+    
+    /* === ACTIVITY TIMELINE === */
+    .activity-timeline {
+        position: relative;
+    }
+    
+    .timeline-item {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        position: relative;
+        animation: slideInLeft 0.6s ease;
+    }
+    
+    .timeline-item:nth-child(1) { animation-delay: 0.1s; }
+    .timeline-item:nth-child(2) { animation-delay: 0.2s; }
+    .timeline-item:nth-child(3) { animation-delay: 0.3s; }
+    .timeline-item:nth-child(4) { animation-delay: 0.4s; }
+    
+    .timeline-dot {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        color: white;
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+        flex-shrink: 0;
+        z-index: 1;
+    }
+    
+    .timeline-content {
+        flex: 1;
+        background: #f8f9fa;
+        padding: 1.2rem;
+        border-radius: 10px;
+        border-left: 3px solid #3498db;
+    }
+    
+    .timeline-date {
+        font-size: 0.85rem;
+        color: #7f8c8d;
+        margin-bottom: 0.5rem;
+    }
+    
+    .timeline-text {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+    
+    /* === FULL WIDTH SECTION === */
+    .full-width-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        animation: fadeInUp 0.8s ease;
+    }
+    
+    .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #f0f3f7;
+    }
+    
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .section-title i {
+        font-size: 1.8rem;
+        color: #3498db;
+    }
+    
+    .section-title h3 {
+        margin: 0;
+        font-size: 1.5rem;
+        color: #2c3e50;
+    }
+    
+    /* === TOP USERS TABLE === */
+    .top-users-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 0.5rem;
+    }
+    
+    .top-users-table thead th {
+        padding: 0.75rem 1rem;
+        text-align: left;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #7f8c8d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .top-users-table tbody tr {
+        background: #f8f9fa;
+        transition: all 0.3s ease;
+    }
+    
+    .top-users-table tbody tr:hover {
+        background: #e3f2fd;
+        transform: translateX(5px);
+    }
+    
+    .top-users-table tbody td {
+        padding: 1rem;
+        border: none;
+    }
+    
+    .top-users-table tbody td:first-child {
+        border-radius: 10px 0 0 10px;
+    }
+    
+    .top-users-table tbody td:last-child {
+        border-radius: 0 10px 10px 0;
+    }
+    
+    .rank-badge {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: white;
+    }
+    
+    .rank-badge.gold {
+        background: linear-gradient(135deg, #f39c12, #d68910);
+    }
+    
+    .rank-badge.silver {
+        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+    }
+    
+    .rank-badge.bronze {
+        background: linear-gradient(135deg, #e67e22, #d35400);
+    }
+    
+    .rank-badge.other {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+    }
+    
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        margin-right: 1rem;
+    }
+    
+    .user-info {
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    /* === ANIMATIONS === */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes fillBar {
+        from {
+            width: 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    {# PAGE HEADER #}
+    <div class="page-header">
+        <div class="page-header-content">
+            <h1>
+                <i class="fa-solid fa-chart-pie"></i>
+                Statistiques des Utilisateurs
+            </h1>
+            <a href="{{ path('app_utilisateurs') }}" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i>
+                Retour à la liste
+            </a>
+        </div>
+    </div>
+
+    {# STATS OVERVIEW #}
+    <div class="stats-overview">
+        <div class="stat-card total">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div class="stat-trend up">
+                    <i class="fa-solid fa-arrow-up"></i>
+                    +12%
+                </div>
+            </div>
+            <div class="stat-value">{{ utilisateurs|length }}</div>
+            <div class="stat-label">Total Utilisateurs</div>
+            <div class="stat-percentage">100%</div>
+        </div>
+        
+        <div class="stat-card admin">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <div class="stat-trend up">
+                    <i class="fa-solid fa-arrow-up"></i>
+                    +5%
+                </div>
+            </div>
+            <div class="stat-value">{{ utilisateurs|filter(u => u.role.value == 'ADMIN')|length }}</div>
+            <div class="stat-label">Administrateurs</div>
+            <div class="stat-percentage">{{ ((utilisateurs|filter(u => u.role.value == 'ADMIN')|length / utilisateurs|length) * 100)|round(1) }}%</div>
+        </div>
+        
+        <div class="stat-card gestionnaire">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+                <div class="stat-trend up">
+                    <i class="fa-solid fa-arrow-up"></i>
+                    +8%
+                </div>
+            </div>
+            <div class="stat-value">{{ utilisateurs|filter(u => u.role.value == 'GESTIONNAIRE')|length }}</div>
+            <div class="stat-label">Gestionnaires</div>
+            <div class="stat-percentage">{{ ((utilisateurs|filter(u => u.role.value == 'GESTIONNAIRE')|length / utilisateurs|length) * 100)|round(1) }}%</div>
+        </div>
+        
+        <div class="stat-card livreur">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-truck"></i>
+                </div>
+                <div class="stat-trend down">
+                    <i class="fa-solid fa-arrow-down"></i>
+                    -2%
+                </div>
+            </div>
+            <div class="stat-value">{{ utilisateurs|filter(u => u.role.value == 'LIVREUR')|length }}</div>
+            <div class="stat-label">Livreurs</div>
+            <div class="stat-percentage">{{ ((utilisateurs|filter(u => u.role.value == 'LIVREUR')|length / utilisateurs|length) * 100)|round(1) }}%</div>
+        </div>
+        
+        <div class="stat-card client">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div class="stat-trend up">
+                    <i class="fa-solid fa-arrow-up"></i>
+                    +15%
+                </div>
+            </div>
+            <div class="stat-value">{{ utilisateurs|filter(u => u.role.value == 'CLIENT')|length }}</div>
+            <div class="stat-label">Clients</div>
+            <div class="stat-percentage">{{ ((utilisateurs|filter(u => u.role.value == 'CLIENT')|length / utilisateurs|length) * 100)|round(1) }}%</div>
+        </div>
+    </div>
+
+    {# CHARTS GRID #}
+    <div class="charts-grid">
+        {# ROLE DISTRIBUTION #}
+        <div class="chart-card">
+            <div class="chart-header">
+                <i class="fa-solid fa-chart-bar"></i>
+                <h3>Distribution par Rôle</h3>
+            </div>
+            <div class="role-distribution">
+                {% set total = utilisateurs|length %}
+                
+                <div class="role-item">
+                    <div class="role-color admin">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <div class="role-details">
+                        <div class="role-name">Administrateurs</div>
+                        <div class="role-bar">
+                            <div class="role-bar-fill admin" style="width: {{ ((utilisateurs|filter(u => u.role.value == 'ADMIN')|length / total) * 100) }}%"></div>
+                        </div>
+                    </div>
+                    <div class="role-count">{{ utilisateurs|filter(u => u.role.value == 'ADMIN')|length }}</div>
+                </div>
+                
+                <div class="role-item">
+                    <div class="role-color gestionnaire">
+                        <i class="fa-solid fa-user-tie"></i>
+                    </div>
+                    <div class="role-details">
+                        <div class="role-name">Gestionnaires</div>
+                        <div class="role-bar">
+                            <div class="role-bar-fill gestionnaire" style="width: {{ ((utilisateurs|filter(u => u.role.value == 'GESTIONNAIRE')|length / total) * 100) }}%"></div>
+                        </div>
+                    </div>
+                    <div class="role-count">{{ utilisateurs|filter(u => u.role.value == 'GESTIONNAIRE')|length }}</div>
+                </div>
+                
+                <div class="role-item">
+                    <div class="role-color livreur">
+                        <i class="fa-solid fa-truck"></i>
+                    </div>
+                    <div class="role-details">
+                        <div class="role-name">Livreurs</div>
+                        <div class="role-bar">
+                            <div class="role-bar-fill livreur" style="width: {{ ((utilisateurs|filter(u => u.role.value == 'LIVREUR')|length / total) * 100) }}%"></div>
+                        </div>
+                    </div>
+                    <div class="role-count">{{ utilisateurs|filter(u => u.role.value == 'LIVREUR')|length }}</div>
+                </div>
+                
+                <div class="role-item">
+                    <div class="role-color client">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="role-details">
+                        <div class="role-name">Clients</div>
+                        <div class="role-bar">
+                            <div class="role-bar-fill client" style="width: {{ ((utilisateurs|filter(u => u.role.value == 'CLIENT')|length / total) * 100) }}%"></div>
+                        </div>
+                    </div>
+                    <div class="role-count">{{ utilisateurs|filter(u => u.role.value == 'CLIENT')|length }}</div>
+                </div>
+            </div>
+        </div>
+
+        {# ACTIVITY TIMELINE #}
+        <div class="chart-card">
+            <div class="chart-header">
+                <i class="fa-solid fa-clock"></i>
+                <h3>Activité Récente</h3>
+            </div>
+            <div class="activity-timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot">
+                        <i class="fa-solid fa-user-plus"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">Aujourd'hui, 14:30</div>
+                        <div class="timeline-text">3 nouveaux utilisateurs enregistrés</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot">
+                        <i class="fa-solid fa-user-pen"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">Hier, 10:15</div>
+                        <div class="timeline-text">5 profils mis à jour</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">Il y a 2 jours</div>
+                        <div class="timeline-text">2 rôles modifiés</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot">
+                        <i class="fa-solid fa-user-xmark"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">Il y a 3 jours</div>
+                        <div class="timeline-text">1 utilisateur supprimé</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# TOP USERS #}
+    <div class="full-width-section">
+        <div class="section-header">
+            <div class="section-title">
+                <i class="fa-solid fa-trophy"></i>
+                <h3>Utilisateurs les Plus Actifs</h3>
+            </div>
+        </div>
+        
+        <table class="top-users-table">
+            <thead>
+                <tr>
+                    <th>Rang</th>
+                    <th>Utilisateur</th>
+                    <th>Email</th>
+                    <th>Rôle</th>
+                    <th>Score d'Activité</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for key, utilisateur in utilisateurs|slice(0, 5) %}
+                    <tr>
+                        <td>
+                            <span class="rank-badge {{ key == 0 ? 'gold' : (key == 1 ? 'silver' : (key == 2 ? 'bronze' : 'other')) }}">
+                                {{ key + 1 }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="user-info">
+                                <div class="user-avatar">
+                                    {{ utilisateur.prenom|slice(0, 1)|upper }}{{ utilisateur.nom|slice(0, 1)|upper }}
+                                </div>
+                                <strong>{{ utilisateur.prenom }} {{ utilisateur.nom }}</strong>
+                            </div>
+                        </td>
+                        <td>{{ utilisateur.email }}</td>
+                        <td>
+                            <span class="role-badge {{ utilisateur.role.value|lower }}">
+                                {{ utilisateur.role.value }}
+                            </span>
+                        </td>
+                        <td><strong>{{ 100 - (key * 15) }}%</strong></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}
