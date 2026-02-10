@@ -1,0 +1,180 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Colis #{{ colis.id }} - PackTrack{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+    
+    .detail-card {
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    .badge {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    
+    .badge.en-attente { background: #fff3cd; color: #856404; }
+    .badge.en-cours { background: #d1ecf1; color: #0c5460; }
+    .badge.livre { background: #d4edda; color: #155724; }
+    
+    .detail-row {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        padding: 16px 0;
+        border-bottom: 1px solid #f1f3f5;
+    }
+    
+    .detail-label {
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .detail-value {
+        color: #212529;
+    }
+    
+    .actions {
+        margin-top: 30px;
+        display: flex;
+        gap: 12px;
+    }
+    
+    .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-primary { background: #007bff; color: white; }
+    .btn-secondary { background: #6c757d; color: white; }
+    .badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .badge.en_attente {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .badge.en_cours {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+    
+    .badge.livre {
+        background: #d4edda;
+        color: #155724;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="detail-card">
+        <div class="detail-header">
+            <h1>📦 Colis #{{ colis.id }}</h1>
+            <span class="badge {{ colis.statut }}">
+                {{ colis.statut|replace({'_': ' '})|title }}
+            </span>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Description :</div>
+            <div class="detail-value">{{ colis.description|default('N/A') }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Articles :</div>
+            <div class="detail-value">{{ colis.articles|default('N/A') }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Adresse destination :</div>
+            <div class="detail-value">{{ colis.adresseDestination }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Destinataire :</div>
+            <div class="detail-value">
+                {{ colis.destinataire.prenom }} {{ colis.destinataire.nom }}
+                <br><small>{{ colis.destinataire.email }}</small>
+            </div>
+        </div>
+
+        {% if colis.statut in ['livre', 'en_cours'] and colis.livraisons|length > 0 %}
+            {% set livraison = colis.livraisons|last %}
+            <div class="detail-row">
+                <div class="detail-label">Livreur :</div>
+                <div class="detail-value">
+                    {{ livraison.livreur.prenom }} {{ livraison.livreur.nom }}
+                    <br><small>{{ livraison.livreur.email }}</small>
+                </div>
+            </div>
+        {% endif %}
+    
+        <div class="detail-row">
+            <div class="detail-label">Poids :</div>
+            <div class="detail-value">{{ colis.poids ? colis.poids ~ ' kg' : 'N/A' }}</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">Dimensions :</div>
+            <div class="detail-value">{{ colis.dimensions|default('N/A') }}</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">Montant :</div>
+            <div class="detail-value">
+                {% if colis.poids %}
+                    <strong style="color: #28a745; font-size: 20px;">{{ colis.calculerMontant()|number_format(2, ',', ' ') }} €</strong>
+                {% else %}
+                    <span style="color: #6c757d;">Non calculable (poids manquant)</span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Date de création :</div>
+            <div class="detail-value">{{ colis.dateCreation|date('d/m/Y à H:i') }}</div>
+        </div>
+        
+        {% if colis.dateExpedition %}
+        <div class="detail-row">
+            <div class="detail-label">Date d'expédition :</div>
+            <div class="detail-value">{{ colis.dateExpedition|date('d/m/Y à H:i') }}</div>
+        </div>
+        {% endif %}
+        
+        <div class="actions">
+            <a href="{{ path('app_colis_index') }}" class="btn btn-secondary">← Retour</a>
+            {% if colis.statut == 'en_attente' %}
+                <a href="{{ path('app_colis_edit', {id: colis.id}) }}" class="btn btn-primary">✏️ Modifier</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
