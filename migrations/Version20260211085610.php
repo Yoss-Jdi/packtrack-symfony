@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260210231829 extends AbstractMigration
+final class Version20260211085610 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -21,6 +21,7 @@ final class Version20260210231829 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE TABLE colis (ID_Colis INT AUTO_INCREMENT NOT NULL, description LONGTEXT DEFAULT NULL, articles LONGTEXT DEFAULT NULL, adresseDestination LONGTEXT NOT NULL, dateCreation TIMESTAMP DEFAULT CURRENT_TIMESTAMP, dateExpedition TIMESTAMP NULL DEFAULT NULL, poids DOUBLE PRECISION DEFAULT NULL, dimensions VARCHAR(100) DEFAULT NULL, statut VARCHAR(50) DEFAULT NULL, ID_Expediteur INT NOT NULL, ID_Destinataire INT NOT NULL, INDEX IDX_470BDFF9EA3CDC84 (ID_Expediteur), INDEX IDX_470BDFF980F8175E (ID_Destinataire), PRIMARY KEY (ID_Colis)) DEFAULT CHARACTER SET utf8mb4');
+        $this->addSql('CREATE TABLE factures (ID_Facture INT AUTO_INCREMENT NOT NULL, numero VARCHAR(50) NOT NULL, dateEmission DATETIME DEFAULT NULL, montantHT DOUBLE PRECISION NOT NULL, montantTTC DOUBLE PRECISION NOT NULL, tva DOUBLE PRECISION DEFAULT NULL, statut VARCHAR(50) DEFAULT NULL, UNIQUE INDEX UNIQ_647590BF55AE19E (numero), PRIMARY KEY (ID_Facture)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE livraisons (ID_Livraison INT AUTO_INCREMENT NOT NULL, statut VARCHAR(50) DEFAULT NULL, dateDebut TIMESTAMP DEFAULT CURRENT_TIMESTAMP, dateFin TIMESTAMP NULL DEFAULT NULL, distanceKm DOUBLE PRECISION DEFAULT NULL, payment DOUBLE PRECISION DEFAULT NULL, total DOUBLE PRECISION DEFAULT NULL, methodePaiement VARCHAR(50) DEFAULT NULL, ID_Colis INT NOT NULL, ID_Livreur INT NOT NULL, INDEX IDX_96A0CE615E84EA07 (ID_Colis), INDEX IDX_96A0CE6137F65FF2 (ID_Livreur), PRIMARY KEY (ID_Livraison)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE notifications (id INT AUTO_INCREMENT NOT NULL, message LONGTEXT NOT NULL, type VARCHAR(50) NOT NULL, date_creation DATETIME NOT NULL, lu TINYINT NOT NULL, ID_Utilisateur INT NOT NULL, ID_Colis INT DEFAULT NULL, INDEX IDX_6000B0D3FD8812BE (ID_Utilisateur), INDEX IDX_6000B0D35E84EA07 (ID_Colis), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE password_reset_tokens (id INT AUTO_INCREMENT NOT NULL, email VARCHAR(255) NOT NULL, token VARCHAR(255) NOT NULL, expires_at DATETIME NOT NULL, created_at DATETIME NOT NULL, used TINYINT NOT NULL, UNIQUE INDEX UNIQ_3967A2165F37A13B (token), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
@@ -44,6 +45,7 @@ final class Version20260210231829 extends AbstractMigration
         $this->addSql('ALTER TABLE notifications DROP FOREIGN KEY FK_6000B0D3FD8812BE');
         $this->addSql('ALTER TABLE notifications DROP FOREIGN KEY FK_6000B0D35E84EA07');
         $this->addSql('DROP TABLE colis');
+        $this->addSql('DROP TABLE factures');
         $this->addSql('DROP TABLE livraisons');
         $this->addSql('DROP TABLE notifications');
         $this->addSql('DROP TABLE password_reset_tokens');
