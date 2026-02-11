@@ -1,0 +1,218 @@
+{% extends 'base.html.twig' %}
+{% block title %}Détails de la Livraison #{{ livraison.id }} - PackTrack{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+    
+    .detail-card {
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    .badge {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    
+    .badge.en_cours {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+    
+    .badge.termine {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .detail-section {
+        margin-bottom: 30px;
+    }
+    
+    .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #495057;
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #e9ecef;
+    }
+    
+    .detail-row {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        padding: 16px 0;
+        border-bottom: 1px solid #f1f3f5;
+    }
+    
+    .detail-label {
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .detail-value {
+        color: #212529;
+    }
+    
+    .actions {
+        margin-top: 30px;
+        display: flex;
+        gap: 12px;
+    }
+    
+    .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .btn-success {
+        background: #28a745;
+        color: white;
+    }
+    
+    .btn:hover {
+        opacity: 0.9;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="detail-card">
+        <div class="detail-header">
+            <h1>🚚 Livraison #{{ livraison.id }}</h1>
+            <span class="badge {{ livraison.statut }}">
+                {{ livraison.statut|replace({'_': ' '})|title }}
+            </span>
+        </div>
+        
+        <!-- Informations de la livraison -->
+        <div class="detail-section">
+            <div class="section-title">📋 Informations de la Livraison</div>
+            
+            <div class="detail-row">
+                <div class="detail-label">Date de début :</div>
+                <div class="detail-value">{{ livraison.dateDebut|date('d/m/Y à H:i') }}</div>
+            </div>
+            
+            {% if livraison.dateFin %}
+            <div class="detail-row">
+                <div class="detail-label">Date de fin :</div>
+                <div class="detail-value">{{ livraison.dateFin|date('d/m/Y à H:i') }}</div>
+            </div>
+            {% endif %}
+            
+            <div class="detail-row">
+                <div class="detail-label">Distance :</div>
+                <div class="detail-value">
+                    {% if livraison.distanceKm %}
+                        <strong>{{ livraison.distanceKm }} km</strong>
+                    {% else %}
+                        <span style="color: #6c757d;">Non spécifiée</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label">💰 Montant total :</div>
+                <div class="detail-value">
+                    {% if livraison.total %}
+                        <strong style="color: #28a745; font-size: 20px;">{{ livraison.total|number_format(2, ',', ' ') }} €</strong>
+                    {% else %}
+                        <span style="color: #6c757d;">Non calculé</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Informations du colis -->
+        <div class="detail-section">
+            <div class="section-title">📦 Informations du Colis #{{ livraison.colis.id }}</div>
+            
+            <div class="detail-row">
+                <div class="detail-label">Description :</div>
+                <div class="detail-value">{{ livraison.colis.description|default('N/A') }}</div>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label">Articles :</div>
+                <div class="detail-value">{{ livraison.colis.articles|default('N/A') }}</div>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label">Adresse destination :</div>
+                <div class="detail-value">{{ livraison.colis.adresseDestination }}</div>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label">Poids :</div>
+                <div class="detail-value">{{ livraison.colis.poids ? livraison.colis.poids ~ ' kg' : 'N/A' }}</div>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label">Dimensions :</div>
+                <div class="detail-value">{{ livraison.colis.dimensions|default('N/A') }}</div>
+            </div>
+        </div>
+        
+        <!-- Informations du destinataire -->
+        <div class="detail-section">
+            <div class="section-title">👤 Destinataire</div>
+            
+            <div class="detail-row">
+                <div class="detail-label">Nom complet :</div>
+                <div class="detail-value">
+                    <strong>{{ livraison.colis.destinataire.prenom }} {{ livraison.colis.destinataire.nom }}</strong>
+                </div>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label">Email :</div>
+                <div class="detail-value">📧 {{ livraison.colis.destinataire.email }}</div>
+            </div>
+            
+            {% if livraison.colis.destinataire.telephone %}
+            <div class="detail-row">
+                <div class="detail-label">Téléphone :</div>
+                <div class="detail-value">📱 {{ livraison.colis.destinataire.telephone }}</div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="actions">
+            <a href="{{ path('app_livraison_mes_livraisons') }}" class="btn btn-secondary">← Retour à mes livraisons</a>
+            {% if livraison.statut == 'en_cours' %}
+                <a href="{{ path('app_livraison_terminer', {id: livraison.id}) }}" class="btn btn-success">
+                    ✅ Terminer la livraison
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
