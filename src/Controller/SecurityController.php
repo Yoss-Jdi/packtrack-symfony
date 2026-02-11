@@ -130,16 +130,18 @@ class SecurityController extends AbstractController
 
         // Si des erreurs existent, retourner au formulaire
         if (!empty($errors)) {
-            return $this->render('security/login.html.twig', [
-                'registration_errors' => $errors,
-                'registration_data' => [
-                    'email' => $email,
-                    'nom' => $nom,
-                    'prenom' => $prenom,
-                    'telephone' => $telephone,
-                ],
-            ]);
-        }
+    return $this->render('security/login.html.twig', [
+        'registration_errors' => $errors,
+        'registration_data' => [
+            'email' => $email,
+            'nom' => $nom,
+            'prenom' => $prenom,
+            'telephone' => $telephone,
+        ],
+        'error' => null, // ⚠️ prevent Twig crash
+        'last_username' => $email, // optional: prefill login field
+    ]);
+}
 
         // Créer le nouvel utilisateur
         $utilisateur = new Utilisateurs();
