@@ -196,11 +196,13 @@
                         <i class="fa-solid fa-box"></i> Colis
                     </a>
                 </li>
-                <li class="{{ app.request.get('_route') starts with 'admin_invoices' ? 'active' }}">
-                    <a href="{{ path('admin_invoices') }}">
-                        <i class="fa-solid fa-file-invoice"></i> Invoices
-                    </a>
-                </li>
+                <li class="{{ app.request.get('_route') starts with 'app_facture_' ? 'active' }}">
+    <a href="{{ path('app_facture_index') }}">
+        <i class="fa-solid fa-file-invoice"></i> Factures
+    </a>
+</li>
+
+
                 <li class="{{ app.request.get('_route') starts with 'admin_vehicles' ? 'active' }}">
                     <a href="{{ path('admin_vehicles') }}">
                         <i class="fa-solid fa-truck"></i> Vehicles
