@@ -26,11 +26,14 @@
         {% endif %}
         <a href="#">Community</a>
         <a href="#">Report Issue</a>
-<a href="{{ path('app_facture_index') }}" class="{{ app.request.get('_route') == 'app_facture_index' ? 'active' }}">Factures</a>
-
+    {% if app.user and is_granted('ROLE_ADMIN') %}
+        <a href="{{ path('app_facture_index') }}" class="{{ app.request.get('_route') == 'app_facture_index' ? 'active' }}">Factures</a>
+    {% endif %}
     </nav>
 
-    <a href="{{ path('admin_dashboard') }}" class="admin-btn">Admin Portal</a>
+    {% if app.user and is_granted('ROLE_ADMIN') %}
+        <a href="{{ path('admin_dashboard') }}" class="admin-btn">Admin Portal</a>
+    {% endif %}
 </header>
 
 
