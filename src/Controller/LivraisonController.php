@@ -34,9 +34,8 @@ class LivraisonController extends AbstractController
     #[Route('/mes-livraisons', name: 'app_livraison_mes_livraisons', methods: ['GET'])]
     public function mesLivraisons(LivraisonRepository $livraisonRepository): Response
     {
-        // Pour l'instant, afficher toutes les livraisons
-        // Plus tard : $livraisonRepository->findByLivreur($this->getUser()->getId())
-        $livraisons = $livraisonRepository->findAll();
+        // Filtrer les livraisons par le livreur connecté
+        $livraisons = $livraisonRepository->findBy(['livreur' => $this->getUser()]);
 
         return $this->render('front/livraison/mes_livraisons.html.twig', [
             'livraisons' => $livraisons,
@@ -44,8 +43,12 @@ class LivraisonController extends AbstractController
     }
 
     #[Route('/prendre/{id}', name: 'app_livraison_prendre', methods: ['POST'])]
-    public function prendreEnCharge(int $id, ColisRepository $colisRepository, EntityManagerInterface $entityManager,  UtilisateursRepository $userRepo, NotificationService $notificationService): Response
-    {
+    public function prendreEnCharge(
+        int $id,
+        ColisRepository $colisRepository,
+        EntityManagerInterface $entityManager,
+        NotificationService $notificationService
+    ): Response {
         $colis = $colisRepository->find($id);
 
         if (!$colis) {
@@ -53,30 +56,21 @@ class LivraisonController extends AbstractController
             return $this->redirectToRoute('app_livraison_index');
         }
 
-        // Verification colis n'est pas deja priste
         if (!$colis->getLivraisons()->isEmpty()) {
             $this->addFlash('error', 'Ce colis est déjà pris en charge.');
             return $this->redirectToRoute('app_livraison_index');
         }
 
-        //temp : prendre le premier livreur disponible pou le test
-        $livreur = $userRepo->findOneBy(['role' => 'Livreur']);
-    
-        if (!$livreur) {
-            $this->addFlash('error', 'Aucun livreur trouvé dans la base de données.');
-            return $this->redirectToRoute('app_livraison_index');
-        }
-        //end temp
-        
+        // ✅ Utiliser le livreur connecté
+        $livreur = $this->getUser();
+
         $livraison = new Livraison();
         $livraison->setColis($colis);
-        // Plus tard remplacer par l'utilisateur connecté
-        // $livraison->setLivreur($this->getUser());
         $livraison->setLivreur($livreur);
-        
+
         $montant = $colis->calculerMontant();
         $livraison->setTotal($montant);
-        
+
         $ancienStatut = $colis->getStatut();
         $colis->setStatut('en_cours');
         $colis->setDateExpedition(new \DateTime());

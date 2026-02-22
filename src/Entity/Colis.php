@@ -87,6 +87,11 @@ class Colis
     #[ORM\OneToMany(mappedBy: 'colis', targetEntity: Livraison::class)]
     private Collection $livraisons;
 
+    #[ORM\Column(name: 'qrCode', type: Types::TEXT, nullable: true)]
+    private ?string $qrCode = null;
+
+    
+
     public function __construct()
     {
         $this->dateCreation = new \DateTime();
@@ -206,6 +211,16 @@ class Colis
     public function setDestinataire(?Utilisateurs $destinataire): static
     {
         $this->destinataire = $destinataire;
+        return $this;
+    }
+    public function getQrCode(): ?string
+    {
+        return $this->qrCode;
+    }
+
+    public function setQrCode(?string $qrCode): static
+    {
+        $this->qrCode = $qrCode;
         return $this;
     }
 

@@ -168,6 +168,22 @@
             <div class="detail-value">{{ colis.dateExpedition|date('d/m/Y à H:i') }}</div>
         </div>
         {% endif %}
+        {% if colis.qrCode %}
+        <div class="detail-row">
+            <div class="detail-label">QR Code de suivi :</div>
+            <div class="detail-value">
+                <img 
+                    src="data:image/png;base64,{{ colis.qrCode }}" 
+                    alt="QR Code Colis #{{ colis.id }}"
+                    width="180"
+                    height="180"
+                    style="border: 2px solid #dee2e6; border-radius: 8px; padding: 8px;"
+                />
+                <br>
+                <small class="text-muted">📱 Scannez pour suivre ce colis</small>
+            </div>
+        </div>
+        {% endif %}
         
         <div class="actions">
             <a href="{{ path('app_colis_index') }}" class="btn btn-secondary">← Retour</a>
