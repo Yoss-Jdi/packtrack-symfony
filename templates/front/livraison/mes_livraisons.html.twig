@@ -126,7 +126,8 @@
                     <th>Destination</th>
                     <th>Poids</th>
                     <th>Date début</th>
-                    <th>Distance</th>
+                    <th>📏 Distance Estimée</th>
+                    <th>🕐 Durée Estimée</th>
                     <th>Total</th>
                     <th>Statut</th>
                     <th>Actions</th>
@@ -143,6 +144,13 @@
                     <td>
                         {% if livraison.distanceKm %}
                             <strong>{{ livraison.distanceKm }} km</strong>
+                        {% else %}
+                            <span style="color: #6c757d;">-</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if livraison.dureeFormatee %}
+                            <strong style="color: #007bff;">{{ livraison.dureeFormatee }}</strong>
                         {% else %}
                             <span style="color: #6c757d;">-</span>
                         {% endif %}
@@ -166,9 +174,10 @@
                             ℹ️
                         </a>
                         {% if livraison.statut == 'en_cours' %}
-                            <a href="{{ path('app_livraison_terminer', {id: livraison.id}) }}" class="btn-finish">
-                                ✅ Terminer
-                            </a>
+                            <form method="post" action="{{ path('app_livraison_terminer', {id: livraison.id}) }}"
+                                onsubmit="return confirm('Confirmer la fin de cette livraison ?')">
+                                <button type="submit" class="btn-finish">✅ Terminer</button>
+                            </form>
                         {% else %}
                             <span style="color: #28a745;">✓ Terminée</span>
                         {% endif %}

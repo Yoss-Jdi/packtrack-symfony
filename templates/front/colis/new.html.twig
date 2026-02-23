@@ -177,6 +177,21 @@
                 <span class="field-help">{{ form.adresseDestination.vars.help }}</span>
             {% endif %}
         </div>
+
+        <div class="form-group">
+            {{ form_label(form.adresseDepart) }}
+            {{ form_widget(form.adresseDepart) }}
+            {% if form.adresseDepart.vars.errors|length > 0 %}
+                <div>
+                    {% for error in form.adresseDepart.vars.errors %}
+                        <span class="field-error">{{ error.message }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if form.adresseDepart.vars.help %}
+                <span class="field-help">{{ form.adresseDepart.vars.help }}</span>
+            {% endif %}
+        </div>
         
         <div class="form-group">
             {{ form_label(form.destinataire) }}
