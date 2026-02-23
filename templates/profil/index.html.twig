@@ -1,0 +1,723 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Mon Profil – PackTrack Admin{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .profil-page { padding: 32px; max-width: 920px; }
+
+    .profil-header {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        margin-bottom: 36px;
+    }
+
+    .profil-header h1 {
+        font-size: 26px;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 4px;
+    }
+
+    .profil-header p { color: #718096; font-size: 14px; }
+
+    .profil-grid {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 24px;
+        align-items: start;
+    }
+
+    @media (max-width: 750px) { .profil-grid { grid-template-columns: 1fr; } }
+
+    /* ===== CARTE ===== */
+    .card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+        overflow: hidden;
+    }
+
+    .card-header {
+        padding: 18px 22px;
+        border-bottom: 1px solid #f0f0f0;
+        font-weight: 700;
+        font-size: 15px;
+        color: #2d3748;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .card-header i { color: #667eea; }
+    .card-body { padding: 24px; }
+
+    /* ===== PHOTO ===== */
+    .photo-center {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .avatar-wrap { position: relative; width: 120px; height: 120px; }
+
+    .avatar-wrap img,
+    .avatar-placeholder {
+        width: 120px; height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #edf2f7;
+        display: block;
+    }
+
+    .avatar-placeholder {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 46px; color: white; font-weight: 700;
+    }
+
+    .avatar-edit-btn {
+        position: absolute;
+        bottom: 4px; right: 4px;
+        width: 34px; height: 34px;
+        background: #667eea;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: white; font-size: 13px;
+        cursor: pointer; border: 3px solid white;
+        transition: background 0.2s ease;
+    }
+    .avatar-edit-btn:hover { background: #764ba2; }
+
+    .photo-name { font-size: 18px; font-weight: 700; color: #1a202c; text-align: center; }
+    .photo-role {
+        display: inline-block;
+        background: linear-gradient(135deg, rgba(102,126,234,0.12), rgba(118,75,162,0.12));
+        color: #667eea; font-size: 12px; font-weight: 600;
+        padding: 4px 14px; border-radius: 20px; text-align: center;
+        letter-spacing: 0.4px; text-transform: uppercase;
+    }
+    .photo-email { font-size: 13px; color: #a0aec0; text-align: center; }
+
+    /* ===== TABS ===== */
+    .upload-tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+    .upload-tab {
+        flex: 1; padding: 8px; font-size: 12px; font-weight: 600;
+        border: 1.5px solid #e2e8f0; border-radius: 8px; background: white;
+        color: #718096; cursor: pointer; transition: all 0.2s; text-align: center;
+        font-family: inherit;
+    }
+    .upload-tab.active { border-color: #667eea; background: rgba(102,126,234,0.07); color: #667eea; }
+    .upload-tab:hover:not(.active) { border-color: #cbd5e0; }
+
+    .upload-panel { display: none; }
+    .upload-panel.active { display: block; animation: fadeUp 0.25s ease; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Webcam mini */
+    .webcam-mini {
+        position: relative; width: 100%; aspect-ratio: 4/3;
+        background: #1a1a2e; border-radius: 12px; overflow: hidden;
+        margin-bottom: 10px; border: 2px solid #e2e8f0;
+    }
+    #profil-video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: none; }
+    .webcam-mini-placeholder {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        color: rgba(255,255,255,0.4); gap: 8px;
+    }
+    .webcam-mini-placeholder i { font-size: 36px; }
+    .webcam-mini-placeholder span { font-size: 12px; }
+    .webcam-mini-captured { position: absolute; inset: 0; display: none; }
+    #profil-captured-img { width: 100%; height: 100%; object-fit: cover; }
+    .captured-ok { position: absolute; inset: 0; background: rgba(56,161,105,0.3); display: flex; align-items: center; justify-content: center; }
+    .captured-ok i { font-size: 40px; color: white; }
+    canvas#profil-canvas { display: none; }
+    .countdown-overlay { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; }
+    .countdown-overlay span { font-size: 72px; font-weight: 800; color: white; text-shadow: 0 0 30px rgba(102,126,234,0.9); }
+
+    /* Upload fichier */
+    .upload-drop {
+        border: 2px dashed #cbd5e0; border-radius: 12px; padding: 28px 16px;
+        text-align: center; cursor: pointer; transition: all 0.2s; position: relative;
+        margin-bottom: 10px;
+    }
+    .upload-drop:hover, .upload-drop.drag-over { border-color: #667eea; background: rgba(102,126,234,0.03); }
+    .upload-drop i { font-size: 32px; color: #a0aec0; display: block; margin-bottom: 8px; }
+    .upload-drop p { font-size: 13px; color: #718096; margin-bottom: 4px; }
+    .upload-drop span { font-size: 11px; color: #a0aec0; }
+    .upload-drop input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .upload-file-preview { display: none; text-align: center; margin-bottom: 10px; }
+    .upload-file-preview img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #667eea; }
+    .upload-file-name { font-size: 12px; color: #667eea; margin-top: 6px; font-weight: 600; }
+
+    /* Boutons */
+    .btn-main {
+        width: 100%; padding: 11px; border: none; border-radius: 10px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white; font-size: 14px; font-weight: 600;
+        cursor: pointer; font-family: inherit; transition: all 0.25s;
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-main:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(102,126,234,0.4); }
+    .btn-main:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .btn-outline {
+        padding: 9px 14px; border: 1.5px solid #e2e8f0; border-radius: 9px;
+        background: white; color: #718096; font-size: 13px; font-weight: 600;
+        cursor: pointer; font-family: inherit; transition: all 0.2s;
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .btn-outline:hover { border-color: #667eea; color: #667eea; }
+
+    .btn-row { display: flex; gap: 8px; margin-bottom: 10px; }
+
+    /* ===== COLONNE DROITE ===== */
+    .right-col { display: flex; flex-direction: column; gap: 20px; }
+
+    /* Grille infos (lecture seule) */
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 500px) { .info-grid { grid-template-columns: 1fr; } }
+    .info-item label { font-size: 11px; font-weight: 700; color: #a0aec0; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 5px; }
+    .info-item .info-val { font-size: 15px; color: #2d3748; font-weight: 500; padding: 10px 14px; background: #f7fafc; border-radius: 8px; border: 1.5px solid #edf2f7; }
+    .info-item.full { grid-column: 1 / -1; }
+
+    /* ===== FORMULAIRE MODIFICATION ===== */
+    .edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 500px) { .edit-grid { grid-template-columns: 1fr; } }
+
+    .field-group { display: flex; flex-direction: column; gap: 5px; }
+    .field-group.full { grid-column: 1 / -1; }
+
+    .field-label {
+        font-size: 11px; font-weight: 700; color: #718096;
+        text-transform: uppercase; letter-spacing: 0.5px;
+        display: flex; align-items: center; gap: 6px;
+    }
+    .field-label i { color: #667eea; font-size: 12px; }
+
+    .field-input {
+        padding: 10px 14px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 9px;
+        font-size: 14px;
+        font-family: inherit;
+        color: #2d3748;
+        background: white;
+        transition: all 0.2s;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .field-input:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+    .field-input.error { border-color: #e53e3e; background: #fff5f5; }
+    .field-input.success { border-color: #38a169; background: #f0fff4; }
+
+    .field-hint { font-size: 11px; color: #a0aec0; margin-top: 2px; }
+
+    .section-divider {
+        grid-column: 1 / -1;
+        display: flex; align-items: center; gap: 10px;
+        margin: 8px 0;
+        color: #a0aec0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .section-divider::before, .section-divider::after {
+        content: ''; flex: 1; height: 1px; background: #f0f0f0;
+    }
+
+    .btn-save {
+        grid-column: 1 / -1;
+        padding: 12px; border: none; border-radius: 10px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white; font-size: 14px; font-weight: 600;
+        cursor: pointer; font-family: inherit; transition: all 0.25s;
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+        margin-top: 4px;
+    }
+    .btn-save:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(102,126,234,0.4); }
+    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* Toast */
+    .status-toast {
+        display: none;
+        align-items: center; gap: 10px;
+        padding: 12px 16px; border-radius: 10px;
+        margin-bottom: 16px; font-size: 14px; font-weight: 500;
+        animation: fadeUp 0.3s ease;
+    }
+    .status-toast.show { display: flex; }
+    .status-toast.success { background: #c6f6d5; color: #22543d; border: 1px solid #38a169; }
+    .status-toast.error   { background: #fed7d7; color: #742a2a; border: 1px solid #e53e3e; }
+    .status-toast.info    { background: rgba(102,126,234,0.1); color: #4a5568; border: 1px solid rgba(102,126,234,0.3); }
+
+    /* Erreurs liste */
+    .error-list { margin: 0; padding-left: 16px; }
+    .error-list li { margin: 2px 0; font-size: 13px; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="profil-page">
+
+    <div class="profil-header">
+        <div>
+            <h1><i class="fas fa-user-circle" style="color:#667eea;margin-right:10px"></i>Mon Profil</h1>
+            <p>Gérez vos informations personnelles et votre photo de profil</p>
+        </div>
+    </div>
+
+    {# Flash messages #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="status-toast show {{ label }}">
+                <i class="fas fa-{{ label == 'success' ? 'check-circle' : 'exclamation-circle' }}"></i>
+                <span>{{ message }}</span>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="profil-grid">
+
+        {# ===== COLONNE GAUCHE : PHOTO ===== #}
+        <div>
+            <div class="card">
+                <div class="card-header"><i class="fas fa-camera"></i> Photo de profil</div>
+                <div class="card-body">
+
+                    <div class="photo-center">
+                        <div class="avatar-wrap">
+                            {% if app.user.photo %}
+                                <img src="{{ asset('uploads/profils/' ~ app.user.photo) }}"
+                                     alt="Photo de profil" id="current-avatar">
+                            {% else %}
+                                <div class="avatar-placeholder" id="current-avatar">
+                                    {{ app.user.prenom|slice(0,1)|upper }}
+                                </div>
+                            {% endif %}
+                            <div class="avatar-edit-btn" title="Modifier la photo"
+                                 onclick="document.getElementById('tab-upload').click()">
+                                <i class="fas fa-pen"></i>
+                            </div>
+                        </div>
+                        <div class="photo-name">{{ app.user.prenom }} {{ app.user.nom }}</div>
+                        <div class="photo-role">{{ app.user.role.value }}</div>
+                        <div class="photo-email">{{ app.user.email }}</div>
+                    </div>
+
+                    <div class="status-toast" id="photo-toast"></div>
+
+                    <div class="upload-tabs">
+                        <button class="upload-tab active" id="tab-webcam" onclick="switchUploadTab('webcam')">
+                            <i class="fas fa-camera"></i> Webcam
+                        </button>
+                        <button class="upload-tab" id="tab-upload" onclick="switchUploadTab('upload')">
+                            <i class="fas fa-upload"></i> Upload
+                        </button>
+                    </div>
+
+                    {# Panel webcam #}
+                    <div class="upload-panel active" id="panel-webcam">
+                        <div class="webcam-mini">
+                            <div class="webcam-mini-placeholder" id="mini-placeholder">
+                                <i class="fas fa-camera-slash"></i>
+                                <span>Cliquez sur Activer</span>
+                            </div>
+                            <video id="profil-video" autoplay playsinline muted></video>
+                            <div class="countdown-overlay" id="mini-countdown">
+                                <span id="countdown-num"></span>
+                            </div>
+                            <div class="webcam-mini-captured" id="mini-captured">
+                                <img id="profil-captured-img" src="" alt="">
+                                <div class="captured-ok"><i class="fas fa-check-circle"></i></div>
+                            </div>
+                        </div>
+                        <canvas id="profil-canvas"></canvas>
+                        <div class="btn-row">
+                            <button class="btn-main" id="btn-cam-action" onclick="startProfilWebcam()" style="flex:1">
+                                <i class="fas fa-camera"></i> Activer
+                            </button>
+                            <button class="btn-outline" id="btn-cam-retake" onclick="retakeProfilPhoto()" style="display:none">
+                                <i class="fas fa-redo"></i> Reprendre
+                            </button>
+                        </div>
+                        <button class="btn-main" id="btn-save-webcam" onclick="saveProfilPhoto('webcam')" disabled>
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                    </div>
+
+                    {# Panel upload #}
+                    <div class="upload-panel" id="panel-upload">
+                        <div class="upload-file-preview" id="file-preview-wrap">
+                            <img id="file-preview-img" src="" alt="">
+                            <div class="upload-file-name" id="file-preview-name"></div>
+                        </div>
+                        <div class="upload-drop" id="drop-zone">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Glissez une photo ou cliquez</p>
+                            <span>JPG, PNG, WEBP · Max 5 Mo</span>
+                            <input type="file" id="profil-file-input" accept="image/jpeg,image/png,image/webp"
+                                   onchange="onProfilFileSelected(event)">
+                        </div>
+                        <button class="btn-main" id="btn-save-upload" onclick="saveProfilPhoto('upload')" disabled>
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        {# ===== COLONNE DROITE ===== #}
+        <div class="right-col">
+
+            {# --- Infos en lecture seule (email, rôle, date) --- #}
+            <div class="card">
+                <div class="card-header"><i class="fas fa-id-card"></i> Informations du compte</div>
+                <div class="card-body">
+                    <div class="info-grid">
+                        <div class="info-item full">
+                            <label>Adresse Email</label>
+                            <div class="info-val">{{ app.user.email }}</div>
+                        </div>
+                        <div class="info-item">
+                            <label>Rôle</label>
+                            <div class="info-val">{{ app.user.role.value }}</div>
+                        </div>
+                        <div class="info-item">
+                            <label>Membre depuis</label>
+                            <div class="info-val">{{ app.user.createdAt ? app.user.createdAt|date('d/m/Y') : '—' }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# --- Formulaire modification coordonnées --- #}
+            <div class="card">
+                <div class="card-header"><i class="fas fa-pen-to-square"></i> Modifier mes coordonnées</div>
+                <div class="card-body">
+
+                    <div class="status-toast" id="info-toast"></div>
+
+                    <div class="edit-grid" id="edit-form">
+
+                        {# Prénom #}
+                        <div class="field-group">
+                            <label class="field-label"><i class="fas fa-user"></i> Prénom</label>
+                            <input type="text" class="field-input" id="field-prenom"
+                                   value="{{ app.user.prenom }}" placeholder="Votre prénom">
+                        </div>
+
+                        {# Nom #}
+                        <div class="field-group">
+                            <label class="field-label"><i class="fas fa-user"></i> Nom</label>
+                            <input type="text" class="field-input" id="field-nom"
+                                   value="{{ app.user.nom }}" placeholder="Votre nom">
+                        </div>
+
+                        {# Téléphone #}
+                        <div class="field-group full">
+                            <label class="field-label"><i class="fas fa-phone"></i> Téléphone</label>
+                            <input type="tel" class="field-input" id="field-telephone"
+                                   value="{{ app.user.telephone ?? '' }}" placeholder="8 chiffres (ex: 22334455)">
+                            <span class="field-hint">Laissez vide pour supprimer</span>
+                        </div>
+
+                        {# Séparateur mot de passe #}
+                        <div class="section-divider">Changer le mot de passe (optionnel)</div>
+
+                        {# Mot de passe actuel #}
+                        <div class="field-group full">
+                            <label class="field-label"><i class="fas fa-lock"></i> Mot de passe actuel</label>
+                            <input type="password" class="field-input" id="field-pwd-current"
+                                   placeholder="Requis pour changer le mot de passe" autocomplete="current-password">
+                        </div>
+
+                        {# Nouveau mot de passe #}
+                        <div class="field-group">
+                            <label class="field-label"><i class="fas fa-key"></i> Nouveau mot de passe</label>
+                            <input type="password" class="field-input" id="field-pwd-new"
+                                   placeholder="Min. 6 car., 1 maj., 1 chiffre" autocomplete="new-password">
+                        </div>
+
+                        {# Confirmer mot de passe #}
+                        <div class="field-group">
+                            <label class="field-label"><i class="fas fa-key"></i> Confirmer</label>
+                            <input type="password" class="field-input" id="field-pwd-confirm"
+                                   placeholder="Répétez le nouveau mot de passe" autocomplete="new-password">
+                        </div>
+
+                        {# Bouton enregistrer #}
+                        <button class="btn-save" id="btn-save-info" onclick="saveUserInfo()">
+                            <i class="fas fa-floppy-disk"></i> Enregistrer les modifications
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+
+            {# --- Authentification faciale --- #}
+            <div class="card">
+                <div class="card-header"><i class="fas fa-shield-halved"></i> Authentification faciale</div>
+                <div class="card-body">
+                    <div style="display:flex;align-items:center;gap:14px;padding:14px;background:#f7fafc;border-radius:10px;border:1.5px solid #edf2f7;">
+                        {% if app.user.photo %}
+                            <div style="width:42px;height:42px;border-radius:50%;background:rgba(56,161,105,0.15);display:flex;align-items:center;justify-content:center;color:#38a169;font-size:20px;flex-shrink:0">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight:700;font-size:14px;color:#22543d">Photo de référence configurée</div>
+                                <div style="font-size:12px;color:#718096">La reconnaissance faciale est active pour votre compte</div>
+                            </div>
+                        {% else %}
+                            <div style="width:42px;height:42px;border-radius:50%;background:rgba(237,137,54,0.15);display:flex;align-items:center;justify-content:center;color:#ed8936;font-size:20px;flex-shrink:0">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight:700;font-size:14px;color:#744210">Aucune photo configurée</div>
+                                <div style="font-size:12px;color:#718096">Ajoutez une photo pour activer l'authentification faciale</div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+const PHOTO_SAVE_URL = '{{ path("app_profil_photo") }}';
+const INFO_SAVE_URL  = '{{ path("app_profil_update_info") }}';
+let profilStream = null;
+let capturedBase64Profil = null;
+let uploadedFileProfil = null;
+
+// ============================================================
+// TABS UPLOAD PHOTO
+// ============================================================
+function switchUploadTab(tab) {
+    document.getElementById('tab-webcam').classList.toggle('active', tab === 'webcam');
+    document.getElementById('tab-upload').classList.toggle('active', tab === 'upload');
+    document.getElementById('panel-webcam').classList.toggle('active', tab === 'webcam');
+    document.getElementById('panel-upload').classList.toggle('active', tab === 'upload');
+    if (tab !== 'webcam' && profilStream) stopProfilWebcam();
+}
+
+// ============================================================
+// WEBCAM
+// ============================================================
+async function startProfilWebcam() {
+    const btn = document.getElementById('btn-cam-action');
+    const state = btn.getAttribute('data-state') || 'start';
+    if (state === 'start') {
+        try {
+            profilStream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480, facingMode: 'user' } });
+            const video = document.getElementById('profil-video');
+            video.srcObject = profilStream;
+            await new Promise(r => video.onloadedmetadata = r);
+            video.play();
+            video.style.display = 'block';
+            document.getElementById('mini-placeholder').style.display = 'none';
+            btn.innerHTML = '<i class="fas fa-camera"></i> Prendre la photo';
+            btn.setAttribute('data-state', 'capture');
+        } catch { showPhotoToast('error', 'Accès caméra refusé.'); }
+    } else if (state === 'capture') {
+        const cdOverlay = document.getElementById('mini-countdown');
+        const cdNum = document.getElementById('countdown-num');
+        cdOverlay.style.display = 'flex';
+        let n = 3; cdNum.textContent = n;
+        const interval = setInterval(() => {
+            n--;
+            if (n > 0) { cdNum.textContent = n; }
+            else { clearInterval(interval); cdOverlay.style.display = 'none'; captureProfilPhoto(); }
+        }, 1000);
+    }
+}
+
+function captureProfilPhoto() {
+    const video = document.getElementById('profil-video');
+    const canvas = document.getElementById('profil-canvas');
+    canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.translate(canvas.width, 0); ctx.scale(-1, 1);
+    ctx.drawImage(video, 0, 0);
+    capturedBase64Profil = canvas.toDataURL('image/jpeg', 0.92);
+    document.getElementById('profil-captured-img').src = capturedBase64Profil;
+    document.getElementById('mini-captured').style.display = 'block';
+    document.getElementById('profil-video').style.display = 'none';
+    stopProfilWebcam();
+    const btn = document.getElementById('btn-cam-action');
+    btn.style.display = 'none';
+    document.getElementById('btn-cam-retake').style.display = 'flex';
+    document.getElementById('btn-save-webcam').disabled = false;
+    showPhotoToast('info', 'Photo capturée. Enregistrez pour confirmer.');
+}
+
+function retakeProfilPhoto() {
+    capturedBase64Profil = null;
+    document.getElementById('mini-captured').style.display = 'none';
+    document.getElementById('profil-video').style.display = 'none';
+    document.getElementById('mini-placeholder').style.display = 'flex';
+    document.getElementById('btn-cam-retake').style.display = 'none';
+    document.getElementById('btn-cam-action').style.display = 'flex';
+    document.getElementById('btn-cam-action').innerHTML = '<i class="fas fa-camera"></i> Activer';
+    document.getElementById('btn-cam-action').setAttribute('data-state', 'start');
+    document.getElementById('btn-save-webcam').disabled = true;
+    hidePhotoToast();
+}
+
+function stopProfilWebcam() {
+    if (profilStream) { profilStream.getTracks().forEach(t => t.stop()); profilStream = null; }
+}
+
+// ============================================================
+// UPLOAD FICHIER
+// ============================================================
+function onProfilFileSelected(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { showPhotoToast('error', 'Fichier trop lourd. Max 5 Mo.'); return; }
+    uploadedFileProfil = file;
+    const reader = new FileReader();
+    reader.onload = e => {
+        document.getElementById('file-preview-img').src = e.target.result;
+        document.getElementById('file-preview-name').textContent = file.name.length > 30 ? file.name.slice(0, 27) + '...' : file.name;
+        document.getElementById('file-preview-wrap').style.display = 'block';
+        document.getElementById('drop-zone').style.display = 'none';
+        document.getElementById('btn-save-upload').disabled = false;
+        showPhotoToast('info', 'Fichier sélectionné. Cliquez sur Enregistrer.');
+    };
+    reader.readAsDataURL(file);
+}
+
+const dropZone = document.getElementById('drop-zone');
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+    e.preventDefault(); dropZone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) { document.getElementById('profil-file-input').files = e.dataTransfer.files; onProfilFileSelected({ target: { files: [file] } }); }
+});
+
+// ============================================================
+// SAUVEGARDE PHOTO
+// ============================================================
+async function saveProfilPhoto(type) {
+    const formData = new FormData();
+    if (type === 'webcam') {
+        if (!capturedBase64Profil) return;
+        formData.append('photo_base64', capturedBase64Profil);
+        setBtn('btn-save-webcam', true);
+    } else {
+        if (!uploadedFileProfil) return;
+        formData.append('photo_file', uploadedFileProfil);
+        setBtn('btn-save-upload', true);
+    }
+    try {
+        const r = await fetch(PHOTO_SAVE_URL, { method: 'POST', body: formData });
+        const data = await r.json();
+        if (data.success) {
+            showPhotoToast('success', 'Photo mise à jour avec succès !');
+            const avatarEl = document.getElementById('current-avatar');
+            if (avatarEl.tagName === 'IMG') {
+                avatarEl.src = data.photoUrl + '?t=' + Date.now();
+            } else {
+                const img = document.createElement('img');
+                img.src = data.photoUrl; img.id = 'current-avatar'; img.alt = 'Photo de profil';
+                img.style.cssText = 'width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid #edf2f7;';
+                avatarEl.replaceWith(img);
+            }
+            const sidebarAvatar = document.querySelector('.sidebar .user-avatar');
+            if (sidebarAvatar) sidebarAvatar.src = data.photoUrl + '?t=' + Date.now();
+        } else {
+            showPhotoToast('error', data.error || 'Erreur lors de l\'enregistrement.');
+        }
+    } catch { showPhotoToast('error', 'Erreur réseau.'); }
+    finally { setBtn('btn-save-webcam', false); setBtn('btn-save-upload', false); }
+}
+
+// ============================================================
+// SAUVEGARDE COORDONNÉES
+// ============================================================
+async function saveUserInfo() {
+    const btn = document.getElementById('btn-save-info');
+    btn.disabled = true;
+    btn.innerHTML = '<span style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;margin-right:8px;vertical-align:middle"></span>Enregistrement...';
+
+    // Réinitialiser les états visuels
+    document.querySelectorAll('.field-input').forEach(el => el.classList.remove('error', 'success'));
+
+    const formData = new FormData();
+    formData.append('nom',              document.getElementById('field-nom').value.trim());
+    formData.append('prenom',           document.getElementById('field-prenom').value.trim());
+    formData.append('telephone',        document.getElementById('field-telephone').value.trim());
+    formData.append('current_password', document.getElementById('field-pwd-current').value);
+    formData.append('new_password',     document.getElementById('field-pwd-new').value);
+    formData.append('confirm_password', document.getElementById('field-pwd-confirm').value);
+
+    try {
+        const r = await fetch(INFO_SAVE_URL, { method: 'POST', body: formData });
+        const data = await r.json();
+
+        if (data.success) {
+            showInfoToast('success', data.message || 'Informations mises à jour avec succès !');
+            // Mettre à jour les valeurs affichées
+            document.getElementById('field-prenom').value    = data.prenom;
+            document.getElementById('field-nom').value       = data.nom;
+            document.getElementById('field-telephone').value = data.telephone ?? '';
+            // Réinitialiser les champs mot de passe
+            document.getElementById('field-pwd-current').value = '';
+            document.getElementById('field-pwd-new').value     = '';
+            document.getElementById('field-pwd-confirm').value = '';
+            // Marquer les champs identité comme OK
+            ['field-prenom', 'field-nom', 'field-telephone'].forEach(id => {
+                document.getElementById(id).classList.add('success');
+                setTimeout(() => document.getElementById(id).classList.remove('success'), 2500);
+            });
+            // Mettre à jour le nom affiché dans la carte photo
+            document.querySelector('.photo-name').textContent = data.prenom + ' ' + data.nom;
+        } else {
+            // Afficher les erreurs
+            const errHtml = '<ul class="error-list">' + data.errors.map(e => `<li>${e}</li>`).join('') + '</ul>';
+            showInfoToast('error', errHtml);
+        }
+    } catch { showInfoToast('error', 'Erreur réseau. Veuillez réessayer.'); }
+    finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-floppy-disk"></i> Enregistrer les modifications';
+    }
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function showPhotoToast(type, text) {
+    const el = document.getElementById('photo-toast');
+    const icons = { success: 'check-circle', error: 'times-circle', info: 'info-circle' };
+    el.className = 'status-toast show ' + type;
+    el.innerHTML = `<i class="fas fa-${icons[type]}"></i><span>${text}</span>`;
+}
+function hidePhotoToast() { document.getElementById('photo-toast').className = 'status-toast'; }
+
+function showInfoToast(type, html) {
+    const el = document.getElementById('info-toast');
+    const icons = { success: 'check-circle', error: 'times-circle', info: 'info-circle' };
+    el.className = 'status-toast show ' + type;
+    el.innerHTML = `<i class="fas fa-${icons[type]}"></i><div>${html}</div>`;
+}
+
+function setBtn(id, loading) {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.disabled = loading;
+    if (loading) btn.innerHTML = '<span style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;margin-right:8px;vertical-align:middle"></span>Enregistrement...';
+    else btn.innerHTML = '<i class="fas fa-save"></i> Enregistrer';
+}
+</script>
+<style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+{% endblock %}

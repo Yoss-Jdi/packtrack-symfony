@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\Service\FileUploader;
 
 final class UtilisateursController extends AbstractController
 {
@@ -27,7 +28,7 @@ final class UtilisateursController extends AbstractController
 
     // Afficher le formulaire et créer un nouvel utilisateur
     #[Route('/admin/ajouterutilisateur', name: 'app_utilisateurs_new')]
-    public function new(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher, FileUploader $fileUploader): Response
     {
         $utilisateur = new Utilisateurs();
         $form = $this->createForm(UtilisateursType::class, $utilisateur);
@@ -35,19 +36,18 @@ final class UtilisateursController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Hasher le mot de passe avant de sauvegarder
             $plainPassword = $form->get('plainPassword')->getData();
-            $hashedPassword = $passwordHasher->hashPassword($utilisateur, $plainPassword);
-            $utilisateur->setMotDePasse($hashedPassword);
+            $utilisateur->setMotDePasse($passwordHasher->hashPassword($utilisateur, $plainPassword));
 
-            // Sauvegarder dans la base de données
+            $photoFile = $form->get('photoFile')->getData();
+            if ($photoFile) {
+                $utilisateur->setPhoto($fileUploader->upload($photoFile));
+            }
+
             $entityManager->persist($utilisateur);
             $entityManager->flush();
 
-            // Message de succès
             $this->addFlash('success', 'Utilisateur créé avec succès !');
-
-            // Rediriger vers la liste
             return $this->redirectToRoute('app_utilisateurs');
         }
 
@@ -69,23 +69,27 @@ final class UtilisateursController extends AbstractController
 
     // Modifier un utilisateur
     #[Route('/admin/modifierutilisateur/{id}', name: 'app_utilisateurs_edit')]
-    public function edit(Request $request, Utilisateurs $utilisateur, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
+    public function edit(Request $request, Utilisateurs $utilisateur, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher, FileUploader $fileUploader): Response
     {
         $form = $this->createForm(UtilisateursType::class, $utilisateur, ['is_edit' => true]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Si un nouveau mot de passe est fourni, le hasher
             $plainPassword = $form->get('plainPassword')->getData();
             if ($plainPassword) {
-                $hashedPassword = $passwordHasher->hashPassword($utilisateur, $plainPassword);
-                $utilisateur->setMotDePasse($hashedPassword);
+                $utilisateur->setMotDePasse($passwordHasher->hashPassword($utilisateur, $plainPassword));
+            }
+
+            $photoFile = $form->get('photoFile')->getData();
+            if ($photoFile) {
+                if ($utilisateur->getPhoto()) {
+                    $fileUploader->delete($utilisateur->getPhoto());
+                }
+                $utilisateur->setPhoto($fileUploader->upload($photoFile));
             }
 
             $entityManager->flush();
-
             $this->addFlash('success', 'Utilisateur modifié avec succès !');
-
             return $this->redirectToRoute('app_utilisateurs');
         }
 
