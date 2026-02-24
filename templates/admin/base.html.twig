@@ -108,48 +108,50 @@
             </div>
         {% endif %}
 
-        <ul>
-            <li class="{{ app.request.get('_route') == 'admin_dashboard' ? 'active' }}">
-                <a href="{{ path('admin_dashboard') }}"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+<ul>
+    <li class="{{ app.request.get('_route') == 'admin_dashboard' ? 'active' }}">
+        <a href="{{ path('admin_dashboard') }}"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+    </li>
+    <li class="{{ app.request.get('_route') starts with 'admin_parcels' ? 'active' }}">
+        <a href="{{ path('admin_parcels') }}"><i class="fa-solid fa-box"></i> Colis</a>
+    </li>
+    <li class="{{ app.request.get('_route') starts with 'app_facture_' ? 'active' }}">
+        <a href="{{ path('app_facture_index') }}"><i class="fa-solid fa-file-invoice"></i> Factures</a>
+    </li>
+    <li class="{{ app.request.get('_route') starts with 'admin_vehicles' ? 'active' }}">
+        <a href="{{ path('admin_vehicles') }}"><i class="fa-solid fa-truck"></i> Vehicles</a>
+    </li>
+    <li class="{{ app.request.get('_route') starts with 'admin_forum' ? 'active' }}">
+        <a href="{{ path('admin_forum') }}"><i class="fa-solid fa-comments"></i> Forum</a>
+    </li>
+    <li class="{{ app.request.get('_route') starts with 'admin_incidents' ? 'active' }}">
+        <a href="{{ path('admin_incidents') }}"><i class="fa-solid fa-triangle-exclamation"></i> Incidents</a>
+    </li>
+    <li class="has-submenu {{ app.request.get('_route') starts with 'app_utilisateurs' ? 'active open' : '' }}">
+        <a href="javascript:void(0);" onclick="toggleSubmenu(this)">
+            <span><i class="fa-solid fa-users"></i> Utilisateurs</span>
+            <i class="fa-solid fa-chevron-down arrow"></i>
+        </a>
+        <ul class="submenu">
+            <li class="{{ app.request.get('_route') == 'app_utilisateurs' ? 'active' }}">
+                <a href="{{ path('app_utilisateurs') }}"><i class="fa-solid fa-list"></i> Liste</a>
             </li>
-            <li class="{{ app.request.get('_route') starts with 'admin_parcels' ? 'active' }}">
-                <a href="{{ path('admin_parcels') }}"><i class="fa-solid fa-box"></i> Parcels</a>
+            <li class="{{ app.request.get('_route') == 'app_utilisateurs_new' ? 'active' }}">
+                <a href="{{ path('app_utilisateurs_new') }}"><i class="fa-solid fa-user-plus"></i> Ajout</a>
             </li>
-            <li class="{{ app.request.get('_route') starts with 'admin_invoices' ? 'active' }}">
-                <a href="{{ path('admin_invoices') }}"><i class="fa-solid fa-file-invoice"></i> Invoices</a>
-            </li>
-            <li class="{{ app.request.get('_route') starts with 'admin_vehicles' ? 'active' }}">
-                <a href="{{ path('admin_vehicles') }}"><i class="fa-solid fa-truck"></i> Vehicles</a>
-            </li>
-            <li class="{{ app.request.get('_route') starts with 'admin_forum' ? 'active' }}">
-                <a href="{{ path('admin_forum') }}"><i class="fa-solid fa-comments"></i> Forum</a>
-            </li>
-            <li class="{{ app.request.get('_route') starts with 'admin_incidents' ? 'active' }}">
-                <a href="{{ path('admin_incidents') }}"><i class="fa-solid fa-triangle-exclamation"></i> Incidents</a>
-            </li>
-            <li class="has-submenu {{ app.request.get('_route') starts with 'app_utilisateurs' ? 'active open' : '' }}">
-                <a href="javascript:void(0);" onclick="toggleSubmenu(this)">
-                    <span><i class="fa-solid fa-users"></i> Utilisateurs</span>
-                    <i class="fa-solid fa-chevron-down arrow"></i>
-                </a>
-                <ul class="submenu">
-                    <li class="{{ app.request.get('_route') == 'app_utilisateurs' ? 'active' }}">
-                        <a href="{{ path('app_utilisateurs') }}"><i class="fa-solid fa-list"></i> Liste</a>
-                    </li>
-                    <li class="{{ app.request.get('_route') == 'app_utilisateurs_new' ? 'active' }}">
-                        <a href="{{ path('app_utilisateurs_new') }}"><i class="fa-solid fa-user-plus"></i> Ajout</a>
-                    </li>
-                    <li class="{{ app.request.get('_route') == 'app_utilisateurs_stats' ? 'active' }}">
-                        <a href="{{ path('app_utilisateurs_stats') }}"><i class="fas fa-chart-bar"></i> Statistiques</a>
-                    </li>
-                </ul>
-            </li>
-
-            <li class="logout-btn">
-                <a href="{{ path('app_logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</a>
+            <li class="{{ app.request.get('_route') == 'app_utilisateurs_stats' ? 'active' }}">
+                <a href="{{ path('app_utilisateurs_stats') }}"><i class="fas fa-chart-bar"></i> Statistiques</a>
             </li>
         </ul>
-    </aside>
+    </li>
+    <li class="{{ app.request.get('_route') starts with 'app_notifications' ? 'active' }}">
+        <a href="{{ path('app_notifications_admin') }}"><i class="fa-solid fa-bell"></i> Notifications</a>
+    </li>
+    <li class="logout-btn">
+        <a href="{{ path('app_logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</a>
+    </li>
+</ul>
+</aside>
 
     <main class="main">
         {% for label, messages in app.flashes %}
@@ -158,15 +160,22 @@
             {% endfor %}
         {% endfor %}
 
-        {% block body %}{% endblock %}
-    </main>
-</div>
+            {% block body %}{% endblock %}
+        </main>
+    </div>
 
-<script>
-    function toggleSubmenu(element) {
-        element.parentElement.classList.toggle('open');
-    }
-</script>
-{% block javascripts %}{% endblock %}
+    
+
+    <script>
+        function toggleSubmenu(element) {
+            const parentLi = element.parentElement
+            parentLi.classList.toggle('open')
+        }
+    </script>
+
+    {% block javascripts %}{% endblock %}
+
+</body>
+</html>
 </body>
 </html>

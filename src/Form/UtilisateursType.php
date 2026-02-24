@@ -139,7 +139,7 @@ class UtilisateursType extends AbstractType
                     return match($role) {
                         Role::ADMIN => 'Administrateur',
                         Role::CLIENT => 'Client',
-                        Role::GESTIONNAIRE => 'Gestionnaire',
+                        Role::ENTREPRISE => 'Entreprise',
                         Role::LIVREUR => 'Livreur',
                     };
                 },

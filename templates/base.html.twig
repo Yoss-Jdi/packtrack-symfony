@@ -237,79 +237,72 @@
         <a href="#">Report Issue</a>
     </nav>
 
-    {# ===== ZONE UTILISATEUR ===== #}
-    {% if app.user %}
-        <div class="navbar-user-area" id="navbar-user-area">
+{# ===== ZONE UTILISATEUR ===== #}
+<div style="display: flex; gap: 12px; align-items: center;">
+    <a href="{{ path('app_notifications_index') }}" style="position: relative; text-decoration: none; color: #495057; font-weight: 600; padding: 8px 16px; border-radius: 6px; transition: 0.2s;">
+        🔔
+    </a>
+</div>
 
-            {# Bouton déclencheur #}
-            <div class="navbar-user-btn" id="navbar-user-btn" onclick="toggleUserDropdown()">
-                {% if app.user.photo %}
-                    <img src="{{ asset('uploads/profils/' ~ app.user.photo) }}"
-                         alt="Photo de profil"
-                         class="navbar-avatar">
-                {% else %}
-                    <div class="navbar-avatar-initial">
-                        {{ app.user.prenom|slice(0,1)|upper }}
-                    </div>
-                {% endif %}
-                <span class="navbar-user-name">{{ app.user.prenom }}</span>
-                <i class="fas fa-chevron-down navbar-chevron"></i>
-            </div>
-
-            {# Menu déroulant #}
-            <div class="navbar-dropdown" id="navbar-dropdown">
-
-                {# En-tête avec avatar + nom #}
-                <div class="dropdown-header">
-                    <div class="dropdown-header-avatar">
-                        {% if app.user.photo %}
-                            <img src="{{ asset('uploads/profils/' ~ app.user.photo) }}"
-                                 alt="Photo de profil"
-                                 class="dropdown-avatar-img">
-                        {% else %}
-                            <div class="dropdown-avatar-initial">
-                                {{ app.user.prenom|slice(0,1)|upper }}
-                            </div>
-                        {% endif %}
-                        <div class="dropdown-user-info">
-                            <strong>{{ app.user.prenom }} {{ app.user.nom }}</strong>
-                            <span class="dropdown-role">{{ app.user.role.value }}</span>
+{% if app.user %}
+    <div class="navbar-user-area" id="navbar-user-area">
+        <div class="navbar-user-btn" id="navbar-user-btn" onclick="toggleUserDropdown()">
+            {% if app.user.photo %}
+                <img src="{{ asset('uploads/profils/' ~ app.user.photo) }}"
+                     alt="Photo de profil"
+                     class="navbar-avatar">
+            {% else %}
+                <div class="navbar-avatar-initial">
+                    {{ app.user.prenom|slice(0,1)|upper }}
+                </div>
+            {% endif %}
+            <span class="navbar-user-name">{{ app.user.prenom }}</span>
+            <i class="fas fa-chevron-down navbar-chevron"></i>
+        </div>
+        <div class="navbar-dropdown" id="navbar-dropdown">
+            <div class="dropdown-header">
+                <div class="dropdown-header-avatar">
+                    {% if app.user.photo %}
+                        <img src="{{ asset('uploads/profils/' ~ app.user.photo) }}"
+                             alt="Photo de profil"
+                             class="dropdown-avatar-img">
+                    {% else %}
+                        <div class="dropdown-avatar-initial">
+                            {{ app.user.prenom|slice(0,1)|upper }}
                         </div>
+                    {% endif %}
+                    <div class="dropdown-user-info">
+                        <strong>{{ app.user.prenom }} {{ app.user.nom }}</strong>
+                        <span class="dropdown-role">{{ app.user.role.value }}</span>
                     </div>
                 </div>
-
-                {# Items du menu #}
-                <div class="dropdown-items">
-                    <a href="{{ path('app_profil_front') }}" class="dropdown-item">
-                        <i class="fas fa-user-circle"></i>
-                        Mon profil
-                    </a>
-
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <div class="dropdown-divider"></div>
-                        <a href="{{ path('admin_dashboard') }}" class="dropdown-item">
-                            <i class="fas fa-tachometer-alt"></i>
-                            Dashboard Admin
-                            <span class="dropdown-admin-badge">ADMIN</span>
-                        </a>
-                    {% endif %}
-
+            </div>
+            <div class="dropdown-items">
+                <a href="{{ path('app_profil_front') }}" class="dropdown-item">
+                    <i class="fas fa-user-circle"></i>
+                    Mon profil
+                </a>
+                {% if is_granted('ROLE_ADMIN') %}
                     <div class="dropdown-divider"></div>
-
-                    <a href="{{ path('app_logout') }}" class="dropdown-item danger">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Se déconnecter
+                    <a href="{{ path('admin_dashboard') }}" class="dropdown-item">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard Admin
+                        <span class="dropdown-admin-badge">ADMIN</span>
                     </a>
-                </div>
-
+                {% endif %}
+                <div class="dropdown-divider"></div>
+                <a href="{{ path('app_logout') }}" class="dropdown-item danger">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Se déconnecter
+                </a>
             </div>
         </div>
-
-    {% else %}
-        <a href="{{ path('app_login') }}" class="navbar-login-btn">
-            <i class="fas fa-sign-in-alt"></i> Connexion
-        </a>
-    {% endif %}
+    </div>
+{% else %}
+    <a href="{{ path('app_login') }}" class="navbar-login-btn">
+        <i class="fas fa-sign-in-alt"></i> Connexion
+    </a>
+{% endif %}
 </header>
 
 {% block body %}{% endblock %}

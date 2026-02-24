@@ -144,6 +144,18 @@ class SecurityController extends AbstractController
                 'registration_data'   => compact('email', 'nom', 'prenom', 'telephone'),
             ]);
         }
+    return $this->render('security/login.html.twig', [
+        'registration_errors' => $errors,
+        'registration_data' => [
+            'email' => $email,
+            'nom' => $nom,
+            'prenom' => $prenom,
+            'telephone' => $telephone,
+        ],
+        'error' => null, // ⚠️ prevent Twig crash
+        'last_username' => $email, // optional: prefill login field
+    ]);
+}
 
         // Créer l'utilisateur
         $utilisateur = new Utilisateurs();

@@ -1,0 +1,61 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}PackTrack – Factures{% endblock %}
+
+{% block body %}
+
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-icon">📄</div>
+        <h1>Consulter une facture</h1>
+        <p>Entrez votre numéro de facture</p>
+
+        <!-- FORMULAIRE DE RECHERCHE -->
+        <form method="get" action="{{ path('front_factures') }}" class="search-box">
+            <input
+                type="text"
+                name="numero"
+                placeholder="Ex : FCT-2026-001"
+                value="{{ numero|default('') }}"
+                required
+            >
+            <button type="submit">Rechercher</button>
+        </form>
+    </div>
+</section>
+
+<!-- AFFICHAGE DE LA FACTURE -->
+<section class="content">
+
+    {% if facture %}
+        <div class="card" style="background:white; padding:20px; max-width:600px; margin:auto;">
+            <h3>Facture {{ facture.numero }}</h3>
+
+            <p><strong>Date :</strong>
+                {{ facture.dateEmission ? facture.dateEmission|date('Y-m-d') : '' }}
+            </p>
+
+            <p><strong>Montant HT :</strong>
+                {{ facture.montantHT|number_format(2, '.', ',') }}
+            </p>
+
+            <p><strong>TVA :</strong>
+                {{ facture.tva|number_format(2, '.', ',') }}
+            </p>
+
+            <p><strong>Montant TTC :</strong>
+                {{ facture.montantTTC|number_format(2, '.', ',') }}
+            </p>
+
+            <p><strong>Statut :</strong> {{ facture.statut }}</p>
+        </div>
+
+    {% elseif numero %}
+        <p style="color:red; text-align:center;">
+            ❌ Aucune facture trouvée pour ce numéro.
+        </p>
+    {% endif %}
+
+</section>
+
+{% endblock %}
