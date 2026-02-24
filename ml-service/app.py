@@ -1,123 +1,50 @@
 from flask import Flask, request, jsonify
-from geopy.geocoders import Nominatim
-from geopy.exc import GeocoderTimedOut
 from datetime import datetime
+import requests as req
 import pickle
 import numpy as np
 
 app = Flask(__name__)
 
-# Charger les deux modèles
+ORS_KEY = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjhlMDdlYzM3ZjY0YjRhMjhiNmRmMjVkMjM5MmRhMDFhIiwiaCI6Im11cm11cjY0In0="
+
+# Charger les modèles
 with open("models/model_distance.pkl", "rb") as f:
     model_distance = pickle.load(f)
 
 with open("models/model_duree.pkl", "rb") as f:
     model_duree = pickle.load(f)
 
-geolocator = Nominatim(user_agent="colis_app_pidev")
-
-def geocode_adresse(adresse: str):
+def geocode_via_ors(adresse: str):
+    """ORS uniquement pour convertir adresse → GPS"""
     try:
-        location = geolocator.geocode(adresse + ", Tunisie", timeout=10)
-        if location:
-            return location.latitude, location.longitude
-        return None, None
-    except GeocoderTimedOut:
+        url = "https://api.openrouteservice.org/geocode/search"
+        params = {
+            "api_key": ORS_KEY,
+            "text": adresse + ", Tunisie",
+            "size": 1,
+            "boundary.country": "TN",
+            # ✅ Focus sur la région de Tunis pour éviter les confusions géographiques
+            "focus.point.lon": 10.18,
+            "focus.point.lat": 36.81,
+        }
+        r    = req.get(url, params=params, timeout=10)
+        data = r.json()
+        coords = data["features"][0]["geometry"]["coordinates"]
+        return coords[1], coords[0]  # lat, lon
+    except Exception as e:
+        print(f"❌ Erreur géocodage '{adresse}': {e}")
         return None, None
 
-# ─────────────────────────────────────────
 @app.route("/health", methods=["GET"])
 def health():
-    return jsonify({"status": "ok", "message": "ML Service opérationnel"})
+    return jsonify({"status": "ok", "service": "PackTrack ML Service"})
 
-# ─────────────────────────────────────────
-@app.route("/predict-distance", methods=["POST"])
-def predict_distance():
-    try:
-        data = request.get_json()
-
-        adresse_depart      = data.get("adresse_depart")
-        adresse_destination = data.get("adresse_destination")
-
-        if not adresse_depart or not adresse_destination:
-            return jsonify({"error": "adresse_depart et adresse_destination sont obligatoires"}), 400
-
-        print(f"📍 Géocodage de : {adresse_depart}")
-        lat1, lon1 = geocode_adresse(adresse_depart)
-
-        print(f"📍 Géocodage de : {adresse_destination}")
-        lat2, lon2 = geocode_adresse(adresse_destination)
-
-        if not all([lat1, lon1, lat2, lon2]):
-            return jsonify({"error": "Impossible de géocoder une des adresses"}), 400
-
-        distance_predite = round(float(model_distance.predict(
-            np.array([[lat1, lon1, lat2, lon2]])
-        )[0]), 2)
-
-        print(f"✅ Distance prédite : {distance_predite} km")
-
-        return jsonify({
-            "distance_km":        distance_predite,
-            "coords_depart":      {"lat": lat1, "lon": lon1},
-            "coords_destination": {"lat": lat2, "lon": lon2},
-        })
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
-
-# ─────────────────────────────────────────
-@app.route("/predict-duree", methods=["POST"])
-def predict_duree():
-    try:
-        data = request.get_json()
-
-        distance_km = data.get("distance_km")
-        poids_kg    = data.get("poids_kg")
-        date_debut  = data.get("date_debut")  # format : "2025-01-15T08:30:00"
-
-        if not all([distance_km, poids_kg, date_debut]):
-            return jsonify({"error": "distance_km, poids_kg et date_debut sont obligatoires"}), 400
-
-        # Extraire heure et jour depuis date_debut
-        dt          = datetime.fromisoformat(date_debut)
-        heure       = dt.hour
-        jour_semaine = dt.weekday()  # 0=lundi, 6=dimanche
-
-        duree_predite = round(float(model_duree.predict(
-            np.array([[distance_km, poids_kg, heure, jour_semaine]])
-        )[0]), 2)
-
-        # Formatter en heures/minutes
-        heures  = int(duree_predite // 60)
-        minutes = int(duree_predite % 60)
-
-        if heures > 0:
-            duree_formatee = f"{heures}h {minutes}min"
-        else:
-            duree_formatee = f"{minutes} min"
-
-        print(f"✅ Durée prédite : {duree_formatee}")
-
-        return jsonify({
-            "duree_minutes":  duree_predite,
-            "duree_formatee": duree_formatee,
-            "heure_utilisee": heure,
-            "jour_utilise":   jour_semaine,
-        })
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
-
-# ─────────────────────────────────────────
 @app.route("/predict-complet", methods=["POST"])
 def predict_complet():
-    """
-    Endpoint tout-en-un : adresses → distance prédite → durée prédite
-    C'est cet endpoint que Symfony va appeler principalement
-    """
     try:
         data = request.get_json()
+        print("📥 Données reçues :", data)
 
         adresse_depart      = data.get("adresse_depart")
         adresse_destination = data.get("adresse_destination")
@@ -125,34 +52,46 @@ def predict_complet():
         date_debut          = data.get("date_debut")
 
         if not all([adresse_depart, adresse_destination, poids_kg, date_debut]):
-            return jsonify({"error": "adresse_depart, adresse_destination, poids_kg et date_debut sont obligatoires"}), 400
+            return jsonify({"error": "Champs manquants"}), 400
 
-        # 1. Géocoder
-        lat1, lon1 = geocode_adresse(adresse_depart)
-        lat2, lon2 = geocode_adresse(adresse_destination)
+        # 1. ORS → coordonnées GPS (2 appels seulement, pas de Directions)
+        lat1, lon1 = geocode_via_ors(adresse_depart)
+        lat2, lon2 = geocode_via_ors(adresse_destination)
 
         if not all([lat1, lon1, lat2, lon2]):
-            return jsonify({"error": "Impossible de géocoder une des adresses"}), 400
+            return jsonify({"error": "Adresse introuvable"}), 400
 
-        # 2. Prédire la distance
+        print(f"📍 Départ    : lat={lat1}, lon={lon1}")
+        print(f"📍 Arrivée   : lat={lat2}, lon={lon2}")
+
+        # 2. Modèle ML prédit la distance réelle
         distance_km = round(float(model_distance.predict(
             np.array([[lat1, lon1, lat2, lon2]])
         )[0]), 2)
 
-        # 3. Prédire la durée
+        # ✅ Sécurité : distance minimum 0.5 km
+        distance_km = max(0.5, distance_km)
+
+        # 3. Modèle ML prédit la durée
         dt           = datetime.fromisoformat(date_debut)
         heure        = dt.hour
         jour_semaine = dt.weekday()
 
         duree_minutes = round(float(model_duree.predict(
+            # ✅ Ordre cohérent avec le training : distance, poids, heure, jour
             np.array([[distance_km, poids_kg, heure, jour_semaine]])
         )[0]), 2)
 
+        # ✅ Sécurité : durée minimum 5 minutes
+        duree_minutes = max(5, duree_minutes)
+
+        # 4. Formatter la durée
         heures  = int(duree_minutes // 60)
         minutes = int(duree_minutes % 60)
         duree_formatee = f"{heures}h {minutes}min" if heures > 0 else f"{minutes} min"
 
-        print(f"✅ Distance : {distance_km} km | Durée : {duree_formatee}")
+        print(f"✅ Distance prédite : {distance_km} km")
+        print(f"✅ Durée prédite    : {duree_formatee}")
 
         return jsonify({
             "distance_km":        distance_km,
@@ -163,6 +102,7 @@ def predict_complet():
         })
 
     except Exception as e:
+        print(f"❌ Erreur : {e}")
         return jsonify({"error": str(e)}), 400
 
 if __name__ == "__main__":
