@@ -1,0 +1,523 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Détails de l'utilisateur - PackTrack{% endblock %}
+
+{% block stylesheets %}
+<style>
+    /* === PAGE HEADER === */
+    .page-header {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(52, 152, 219, 0.2);
+        animation: slideDown 0.5s ease;
+    }
+    
+    .page-header h1 {
+        color: white;
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .page-header h1 i {
+        font-size: 2.5rem;
+    }
+    
+    /* === DETAIL CONTAINER === */
+    .detail-container {
+        max-width: 900px;
+        margin: 0 auto;
+        animation: fadeInUp 0.6s ease;
+    }
+    
+    .detail-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* === USER PROFILE HEADER === */
+    .profile-header {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        padding: 2.5rem;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .profile-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 400px;
+        height: 400px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+    }
+    
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        font-weight: 700;
+        color: white;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        position: relative;
+        z-index: 1;
+        animation: scaleIn 0.5s ease;
+    }
+    
+    .profile-info {
+        flex: 1;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .profile-name {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+        animation: slideInLeft 0.6s ease;
+    }
+    
+    .profile-email {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        animation: slideInLeft 0.7s ease;
+    }
+    
+    .profile-email i {
+        font-size: 1rem;
+    }
+    
+    /* === DETAIL GRID === */
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        padding: 2.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    .detail-item {
+        animation: fadeIn 0.5s ease;
+    }
+    
+    .detail-item:nth-child(1) { animation-delay: 0.1s; }
+    .detail-item:nth-child(2) { animation-delay: 0.2s; }
+    .detail-item:nth-child(3) { animation-delay: 0.3s; }
+    .detail-item:nth-child(4) { animation-delay: 0.4s; }
+    
+    .detail-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #7f8c8d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.75rem;
+    }
+    
+    .detail-label i {
+        color: #3498db;
+        font-size: 1.1rem;
+    }
+    
+    .detail-value {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2c3e50;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+        border-left: 4px solid #3498db;
+        transition: all 0.3s ease;
+    }
+    
+    .detail-value:hover {
+        background: #e3f2fd;
+        transform: translateX(5px);
+    }
+    
+    /* === ROLE BADGE === */
+    .role-badge-large {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .role-badge-large:hover {
+        transform: scale(1.05);
+    }
+    
+    .role-badge-large i {
+        font-size: 1.3rem;
+    }
+    
+    .role-badge-large.admin {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+    }
+    
+    .role-badge-large.gestionnaire {
+        background: linear-gradient(135deg, #f39c12 0%, #d68910 100%);
+        color: white;
+    }
+    
+    .role-badge-large.livreur {
+        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        color: white;
+    }
+    
+    .role-badge-large.client {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        color: white;
+    }
+    
+    /* === ID BADGE === */
+    .id-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+    
+    /* === ACTION BUTTONS === */
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        padding: 2rem 2.5rem;
+        background: #f8f9fa;
+        border-top: 2px solid #e0e6ed;
+        justify-content: flex-end;
+    }
+    
+    .btn-modern {
+        padding: 0.9rem 2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        border: none;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        text-decoration: none;
+    }
+    
+    .btn-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-modern i {
+        font-size: 1.1rem;
+    }
+    
+    .btn-back {
+        background: #95a5a6;
+        color: white;
+    }
+    
+    .btn-back:hover {
+        background: #7f8c8d;
+    }
+    
+    .btn-edit {
+        background: linear-gradient(135deg, #f39c12 0%, #d68910 100%);
+        color: white;
+    }
+    
+    .btn-edit:hover {
+        background: linear-gradient(135deg, #d68910 0%, #bf6e0a 100%);
+    }
+    
+    /* === STATS SECTION === */
+    .user-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        padding: 2rem 2.5rem;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e3f2fd 100%);
+    }
+    
+    @media (max-width: 768px) {
+        .user-stats {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    .stat-box {
+        text-align: center;
+        padding: 1.5rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        animation: fadeInUp 0.6s ease;
+    }
+    
+    .stat-box:nth-child(1) { animation-delay: 0.1s; }
+    .stat-box:nth-child(2) { animation-delay: 0.2s; }
+    .stat-box:nth-child(3) { animation-delay: 0.3s; }
+    
+    .stat-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        margin: 0 auto 1rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        background: var(--stat-color);
+        color: white;
+    }
+    
+    .stat-box:nth-child(1) { --stat-color: #3498db; }
+    .stat-box:nth-child(2) { --stat-color: #2ecc71; }
+    .stat-box:nth-child(3) { --stat-color: #e74c3c; }
+    
+    .stat-label {
+        font-size: 0.85rem;
+        color: #7f8c8d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+    
+    /* === ANIMATIONS === */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes scaleIn {
+        from {
+            opacity: 0;
+            transform: scale(0.5);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    {# PAGE HEADER #}
+    <div class="page-header">
+        <h1>
+            <i class="fa-solid fa-user-circle"></i>
+            Profil de l'Utilisateur
+        </h1>
+    </div>
+
+    {# DETAIL CONTAINER #}
+    <div class="detail-container">
+        <div class="detail-card">
+            {# PROFILE HEADER #}
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    {{ utilisateur.prenom|slice(0, 1)|upper }}{{ utilisateur.nom|slice(0, 1)|upper }}
+                </div>
+                <div class="profile-info">
+                    <div class="profile-name">
+                        {{ utilisateur.prenom }} {{ utilisateur.nom }}
+                    </div>
+                    <div class="profile-email">
+                        <i class="fa-solid fa-envelope"></i>
+                        {{ utilisateur.email }}
+                    </div>
+                </div>
+            </div>
+
+            {# USER STATS #}
+            <div class="user-stats">
+                <div class="stat-box">
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-label">Membre depuis</div>
+                    <div class="stat-value"> {{ utilisateur.createdAt|date('d/m/Y') }} </div>
+                </div>
+                
+                <div class="stat-box">
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <div class="stat-label">Activité</div>
+                    <div class="stat-value">Actif</div>
+                </div>
+                
+                <div class="stat-box">
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div class="stat-label">Statut</div>
+                    <div class="stat-value">Vérifié</div>
+                </div>
+            </div>
+
+            {# DETAIL GRID #}
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fa-solid fa-hashtag"></i>
+                        Identifiant
+                    </div>
+                    <div class="detail-value">
+                        <span class="id-badge">
+                            <i class="fa-solid fa-id-badge"></i>
+                            #{{ utilisateur.id }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fa-solid fa-user-shield"></i>
+                        Rôle
+                    </div>
+                    <div class="detail-value">
+                        <span class="role-badge-large {{ utilisateur.role.value|lower }}">
+                            {% if utilisateur.role.value == 'ADMIN' %}
+                                <i class="fa-solid fa-user-shield"></i>
+                            {% elseif utilisateur.role.value == 'GESTIONNAIRE' %}
+                                <i class="fa-solid fa-user-tie"></i>
+                            {% elseif utilisateur.role.value == 'LIVREUR' %}
+                                <i class="fa-solid fa-truck"></i>
+                            {% else %}
+                                <i class="fa-solid fa-user"></i>
+                            {% endif %}
+                            {{ utilisateur.role.value }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fa-solid fa-user"></i>
+                        Nom complet
+                    </div>
+                    <div class="detail-value">
+                        {{ utilisateur.nom }} {{ utilisateur.prenom }}
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fa-solid fa-phone"></i>
+                        Téléphone
+                    </div>
+                    <div class="detail-value">
+                        {% if utilisateur.telephone %}
+                            {{ utilisateur.telephone }}
+                        {% else %}
+                            <span style="color: #95a5a6; font-style: italic;">Non renseigné</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {# ACTION BUTTONS #}
+            <div class="action-buttons">
+                <a href="{{ path('app_utilisateurs') }}" class="btn-modern btn-back">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Retour à la liste
+                </a>
+                <a href="{{ path('app_utilisateurs_edit', {'id': utilisateur.id}) }}" class="btn-modern btn-edit">
+                    <i class="fa-solid fa-pen"></i>
+                    Modifier
+                </a>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

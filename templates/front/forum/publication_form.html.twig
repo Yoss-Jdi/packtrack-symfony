@@ -1,0 +1,68 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}
+    {% if mode == 'edit' %}
+        Éditer la publication – Community
+    {% else %}
+        Nouvelle publication – Community
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+<section class="hero hero--compact">
+    <div class="hero-content">
+        <div class="hero-icon">📝</div>
+        <h1>
+            {% if mode == 'edit' %}
+                Éditer la publication
+            {% else %}
+                Nouvelle publication
+            {% endif %}
+        </h1>
+        <p>Partagez votre expérience avec la communauté PackTrack.</p>
+    </div>
+</section>
+
+<section class="content content--one">
+    {% for message in app.flashes('success') %}
+        <div class="card" style="border-left:4px solid #22c55e; margin-bottom:15px;">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div class="forum-header" style="margin-bottom:12px;">
+            <h2 style="margin:0;">
+                {% if mode == 'edit' %}
+                    Mettre à jour votre publication
+                {% else %}
+                    Créer une nouvelle publication
+                {% endif %}
+            </h2>
+            <a class="btn btn-light" href="{{ path('front_forum_index') }}">← Retour à la communauté</a>
+        </div>
+
+        {{ form_start(form) }}
+            <div class="form-row">
+                {{ form_label(form.titre) }}
+                {{ form_widget(form.titre) }}
+                {{ form_errors(form.titre) }}
+            </div>
+
+            <div class="form-row">
+                {{ form_label(form.contenu) }}
+                {{ form_widget(form.contenu) }}
+                {{ form_errors(form.contenu) }}
+            </div>
+
+            <button class="btn btn-primary" type="submit">
+                {% if mode == 'edit' %}
+                    Enregistrer les modifications
+                {% else %}
+                    Publier
+                {% endif %}
+            </button>
+        {{ form_end(form) }}
+    </div>
+</section>
+{% endblock %}

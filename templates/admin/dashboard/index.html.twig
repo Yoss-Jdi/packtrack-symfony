@@ -1,0 +1,73 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Dashboard - PackTrack{% endblock %}
+
+{% block body %}
+    {# TOPBAR #}
+    <div class="topbar">
+        <input type="text" placeholder="Search parcels...">
+        <div class="user">
+            <img src="https://i.pravatar.cc/40?img=12" alt="Admin">
+            <span>Admin</span>
+        </div>
+    </div>
+
+    {# STAT CARDS #}
+    <section class="cards">
+        <div class="card">
+            <i class="fa-solid fa-box"></i>
+            <p>Total Parcels</p>
+            <h2>2,847</h2>
+        </div>
+        <div class="card">
+            <i class="fa-solid fa-truck-fast"></i>
+            <p>In Transit</p>
+            <h2>1,234</h2>
+        </div>
+        <div class="card">
+            <i class="fa-solid fa-circle-check"></i>
+            <p>Delivered</p>
+            <h2>1,456</h2>
+        </div>
+        <div class="card">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <p>Incidents</p>
+            <h2>23</h2>
+        </div>
+    </section>
+
+    {# RECENT PARCELS #}
+    <section class="table-section" style="margin-top:25px;">
+        <h3>Recent Parcels</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Client</th>
+                    <th>Status</th>
+                    <th>Destination</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><i class="fa-solid fa-box"></i> PKT-1001</td>
+                    <td>Ali Ben Salah</td>
+                    <td class="status transit">In Transit</td>
+                    <td>Tunis</td>
+                </tr>
+                <tr>
+                    <td><i class="fa-solid fa-box"></i> PKT-1002</td>
+                    <td>Sara Mezni</td>
+                    <td class="status delivered">Delivered</td>
+                    <td>Sfax</td>
+                </tr>
+                <tr>
+                    <td><i class="fa-solid fa-box"></i> PKT-1003</td>
+                    <td>Mohamed Trabelsi</td>
+                    <td class="status processing">Processing</td>
+                    <td>Sousse</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+{% endblock %}
