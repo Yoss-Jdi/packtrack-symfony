@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuration de votre photo – PackTrack</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            width: 500px; height: 500px;
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            border-radius: 50%;
+            top: -250px; right: -200px;
+            opacity: 0.4;
+            animation: float 7s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            width: 400px; height: 400px;
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            border-radius: 50%;
+            bottom: -200px; left: -150px;
+            opacity: 0.4;
+            animation: float 9s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.04); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            background: rgba(255,255,255,0.97);
+            border-radius: 28px;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.28);
+            width: 560px;
+            max-width: 98%;
+            overflow: hidden;
+            animation: slideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 36px 40px 32px;
+            text-align: center;
+            color: white;
+        }
+
+        .header-icon {
+            width: 80px; height: 80px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            border: 3px solid rgba(255,255,255,0.4);
+            backdrop-filter: blur(10px);
+        }
+
+        .header-icon i { font-size: 38px; }
+        .header h1 { font-family: 'Poppins', sans-serif; font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+        .header p { font-size: 14px; opacity: 0.88; line-height: 1.5; max-width: 360px; margin: 0 auto; }
+
+        .context-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.25);
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 12px;
+            margin-top: 12px;
+            font-weight: 500;
+        }
+
+        .body { padding: 36px 40px; }
+
+        /* Tabs pour choisir webcam ou upload */
+        .method-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 28px;
+            background: #f7fafc;
+            padding: 5px;
+            border-radius: 14px;
+        }
+
+        .method-tab {
+            flex: 1; padding: 13px; border: none;
+            background: transparent; cursor: pointer;
+            border-radius: 10px; font-family: 'Inter', sans-serif;
+            font-size: 14px; font-weight: 600; color: #718096;
+            transition: all 0.3s ease;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+
+        .method-tab.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .method-tab:hover:not(.active) { background: #edf2f7; }
+
+        .method-panel { display: none; }
+        .method-panel.active { display: block; animation: fadeIn 0.3s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== WEBCAM ===== */
+        .webcam-area {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: #0f0f1a;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 16px;
+            border: 2px solid #e2e8f0;
+        }
+
+        #setup-video {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        .webcam-placeholder {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            color: rgba(255,255,255,0.5);
+            gap: 12px;
+        }
+
+        .webcam-placeholder i { font-size: 48px; }
+        .webcam-placeholder p { font-size: 14px; text-align: center; max-width: 200px; line-height: 1.4; }
+
+        .webcam-countdown {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Poppins', sans-serif;
+            font-size: 80px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 0 30px rgba(102,126,234,0.8);
+            display: none;
+        }
+
+        .captured-preview {
+            position: absolute; inset: 0;
+            display: none;
+        }
+
+        #captured-img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+        }
+
+        .captured-overlay {
+            position: absolute; inset: 0;
+            background: rgba(56,161,105,0.3);
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .captured-overlay i { font-size: 60px; color: white; }
+
+        .webcam-actions {
+            display: flex; gap: 10px; margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            flex: 1; padding: 14px; border: none; border-radius: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; font-size: 15px; font-weight: 600;
+            cursor: pointer; font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,0.5); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .btn-secondary {
+            padding: 14px 20px; border: 2px solid #e2e8f0; border-radius: 12px;
+            background: white; color: #718096; font-size: 15px; font-weight: 600;
+            cursor: pointer; font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover { border-color: #667eea; color: #667eea; background: rgba(102,126,234,0.05); }
+
+        /* ===== UPLOAD ===== */
+        .upload-zone {
+            border: 2px dashed #cbd5e0;
+            border-radius: 16px;
+            padding: 48px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .upload-zone:hover, .upload-zone.drag-over {
+            border-color: #667eea;
+            background: rgba(102,126,234,0.04);
+        }
+
+        .upload-zone i { font-size: 48px; color: #a0aec0; margin-bottom: 12px; display: block; }
+        .upload-zone p { color: #718096; font-size: 15px; margin-bottom: 6px; }
+        .upload-zone span { font-size: 12px; color: #a0aec0; }
+
+        .upload-zone input[type="file"] {
+            position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+        }
+
+        .upload-preview {
+            display: none;
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            aspect-ratio: 1;
+            width: 200px;
+            margin: 0 auto 20px;
+        }
+
+        .upload-preview img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            border-radius: 16px;
+            border: 3px solid #667eea;
+        }
+
+        .upload-preview .remove-btn {
+            position: absolute;
+            top: 8px; right: 8px;
+            width: 30px; height: 30px;
+            background: rgba(229,62,62,0.9);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: white; font-size: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .upload-preview .remove-btn:hover { background: #e53e3e; transform: scale(1.1); }
+
+        /* ===== STATUS ===== */
+        .status-msg {
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-msg.show { display: flex; }
+        .status-msg.success { background: #c6f6d5; color: #22543d; border: 1px solid #38a169; }
+        .status-msg.error { background: #fed7d7; color: #742a2a; border: 1px solid #e53e3e; }
+        .status-msg.info { background: rgba(102,126,234,0.1); color: #4a5568; border: 1px solid rgba(102,126,234,0.3); }
+
+        .info-text {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 13px;
+            color: #718096;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            line-height: 1.5;
+        }
+
+        .info-text i { color: #667eea; margin-top: 2px; flex-shrink: 0; }
+
+        canvas#setup-canvas { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="header-icon"><i class="fas fa-camera"></i></div>
+        <h1>Configuration de votre photo</h1>
+        <p>Cette photo sera utilisée pour vérifier votre identité lors de chaque connexion via reconnaissance faciale.</p>
+        {% if context == 'register' %}
+            <div class="context-badge"><i class="fas fa-user-plus"></i> Nouvelle inscription</div>
+        {% else %}
+            <div class="context-badge"><i class="fas fa-shield-halved"></i> Sécurité du compte</div>
+        {% endif %}
+    </div>
+
+    <div class="body">
+
+        <div class="info-text">
+            <i class="fas fa-info-circle"></i>
+            <span>Assurez-vous que votre visage est bien visible, éclairé et centré. Évitez les lunettes de soleil ou les masques. Cette photo est utilisée uniquement pour l'authentification.</span>
+        </div>
+
+        <div class="status-msg" id="status-msg">
+            <i class="fas fa-info-circle"></i>
+            <span id="status-text"></span>
+        </div>
+
+        <!-- Sélection de méthode -->
+        <div class="method-tabs">
+            <button class="method-tab active" onclick="switchMethod('webcam')">
+                <i class="fas fa-camera"></i> Prendre une photo
+            </button>
+            <button class="method-tab" onclick="switchMethod('upload')">
+                <i class="fas fa-upload"></i> Uploader une photo
+            </button>
+        </div>
+
+        <!-- Panel webcam -->
+        <div class="method-panel active" id="panel-webcam">
+            <div class="webcam-area">
+                <div class="webcam-placeholder" id="webcam-placeholder">
+                    <i class="fas fa-camera-slash"></i>
+                    <p>Cliquez sur "Activer la caméra" pour commencer</p>
+                </div>
+                <video id="setup-video" autoplay playsinline muted style="display:none"></video>
+                <div class="webcam-countdown" id="webcam-countdown"></div>
+                <div class="captured-preview" id="captured-preview">
+                    <img id="captured-img" src="" alt="Photo capturée">
+                    <div class="captured-overlay"><i class="fas fa-check-circle"></i></div>
+                </div>
+            </div>
+            <canvas id="setup-canvas"></canvas>
+
+            <div class="webcam-actions">
+                <button class="btn-primary" id="btn-start-cam" onclick="startSetupWebcam()">
+                    <i class="fas fa-camera"></i> Activer la caméra
+                </button>
+                <button class="btn-secondary" id="btn-retake" onclick="retakePhoto()" style="display:none">
+                    <i class="fas fa-redo"></i> Reprendre
+                </button>
+            </div>
+
+            <button class="btn-primary" id="btn-save-webcam" onclick="saveWebcamPhoto()" disabled style="width:100%">
+                <i class="fas fa-save"></i> Enregistrer cette photo
+            </button>
+        </div>
+
+        <!-- Panel upload -->
+        <div class="method-panel" id="panel-upload">
+            <div class="upload-preview" id="upload-preview-wrap">
+                <img id="upload-preview-img" src="" alt="Aperçu">
+                <div class="remove-btn" onclick="removeUpload()"><i class="fas fa-times"></i></div>
+            </div>
+
+            <div class="upload-zone" id="upload-zone">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Glissez votre photo ici ou cliquez pour parcourir</p>
+                <span>JPG, PNG ou WEBP – Max 5 Mo</span>
+                <input type="file" id="upload-input" accept="image/jpeg,image/png,image/webp" onchange="onFileSelected(event)">
+            </div>
+
+            <button class="btn-primary" id="btn-save-upload" onclick="saveUploadPhoto()" disabled style="width:100%">
+                <i class="fas fa-save"></i> Enregistrer cette photo
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+let setupStream = null;
+let capturedBase64 = null;
+let uploadedFile = null;
+let isSaving = false;
+
+const EMAIL = '{{ email }}';
+const CONTEXT = '{{ context }}';
+const SAVE_URL = '{{ path("app_setup_photo_save") }}';
+const REDIRECT_LOGIN = '{{ path("app_login") }}';
+
+// ============================================================
+// TABS
+// ============================================================
+function switchMethod(method) {
+    document.querySelectorAll('.method-tab').forEach((t, i) => {
+        t.classList.toggle('active', (i === 0) === (method === 'webcam'));
+    });
+    document.getElementById('panel-webcam').classList.toggle('active', method === 'webcam');
+    document.getElementById('panel-upload').classList.toggle('active', method === 'upload');
+
+    if (method !== 'webcam' && setupStream) {
+        stopSetupWebcam();
+    }
+}
+
+// ============================================================
+// WEBCAM
+// ============================================================
+async function startSetupWebcam() {
+    try {
+        setupStream = await navigator.mediaDevices.getUserMedia({
+            video: { width: 640, height: 480, facingMode: 'user' }
+        });
+        const video = document.getElementById('setup-video');
+        video.srcObject = setupStream;
+        video.style.display = 'block';
+        document.getElementById('webcam-placeholder').style.display = 'none';
+        document.getElementById('btn-start-cam').innerHTML = '<i class="fas fa-camera"></i> Prendre la photo';
+        document.getElementById('btn-start-cam').onclick = startCountdown;
+    } catch (e) {
+        showStatus('error', 'Accès à la caméra refusé. Veuillez autoriser la caméra dans votre navigateur.');
+    }
+}
+
+function startCountdown() {
+    const countEl = document.getElementById('webcam-countdown');
+    countEl.style.display = 'block';
+    let count = 3;
+    countEl.textContent = count;
+
+    const interval = setInterval(() => {
+        count--;
+        if (count > 0) {
+            countEl.textContent = count;
+        } else {
+            clearInterval(interval);
+            countEl.style.display = 'none';
+            capturePhoto();
+        }
+    }, 1000);
+}
+
+function capturePhoto() {
+    const video  = document.getElementById('setup-video');
+    const canvas = document.getElementById('setup-canvas');
+    canvas.width  = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext('2d');
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(video, 0, 0);
+
+    capturedBase64 = canvas.toDataURL('image/jpeg', 0.9);
+
+    document.getElementById('captured-img').src = capturedBase64;
+    document.getElementById('captured-preview').style.display = 'block';
+    document.getElementById('setup-video').style.display = 'none';
+
+    document.getElementById('btn-start-cam').style.display = 'none';
+    document.getElementById('btn-retake').style.display = 'block';
+    document.getElementById('btn-save-webcam').disabled = false;
+
+    stopSetupWebcam();
+    showStatus('info', 'Photo capturée ! Vérifiez que votre visage est bien visible, puis enregistrez.');
+}
+
+function retakePhoto() {
+    capturedBase64 = null;
+    document.getElementById('captured-preview').style.display = 'none';
+    document.getElementById('btn-retake').style.display = 'none';
+    document.getElementById('btn-save-webcam').disabled = true;
+    document.getElementById('btn-start-cam').style.display = 'flex';
+    document.getElementById('btn-start-cam').innerHTML = '<i class="fas fa-camera"></i> Activer la caméra';
+    document.getElementById('btn-start-cam').onclick = startSetupWebcam;
+    hideStatus();
+}
+
+function stopSetupWebcam() {
+    if (setupStream) {
+        setupStream.getTracks().forEach(t => t.stop());
+        setupStream = null;
+    }
+}
+
+// ============================================================
+// UPLOAD
+// ============================================================
+function onFileSelected(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+        showStatus('error', 'Fichier trop lourd. Maximum 5 Mo.');
+        return;
+    }
+
+    uploadedFile = file;
+    const reader = new FileReader();
+    reader.onload = e => {
+        document.getElementById('upload-preview-img').src = e.target.result;
+        document.getElementById('upload-preview-wrap').style.display = 'block';
+        document.getElementById('upload-zone').style.display = 'none';
+        document.getElementById('btn-save-upload').disabled = false;
+        showStatus('info', 'Fichier sélectionné. Cliquez sur "Enregistrer" pour confirmer.');
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeUpload() {
+    uploadedFile = null;
+    document.getElementById('upload-preview-wrap').style.display = 'none';
+    document.getElementById('upload-zone').style.display = 'block';
+    document.getElementById('btn-save-upload').disabled = true;
+    document.getElementById('upload-input').value = '';
+    hideStatus();
+}
+
+// Drag and drop
+const uploadZone = document.getElementById('upload-zone');
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadZone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) {
+        document.getElementById('upload-input').files = e.dataTransfer.files;
+        onFileSelected({ target: { files: [file] } });
+    }
+});
+
+// ============================================================
+// SAUVEGARDE
+// ============================================================
+async function saveWebcamPhoto() {
+    if (!capturedBase64 || isSaving) return;
+    isSaving = true;
+    setButtonLoading('btn-save-webcam', true);
+
+    const formData = new FormData();
+    formData.append('photo_base64', capturedBase64);
+
+    await doSave(formData);
+}
+
+async function saveUploadPhoto() {
+    if (!uploadedFile || isSaving) return;
+    isSaving = true;
+    setButtonLoading('btn-save-upload', true);
+
+    const formData = new FormData();
+    formData.append('photo_file', uploadedFile);
+
+    await doSave(formData);
+}
+
+async function doSave(formData) {
+    try {
+        const response = await fetch(SAVE_URL, { method: 'POST', body: formData });
+        const data = await response.json();
+
+        if (data.success) {
+            showStatus('success', 'Photo enregistrée avec succès ! Redirection en cours...');
+            setTimeout(() => {
+                if (CONTEXT === 'register') {
+                    window.location.href = REDIRECT_LOGIN;
+                } else {
+                    window.location.href = REDIRECT_LOGIN;
+                }
+            }, 1800);
+        } else {
+            showStatus('error', data.error || 'Erreur lors de l\'enregistrement.');
+            isSaving = false;
+            setButtonLoading('btn-save-webcam', false);
+            setButtonLoading('btn-save-upload', false);
+        }
+    } catch (e) {
+        showStatus('error', 'Erreur réseau. Veuillez réessayer.');
+        isSaving = false;
+        setButtonLoading('btn-save-webcam', false);
+        setButtonLoading('btn-save-upload', false);
+    }
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function showStatus(type, text) {
+    const el = document.getElementById('status-msg');
+    const icons = { success: 'check-circle', error: 'times-circle', info: 'info-circle' };
+    el.className = 'status-msg show ' + type;
+    el.innerHTML = `<i class="fas fa-${icons[type]}"></i><span>${text}</span>`;
+}
+
+function hideStatus() {
+    document.getElementById('status-msg').className = 'status-msg';
+}
+
+function setButtonLoading(id, loading) {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    if (loading) {
+        btn.disabled = true;
+        btn.innerHTML = '<span style="display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,0.5);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;margin-right:8px;vertical-align:middle"></span> Enregistrement...';
+    }
+}
+</script>
+
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+
+</body>
+</html>

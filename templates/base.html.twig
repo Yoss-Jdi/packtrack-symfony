@@ -3,15 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}PackTrack – Track Parcel{% endblock %}</title>
-    
-    {# CSS du front #}
     <link rel="stylesheet" href="{{ asset('css/front-style.css') }}">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* ===== DROPDOWN SESSION UTILISATEUR ===== */
+        .navbar-user-area {
+            position: relative;
+        }
+
+        .navbar-user-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 14px 6px 6px;
+            border-radius: 30px;
+            border: 1.5px solid rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.7);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            color: inherit;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .navbar-user-btn:hover,
+        .navbar-user-btn.open {
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+            border-color: rgba(102,126,234,0.3);
+        }
+
+        .navbar-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(102,126,234,0.35);
+            flex-shrink: 0;
+            display: block;
+        }
+
+        .navbar-avatar-initial {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .navbar-user-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #2d3748;
+            max-width: 100px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .navbar-chevron {
+            font-size: 11px;
+            color: #a0aec0;
+            transition: transform 0.25s ease;
+        }
+
+        .navbar-user-btn.open .navbar-chevron {
+            transform: rotate(180deg);
+        }
+
+        /* Dropdown menu */
+        .navbar-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: 220px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.14);
+            border: 1px solid rgba(0,0,0,0.07);
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(-8px) scale(0.97);
+            transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .navbar-dropdown.open {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        /* En-tête dropdown */
+        .dropdown-header {
+            padding: 16px 18px 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .dropdown-header-avatar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 0;
+        }
+
+        .dropdown-avatar-img {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(102,126,234,0.3);
+            flex-shrink: 0;
+        }
+
+        .dropdown-avatar-initial {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .dropdown-user-info strong {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a202c;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 130px;
+        }
+
+        .dropdown-user-info .dropdown-role {
+            font-size: 11px;
+            color: #667eea;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        /* Items du dropdown */
+        .dropdown-items { padding: 8px 0; }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 18px;
+            font-size: 14px;
+            color: #2d3748;
+            text-decoration: none;
+            transition: background 0.15s;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background: #f7fafc;
+        }
+
+        .dropdown-item i {
+            width: 18px;
+            text-align: center;
+            font-size: 14px;
+            color: #a0aec0;
+        }
+
+        .dropdown-item:hover i { color: #667eea; }
+
+        .dropdown-item.danger { color: #e53e3e; }
+        .dropdown-item.danger i { color: #fc8181; }
+        .dropdown-item.danger:hover { background: #fff5f5; }
+        .dropdown-item.danger:hover i { color: #e53e3e; }
+
+        .dropdown-divider { height: 1px; background: #f0f0f0; margin: 4px 0; }
+
+        /* Badge admin */
+        .dropdown-admin-badge {
+            margin-left: auto;
+            font-size: 10px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            letter-spacing: 0.3px;
+        }
+
+        /* Bouton connexion (si non connecté) */
+        .navbar-login-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 20px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.25s;
+            box-shadow: 0 4px 12px rgba(102,126,234,0.35);
+        }
+        .navbar-login-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(102,126,234,0.45); }
+    </style>
     {% block stylesheets %}{% endblock %}
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="navbar">
     <div class="logo">
         <span class="icon">📦</span>
@@ -24,47 +237,110 @@
         <a href="#">Report Issue</a>
     </nav>
 
-        <div style="display: flex; gap: 12px; align-items: center;">
-            <a href="{{ path('app_notifications_index') }}" style="position: relative; text-decoration: none; color: #495057; font-weight: 600; padding: 8px 16px; border-radius: 6px; transition: 0.2s;">
-                🔔
-            </a>
-            {% if app.user and is_granted('ROLE_ADMIN') %}
-                <a href="{{ path('admin_dashboard') }}" class="admin-btn">Admin Portal</a>
+{# ===== ZONE UTILISATEUR ===== #}
+<div style="display: flex; gap: 12px; align-items: center;">
+    <a href="{{ path('app_notifications_index') }}" style="position: relative; text-decoration: none; color: #495057; font-weight: 600; padding: 8px 16px; border-radius: 6px; transition: 0.2s;">
+        🔔
+    </a>
+</div>
+
+{% if app.user %}
+    <div class="navbar-user-area" id="navbar-user-area">
+        <div class="navbar-user-btn" id="navbar-user-btn" onclick="toggleUserDropdown()">
+            {% if app.user.photo %}
+                <img src="{{ asset('uploads/profils/' ~ app.user.photo) }}"
+                     alt="Photo de profil"
+                     class="navbar-avatar">
+            {% else %}
+                <div class="navbar-avatar-initial">
+                    {{ app.user.prenom|slice(0,1)|upper }}
+                </div>
             {% endif %}
+            <span class="navbar-user-name">{{ app.user.prenom }}</span>
+            <i class="fas fa-chevron-down navbar-chevron"></i>
         </div>
+        <div class="navbar-dropdown" id="navbar-dropdown">
+            <div class="dropdown-header">
+                <div class="dropdown-header-avatar">
+                    {% if app.user.photo %}
+                        <img src="{{ asset('uploads/profils/' ~ app.user.photo) }}"
+                             alt="Photo de profil"
+                             class="dropdown-avatar-img">
+                    {% else %}
+                        <div class="dropdown-avatar-initial">
+                            {{ app.user.prenom|slice(0,1)|upper }}
+                        </div>
+                    {% endif %}
+                    <div class="dropdown-user-info">
+                        <strong>{{ app.user.prenom }} {{ app.user.nom }}</strong>
+                        <span class="dropdown-role">{{ app.user.role.value }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="dropdown-items">
+                <a href="{{ path('app_profil_front') }}" class="dropdown-item">
+                    <i class="fas fa-user-circle"></i>
+                    Mon profil
+                </a>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <div class="dropdown-divider"></div>
+                    <a href="{{ path('admin_dashboard') }}" class="dropdown-item">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard Admin
+                        <span class="dropdown-admin-badge">ADMIN</span>
+                    </a>
+                {% endif %}
+                <div class="dropdown-divider"></div>
+                <a href="{{ path('app_logout') }}" class="dropdown-item danger">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Se déconnecter
+                </a>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <a href="{{ path('app_login') }}" class="navbar-login-btn">
+        <i class="fas fa-sign-in-alt"></i> Connexion
+    </a>
+{% endif %}
 </header>
 
-<!-- CONTENU DYNAMIQUE -->
 {% block body %}{% endblock %}
 
-<!-- FOOTER -->
 <footer>
     <div class="footer-grid">
         <div>
             <strong>PackTrack</strong>
             <p>AI-powered parcel delivery management for modern logistics.</p>
         </div>
-
         <div>
             <strong>Quick Links</strong>
             <p>Track Parcel<br>Community<br>Report Issue</p>
         </div>
-
         <div>
             <strong>Support</strong>
             <p>Help Center<br>Contact Us<br>FAQs</p>
         </div>
-
         <div>
             <strong>Contact</strong>
-            <p>support@packtrack.com<br>1-800-PACKTRACK</p>
+            <p><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2e5d5b5e5e415c5a6e5e4f4d455a5c4f4d45004d4143">[email&#160;protected]</a><br>1-800-PACKTRACK</p>
         </div>
     </div>
-
     <p class="copyright">© 2026 PackTrack. All rights reserved.</p>
 </footer>
 
-{% block javascripts %}{% endblock %}
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+function toggleUserDropdown() {
+    const btn      = document.getElementById('navbar-user-btn');
+    const dropdown = document.getElementById('navbar-dropdown');
+    const isOpen   = dropdown.classList.contains('open');
 
-</body>
-</html>
+    btn.classList.toggle('open', !isOpen);
+    dropdown.classList.toggle('open', !isOpen);
+}
+
+// Fermer en cliquant ailleurs
+document.addEventListener('click', function(e) {
+    const area = document.getElementById('navbar-user-area');
+    if (area && !area.contains(e.target)) {
+        

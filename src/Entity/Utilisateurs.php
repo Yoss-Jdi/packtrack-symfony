@@ -34,6 +34,9 @@ class Utilisateurs implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::STRING, enumType: Role::class)]
     private ?Role $role = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $photo = null;
+
     // ====== NOUVEAU CHAMP ======
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $createdAt = null;
@@ -138,6 +141,17 @@ class Utilisateurs implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return ['ROLE_' . $this->role->value];
     }
+
+    public function getPhoto(): ?string
+{
+    return $this->photo;
+}
+
+public function setPhoto(?string $photo): static
+{
+    $this->photo = $photo;
+    return $this;
+}
 
     public function eraseCredentials(): void
     {

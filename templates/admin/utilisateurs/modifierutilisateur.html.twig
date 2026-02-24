@@ -322,6 +322,132 @@
         25% { transform: translateX(-5px); }
         75% { transform: translateX(5px); }
     }
+
+    /* === PHOTO UPLOAD STYLISÉ === */
+    .photo-upload-wrapper {
+        display: block;
+        border: 2px dashed #e0e6ed;
+        border-radius: 14px;
+        padding: 1.5rem;
+        background: #fafbfc;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .photo-upload-wrapper:hover {
+        border-color: #f39c12;
+        background: rgba(243, 156, 18, 0.03);
+    }
+
+    .photo-upload-wrapper.has-file {
+        border-color: #2ecc71;
+        background: rgba(46, 204, 113, 0.04);
+        border-style: solid;
+    }
+
+    .photo-upload-inner {
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+    }
+
+    .photo-preview-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 2.5px dashed #cbd5e0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        flex-shrink: 0;
+        background: #f0f3f7;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .photo-preview-circle img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .photo-preview-circle .preview-icon {
+        font-size: 2rem;
+        color: #a0aec0;
+        transition: color 0.3s;
+        position: absolute;
+    }
+
+    .photo-preview-circle.loaded {
+        border-color: #f39c12;
+        border-style: solid;
+    }
+
+    .photo-preview-circle.current-photo {
+        border-color: #2ecc71;
+        border-style: solid;
+    }
+
+    .photo-upload-right {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .photo-upload-right h4 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.3rem;
+    }
+
+    .photo-upload-right p {
+        font-size: 0.82rem;
+        color: #95a5a6;
+        margin-bottom: 0.8rem;
+        line-height: 1.4;
+    }
+
+    .photo-choose-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.55rem 1.1rem;
+        border: 2px solid #f39c12;
+        border-radius: 8px;
+        background: white;
+        color: #f39c12;
+        font-size: 0.87rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        font-family: inherit;
+    }
+
+    .photo-choose-btn:hover {
+        background: linear-gradient(135deg, #f39c12, #e67e22);
+        color: white;
+        border-color: transparent;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+    }
+
+    .photo-file-name {
+        font-size: 0.82rem;
+        color: #f39c12;
+        font-weight: 600;
+        margin-top: 0.5rem;
+        display: none;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 200px;
+    }
+
+    .photo-file-hidden { display: none; }
 </style>
 {% endblock %}
 
@@ -527,6 +653,58 @@
                     {% endif %}
                 </div>
 
+                {# Photo de profil #}
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fa-solid fa-camera"></i>
+                        Photo de profil
+                    </label>
+
+                    {# ✅ CORRECTION : input natif avec id fixe + onclick sur le wrapper #}
+                    <input type="file"
+                           id="real-photo-input"
+                           name="utilisateurs[photoFile]"
+                           accept="image/jpeg,image/png,image/webp"
+                           onchange="onPhotoSelected(event)"
+                           style="display:none">
+
+                    <div class="photo-upload-wrapper {% if utilisateur.photo %}has-file{% endif %}"
+                         id="photo-wrapper"
+                         onclick="document.getElementById('real-photo-input').click()">
+                        <div class="photo-upload-inner">
+                            <div class="photo-preview-circle {% if utilisateur.photo %}current-photo{% endif %}" id="photo-circle">
+                                {% if utilisateur.photo %}
+                                    <img id="photo-preview-img"
+                                         src="{{ asset('uploads/profils/' ~ utilisateur.photo) }}"
+                                         alt="Photo actuelle"
+                                         style="width:100%;height:100%;object-fit:cover;border-radius:50%">
+                                {% else %}
+                                    <img id="photo-preview-img" src="" alt="Aperçu"
+                                         style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%">
+                                    <span class="preview-icon" id="photo-icon">👤</span>
+                                {% endif %}
+                            </div>
+                            <div class="photo-upload-right">
+                                <h4 id="photo-title">{% if utilisateur.photo %}Photo actuelle{% else %}Aucune photo{% endif %}</h4>
+                                <p>JPG, PNG ou WEBP · Maximum 5 Mo<br>Laissez vide pour conserver la photo actuelle</p>
+                                <span class="photo-choose-btn">
+                                    <i class="fa-solid fa-camera"></i> {% if utilisateur.photo %}Changer la photo{% else %}Choisir une photo{% endif %}
+                                </span>
+                                <div class="photo-file-name" id="photo-file-name" style="display:none">
+                                    <i class="fa-solid fa-image"></i><span id="photo-file-label"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if submitted and form.photoFile.vars.errors|length > 0 %}
+                        <div class="invalid-feedback" style="display:flex">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                            {{ form_errors(form.photoFile) }}
+                        </div>
+                    {% endif %}
+                </div>
+
                 {# ACTION BUTTONS #}
                 <div class="form-actions">
                     <a href="{{ path('app_utilisateurs') }}" class="btn-modern btn-cancel">
@@ -544,4 +722,35 @@
         </div>
     </div>
 
+{% endblock %}
+
+{% block javascripts %}
+<script>
+function onPhotoSelected(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+        alert('Image trop lourde. Maximum 5 Mo.');
+        event.target.value = '';
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+        const img = document.getElementById('photo-preview-img');
+        img.src = e.target.result;
+        img.style.display = 'block';
+        const icon = document.querySelector('#photo-circle .preview-icon');
+        if (icon) icon.style.display = 'none';
+        document.getElementById('photo-circle').classList.remove('current-photo');
+        document.getElementById('photo-circle').classList.add('loaded');
+        document.getElementById('photo-wrapper').classList.add('has-file');
+        const nameEl = document.getElementById('photo-file-name');
+        const labelEl = document.getElementById('photo-file-label');
+        labelEl.textContent = file.name.length > 30 ? file.name.slice(0, 27) + '...' : file.name;
+        nameEl.style.display = 'block';
+        document.getElementById('photo-title').textContent = 'Nouvelle photo sélectionnée';
+    };
+    reader.readAsDataURL(file);
+}
+</script>
 {% endblock %}
