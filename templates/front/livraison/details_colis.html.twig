@@ -1,0 +1,176 @@
+{% extends 'base.html.twig' %}
+{% block title %}Détails du Colis #{{ colis.id }} - PackTrack{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+    
+    .detail-card {
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    .badge {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    
+    .badge.en_attente {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .detail-row {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        padding: 16px 0;
+        border-bottom: 1px solid #f1f3f5;
+    }
+    
+    .detail-label {
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .detail-value {
+        color: #212529;
+    }
+    
+    .actions {
+        margin-top: 30px;
+        display: flex;
+        gap: 12px;
+    }
+    
+    .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .btn-success {
+        background: #28a745;
+        color: white;
+    }
+    
+    .btn:hover {
+        opacity: 0.9;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="detail-card">
+        <div class="detail-header">
+            <h1>📦 Détails du Colis #{{ colis.id }}</h1>
+            <span class="badge {{ colis.statut }}">
+                {{ colis.statut|replace({'_': ' '})|title }}
+            </span>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Description :</div>
+            <div class="detail-value">{{ colis.description|default('N/A') }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Articles :</div>
+            <div class="detail-value">{{ colis.articles|default('N/A') }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Adresse destination :</div>
+            <div class="detail-value">{{ colis.adresseDestination }}</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">Adresse de départ :</div>
+            <div class="detail-value">{{ colis.adresseDepart }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Destinataire :</div>
+            <div class="detail-value">
+                {{ colis.destinataire.prenom }} {{ colis.destinataire.nom }}
+                <br><small>📧 {{ colis.destinataire.email }}</small>
+                {% if colis.destinataire.telephone %}
+                    <br><small>📱 {{ colis.destinataire.telephone }}</small>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Poids :</div>
+            <div class="detail-value">{{ colis.poids ? colis.poids ~ ' kg' : 'N/A' }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Dimensions :</div>
+            <div class="detail-value">{{ colis.dimensions|default('N/A') }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">💰 Montant :</div>
+            <div class="detail-value">
+                {% if colis.poids %}
+                    <strong style="color: #28a745; font-size: 20px;">{{ colis.calculerMontant()|number_format(2, ',', ' ') }} €</strong>
+                {% else %}
+                    <span style="color: #6c757d;">Non calculable (poids manquant)</span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Date de création :</div>
+            <div class="detail-value">{{ colis.dateCreation|date('d/m/Y à H:i') }}</div>
+        </div>
+        {% if colis.qrCode %}
+        <div class="detail-card full" style="text-align: center; margin-top: 20px;">
+            <h3>📱 QR Code de suivi</h3>
+            <img 
+                src="data:image/png;base64,{{ colis.qrCode }}" 
+                alt="QR Code Colis #{{ colis.id }}"
+                width="200"
+                height="200"
+                style="border: 2px solid #dee2e6; border-radius: 8px; padding: 10px;"
+            />
+            <p style="color: #6c757d; margin-top: 10px; font-size: 14px;">
+                Scannez pour obtenir les informations de ce colis
+            </p>
+        </div>
+        {% endif %}
+        
+        <div class="actions">
+            <a href="{{ path('app_livraison_index') }}" class="btn btn-secondary">← Retour</a>
+            <form method="post" action="{{ path('app_livraison_prendre', {id: colis.id}) }}" style="display: inline;">
+                <button type="submit" class="btn btn-success">✅ Prendre en charge</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

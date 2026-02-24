@@ -10,8 +10,6 @@
     {% block stylesheets %}{% endblock %}
 </head>
 <body>
-
-<!-- HEADER -->
 <header class="navbar">
     <div class="logo">
         <span class="icon">📦</span>
@@ -20,12 +18,26 @@
 
     <nav>
         <a href="{{ path('app_home') }}" class="{{ app.request.get('_route') == 'app_home' ? 'active' }}">Track Parcel</a>
+        {% if app.user and is_granted('ROLE_ENTREPRISE') %}
+            <a href="{{ path('app_colis_index') }}" class="{{ app.request.get('_route') in ['app_colis_index', 'app_colis_new', 'app_colis_show', 'app_colis_edit'] ? 'active' }}">Mes Colis</a>
+        {% endif %}
+        {% if app.user and is_granted('ROLE_LIVREUR') %}
+            <a href="{{ path('app_livraison_index') }}" class="{{ app.request.get('_route') in ['app_livraison_index', 'app_livraison_mes_livraisons', 'app_livraison_terminer', 'app_livraison_colis_details', 'app_livraison_details'] ? 'active' }}">Livraisons</a>
+        {% endif %}
         <a href="#">Community</a>
         <a href="#">Report Issue</a>
+    {% if app.user and is_granted('ROLE_ADMIN') %}
+        <a href="{{ path('app_facture_index') }}" class="{{ app.request.get('_route') == 'app_facture_index' ? 'active' }}">Factures</a>
+    {% endif %}
     </nav>
-
-    <a href="{{ path('admin_dashboard') }}" class="admin-btn">Admin Portal</a>
+    <a href="{{ path('app_notifications_index') }}" style="position: relative; text-decoration: none; color: #495057; font-weight: 600; padding: 8px 16px; border-radius: 6px; transition: 0.2s;">
+                🔔
+            </a>
+    {% if app.user and is_granted('ROLE_ADMIN') %}
+        <a href="{{ path('admin_dashboard') }}" class="admin-btn">Admin Portal</a>
+    {% endif %}
 </header>
+
 
 <!-- CONTENU DYNAMIQUE -->
 {% block body %}{% endblock %}
