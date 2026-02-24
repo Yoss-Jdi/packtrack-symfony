@@ -1,0 +1,28 @@
+### Symfony ###
+.env
+.env.*
+!.env.example
+
+# Symfony Secrets
+/config/secrets/*/*.decrypt.private.php
+/config/secrets/*/*.private.php
+
+### Vendors & Cache ###
+/vendor/
+/var/
+/node_modules/
+/public/build/
+/public/assets/
+/public/bundles/
+
+### Logs ###
+npm-debug.log
+yarn-error.log
+
+### Security ###
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+.env.enc

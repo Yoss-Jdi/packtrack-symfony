@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentification - PackTrack</title>
+    
+    {# Google Fonts #}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    {# Font Awesome pour les icônes #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Fond animé avec dégradé moderne */
+        .hero {
+            min-height: 100vh;
+            width: 100%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 20px;
+        }
+
+        /* Formes géométriques animées en arrière-plan */
+        .hero::before {
+            content: '';
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 50%;
+            top: -250px;
+            right: -250px;
+            opacity: 0.5;
+            animation: float 6s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        .hero::after {
+            content: '';
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 50%;
+            bottom: -200px;
+            left: -200px;
+            opacity: 0.5;
+            animation: float 8s ease-in-out infinite reverse;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) scale(1);
+            }
+            50% {
+                transform: translateY(-20px) scale(1.05);
+            }
+        }
+
+        /* Conteneur principal */
+        .auth-container {
+            position: relative;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 450px;
+            max-width: 90%;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            animation: slideIn 0.5s ease-out;
+            overflow: hidden;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Conteneur de contenu avec défilement */
+        .form-scroll-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 40px;
+            scrollbar-width: thin;
+            scrollbar-color: #667eea #f1f1f1;
+        }
+
+        /* Personnalisation de la barre de défilement */
+        .form-scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .form-scroll-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .form-scroll-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        .form-scroll-container::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        /* Indicateur de défilement */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #667eea;
+            font-size: 12px;
+            opacity: 0.7;
+            animation: bounce 2s infinite;
+            z-index: 20;
+            transition: opacity 0.3s ease;
+        }
+
+        .scroll-indicator i {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+            60% {
+                transform: translateX(-50%) translateY(-5px);
+            }
+        }
+
+        /* Logo et titre */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .logo-icon i {
+            font-size: 40px;
+            color: white;
+        }
+
+        .logo-section h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .logo-section p {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        /* Onglets de navigation */
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: #f7fafc;
+            padding: 5px;
+            border-radius: 12px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            color: #718096;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: #edf2f7;
+        }
+
+        /* Formulaires */
+        .form-container {
+            position: relative;
+            min-height: 400px;
+        }
+
+        .auth-form {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Groupes de champs */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #4a5568;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a0aec0;
+            font-size: 16px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 15px 14px 45px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: #cbd5e0;
+        }
+
+        /* Checkbox personnalisée */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .checkbox-group label {
+            margin-left: 10px;
+            color: #4a5568;
+            font-size: 14px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Bouton de soumission */
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Messages d'alerte */
+        .alert {
+            padding: 14px 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideDown 0.4s ease;
+        }
+
+        .alert i {
+            font-size: 18px;
+        }
+
+        .alert-success {
+            background-color: #c6f6d5;
+            color: #22543d;
+            border-left: 4px solid #38a169;
+        }
+
+        .alert-danger {
+            background-color: #fed7d7;
+            color: #742a2a;
+            border-left: 4px solid #e53e3e;
+        }
+
+        .alert ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .alert li {
+            margin: 3px 0;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Séparateur avec texte */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: #a0aec0;
+            font-size: 13px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        .divider span {
+            padding: 0 15px;
+        }
+
+        /* Boutons réseaux sociaux */
+        .social-login {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .social-btn {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .social-btn i {
+            font-size: 20px;
+        }
+
+        .social-btn.facebook {
+            color: #1877f2;
+        }
+
+        .social-btn.google {
+            color: #ea4335;
+        }
+
+        .social-btn.twitter {
+            color: #1da1f2;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Lien "Mot de passe oublié" */
+        .forgot-password {
+            text-align: right;
+            margin-top: -10px;
+            margin-bottom: 20px;
+        }
+
+        .forgot-password a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        /* Indicateur de force du mot de passe */
+        .password-strength {
+            margin-top: 8px;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .password-strength-bar.weak {
+            width: 33%;
+            background: #e53e3e;
+        }
+
+        .password-strength-bar.medium {
+            width: 66%;
+            background: #ed8936;
+        }
+
+        .password-strength-bar.strong {
+            width: 100%;
+            background: #38a169;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .auth-container {
+                max-height: 95vh;
+                width: 95%;
+            }
+
+            .form-scroll-container {
+                padding: 25px 20px;
+            }
+
+            .scroll-indicator {
+                display: none;
+            }
+
+            .logo-section h1 {
+                font-size: 24px;
+            }
+
+            .social-login {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-height: 700px) {
+            .auth-container {
+                max-height: 85vh;
+            }
+            
+            .logo-section {
+                margin-bottom: 20px;
+            }
+            
+            .logo-icon {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .logo-icon i {
+                font-size: 30px;
+            }
+        }
+
+        /* Animation de chargement sur le bouton */
+        .submit-btn.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .submit-btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spinner 0.6s linear infinite;
+        }
+
+        @keyframes spinner {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="auth-container">
+            <div class="form-scroll-container">
+                {# Logo et titre #}
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                    <h1>PackTrack</h1>
+                    <p>Gestion intelligente de vos colis</p>
+                </div>
+
+                {# Messages Flash #}
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+
+                {# Erreurs de connexion #}
+                {% if error is defined and error %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>{{ error.messageKey|trans(error.messageData, 'security') }}</span>
+                    </div>
+                {% endif %}
+
+                {# Erreurs d'inscription #}
+                {% if registration_errors is defined %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>
+                            <ul>
+                                {% for error in registration_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {# Onglets de navigation #}
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="switchTab('login')">
+                        <i class="fas fa-sign-in-alt"></i> Connexion
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('register')">
+                        <i class="fas fa-user-plus"></i> Inscription
+                    </button>
+                </div>
+
+                <div class="form-container">
+                    {# Formulaire de connexion #}
+                    <form action="{{ path('app_login') }}" method="post" class="auth-form active" id="login-form">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                        
+                        {# Boutons réseaux sociaux #}
+                        <div class="social-login">
+                            <button type="button" class="social-btn facebook" title="Connexion avec Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </button>
+                            <button type="button" class="social-btn google" title="Connexion avec Google">
+                                <i class="fab fa-google"></i>
+                            </button>
+                            <button type="button" class="social-btn twitter" title="Connexion avec Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </button>
+                        </div>
+
+                        <div class="divider">
+                            <span>Ou avec votre email</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="login-email">Adresse Email</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-envelope"></i>
+                                <input 
+                                    type="email" 
+                                    id="login-email"
+                                    name="email" 
+                                    class="form-control" 
+                                    placeholder="exemple@email.com" 
+                                    value="{{ last_username ?? '' }}"
+                                    required 
+                                    autocomplete="email"
+                                >
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="login-password">Mot de passe</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input 
+                                    type="password" 
+                                    id="login-password"
+                                    name="password" 
+                                    class="form-control" 
+                                    placeholder="••••••••" 
+                                    required 
+                                    autocomplete="current-password"
+                                >
+                            </div>
+                        </div>
+
+                        <div class="forgot-password">
+                            <a href="{{ path('app_forgot_password') }}">Mot de passe oublié ?</a>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input 
+                                type="checkbox" 
+                                name="_remember_me" 
+                                id="remember_me"
+                            >
+                            <label for="remember_me">Se souvenir de moi</label>
+                        </div>
+
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-sign-in-alt"></i> Se connecter
+                        </button>
+                    </form>
+
+                    {# Formulaire d'inscription #}
+                    <form action="{{ path('app_register') }}" method="post" class="auth-form" id="register-form">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('register') }}">
+                        
+                        {# Boutons réseaux sociaux #}
+                        <div class="social-login">
+                            <button type="button" class="social-btn facebook" title="Inscription avec Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </button>
+                            <button type="button" class="social-btn google" title="Inscription avec Google">
+                                <i class="fab fa-google"></i>
+                            </button>
+                            <button type="button" class="social-btn twitter" title="Inscription avec Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </button>
+                        </div>
+
+                        <div class="divider">
+                            <span>Ou créez un compte</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="register-email">Adresse Email *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-envelope"></i>
+                                <input 
+                                    type="email" 
+                                    id="register-email"
+                                    name="email" 
+                                    class="form-control" 
+                                    placeholder="exemple@email.com" 
+                                    value="{{ registration_data.email ?? '' }}"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="register-nom">Nom *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user"></i>
+                                <input 
+                                    type="text" 
+                                    id="register-nom"
+                                    name="nom" 
+                                    class="form-control" 
+                                    placeholder="Votre nom" 
+                                    value="{{ registration_data.nom ?? '' }}"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="register-prenom">Prénom *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user"></i>
+                                <input 
+                                    type="text" 
+                                    id="register-prenom"
+                                    name="prenom" 
+                                    class="form-control" 
+                                    placeholder="Votre prénom" 
+                                    value="{{ registration_data.prenom ?? '' }}"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="register-telephone">Téléphone *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-phone"></i>
+                                <input 
+                                    type="tel" 
+                                    id="register-telephone"
+                                    name="telephone" 
+                                    class="form-control" 
+                                    placeholder="12345678" 
+                                    value="{{ registration_data.telephone ?? '' }}"
+                                    pattern="[0-9]{8}"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="register-password">Mot de passe *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input 
+                                    type="password" 
+                                    id="register-password"
+                                    name="password" 
+                                    class="form-control" 
+                                    placeholder="••••••••" 
+                                    required
+                                    onkeyup="checkPasswordStrength(this.value)"
+                                >
+                            </div>
+                            <div class="password-strength">
+                                <div class="password-strength-bar" id="strength-bar"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="register-confirm-password">Confirmer le mot de passe *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input 
+                                    type="password" 
+                                    id="register-confirm-password"
+                                    name="confirm_password" 
+                                    class="form-control" 
+                                    placeholder="••••••••" 
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input 
+                                type="checkbox" 
+                                name="terms" 
+                                id="terms" 
+                                required
+                            >
+                            <label for="terms">J'accepte les termes et conditions</label>
+                        </div>
+
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-user-plus"></i> S'inscrire
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            {# Indicateur de défilement #}
+            <div class="scroll-indicator" id="scrollIndicator">
+                <i class="fas fa-chevron-down"></i>
+                <span>Défiler</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Basculer entre les formulaires
+        function switchTab(formType) {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const tabs = document.querySelectorAll('.tab-btn');
+
+            if (formType === 'login') {
+                loginForm.classList.add('active');
+                registerForm.classList.remove('active');
+                tabs[0].classList.add('active');
+                tabs[1].classList.remove('active');
+            } else {
+                registerForm.classList.add('active');
+                loginForm.classList.remove('active');
+                tabs[1].classList.add('active');
+                tabs[0].classList.remove('active');
+            }
+        }
+
+        // Vérifier la force du mot de passe
+        function checkPasswordStrength(password) {
+            const strengthBar = document.getElementById('strength-bar');
+            let strength = 0;
+
+            if (password.length >= 6) strength++;
+            if (password.match(/[A-Z]/)) strength++;
+            if (password.match(/[0-9]/)) strength++;
+            if (password.match(/[^A-Za-z0-9]/)) strength++;
+
+            strengthBar.className = 'password-strength-bar';
+            
+            if (strength <= 1) {
+                strengthBar.classList.add('weak');
+            } else if (strength <= 3) {
+                strengthBar.classList.add('medium');
+            } else {
+                strengthBar.classList.add('strong');
+            }
+        }
+
+        // Masquer l'indicateur de défilement quand on arrive en bas
+        document.querySelector('.form-scroll-container').addEventListener('scroll', function() {
+            const scrollIndicator = document.getElementById('scrollIndicator');
+            const container = this;
+            
+            if (container.scrollTop + container.clientHeight >= container.scrollHeight - 10) {
+                scrollIndicator.style.opacity = '0';
+            } else {
+                scrollIndicator.style.opacity = '0.7';
+            }
+        });
+
+        // Cacher l'indicateur sur les grands écrans
+        function checkScrollIndicator() {
+            const container = document.querySelector('.form-scroll-container');
+            const scrollIndicator = document.getElementById('scrollIndicator');
+            
+            if (container.scrollHeight <= container.clientHeight) {
+                scrollIndicator.style.display = 'none';
+            } else {
+                scrollIndicator.style.display = 'flex';
+            }
+        }
+
+        // Vérifier au chargement et au redimensionnement
+        window.addEventListener('load', checkScrollIndicator);
+        window.addEventListener('resize', checkScrollIndicator);
+
+        // Si des erreurs d'inscription existent, afficher le formulaire d'inscription
+        {% if registration_errors is defined %}
+            window.onload = function() {
+                switchTab('register');
+                setTimeout(() => {
+                    const container = document.querySelector('.form-scroll-container');
+                    container.scrollTop = container.scrollHeight;
+                    checkScrollIndicator();
+                }, 100);
+            }
+        {% endif %}
+
+        // Animation de chargement sur les boutons
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('.submit-btn');
+                submitBtn.classList.add('loading');
+            });
+        });
+
+        // Désactiver les boutons sociaux (exemple uniquement)
+        document.querySelectorAll('.social-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Connexion via réseaux sociaux non configurée');
+            });
+        });
+    </script>
+</body>
+</html>

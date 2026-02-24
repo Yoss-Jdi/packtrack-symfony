@@ -1,0 +1,50 @@
+# config/services.yaml
+parameters:
+    # Configuration du mailer
+    app.mailer_from_address: '%env(MAILER_FROM_ADDRESS)%'
+    app.mailer_from_name: '%env(MAILER_FROM_NAME)%'
+    
+    # AI Configuration
+    app.ai_provider: '%env(AI_PROVIDER)%'
+    app.huggingface_api_key: '%env(HUGGINGFACE_API_KEY)%'
+    app.groq_api_key: '%env(GROQ_API_KEY)%'
+    app.ollama_api_url: '%env(OLLAMA_API_URL)%'
+
+services:
+    # Default configuration for services
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    # Makes classes in src/ available to be used as services
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    # Controllers are imported separately to make sure services can be injected as action arguments
+    App\Controller\:
+        resource: '../src/Controller/'
+        tags: ['controller.service_arguments']
+    
+    # Vehicle Problem Analyzer Service
+    App\Service\VehicleProblemAnalyzer:
+        arguments:
+            $aiProvider: '%app.ai_provider%'
+            $huggingfaceKey: '%app.huggingface_api_key%'
+            $groqKey: '%app.groq_api_key%'
+            $ollamaUrl: '%app.ollama_api_url%'
+    
+    # Post Summarizer Service
+    App\Service\PostSummarizer:
+        arguments:
+            $aiProvider: '%app.ai_provider%'
+            $groqKey: '%app.groq_api_key%'
+    
+    # Chatbot Service
+    App\Service\ChatbotService:
+        arguments:
+            $aiProvider: '%app.ai_provider%'
+            $groqKey: '%app.groq_api_key%'

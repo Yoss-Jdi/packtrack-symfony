@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}PackTrack – Track Parcel{% endblock %}</title>
+    
+    {# CSS du front #}
+    <link rel="stylesheet" href="{{ asset('css/front-style.css') }}">
+    
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="navbar">
+    <div class="logo">
+        <span class="icon">📦</span>
+        <strong>PackTrack</strong>
+    </div>
+
+    <nav>
+        <a href="{{ path('app_home') }}" class="{{ app.request.get('_route') == 'app_home' ? 'active' }}">Track Parcel</a>
+        <a href="{{ path('front_forum_index') }}" class="{{ app.request.get('_route') starts with 'front_forum' ? 'active' }}">Community</a>
+        <a href="{{ path('admin_incidents') }}">Report Issue</a>
+    </nav>
+
+    <a href="{{ path('admin_dashboard') }}" class="admin-btn">Admin Portal</a>
+</header>
+
+<!-- CONTENU DYNAMIQUE -->
+{% block body %}{% endblock %}
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-grid">
+        <div>
+            <strong>PackTrack</strong>
+            <p>AI-powered parcel delivery management for modern logistics.</p>
+        </div>
+
+        <div>
+            <strong>Quick Links</strong>
+            <p>Track Parcel<br>Community<br>Report Issue</p>
+        </div>
+
+        <div>
+            <strong>Support</strong>
+            <p>Help Center<br>Contact Us<br>FAQs</p>
+        </div>
+
+        <div>
+            <strong>Contact</strong>
+            <p>support@packtrack.com<br>1-800-PACKTRACK</p>
+        </div>
+    </div>
+
+    <p class="copyright">© 2026 PackTrack. All rights reserved.</p>
+</footer>
+
+{% block javascripts %}{% endblock %}
+
+</body>
+</html>

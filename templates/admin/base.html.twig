@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PackTrack - Admin{% endblock %}</title>
+    
+    {# CSS du backoffice #}
+    <link rel="stylesheet" href="{{ asset('css/back-style.css') }}">
+    
+    {# Font Awesome #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <style>
+        /* Styles pour le sous-menu utilisateurs */
+        .sidebar ul li.has-submenu {
+            position: relative;
+        }
+        
+        .sidebar ul li.has-submenu > a {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar ul li.has-submenu > a:hover {
+            padding-left: 25px;
+        }
+        
+        .sidebar ul li.has-submenu .arrow {
+            transition: transform 0.3s ease;
+            font-size: 11px;
+            opacity: 0.7;
+        }
+        
+        .sidebar ul li.has-submenu.open .arrow {
+            transform: rotate(180deg);
+        }
+        
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.05));
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            border-radius: 0 0 8px 8px;
+            opacity: 0;
+        }
+        
+        .sidebar ul li.has-submenu.open .submenu {
+            max-height: 200px;
+            opacity: 1;
+            margin-top: 5px;
+            padding: 8px 0;
+        }
+        
+        .submenu li {
+            margin: 0;
+            padding: 0;
+        }
+        
+        .submenu li a {
+            padding: 12px 20px 12px 45px;
+            font-size: 13.5px;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            position: relative;
+        }
+        
+        .submenu li a::before {
+            content: '';
+            position: absolute;
+            left: 28px;
+            width: 4px;
+            height: 4px;
+            background: currentColor;
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+        
+        .submenu li a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            padding-left: 50px;
+            border-left-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .submenu li a:hover::before {
+            opacity: 1;
+            transform: scale(1.3);
+        }
+        
+        .submenu li.active a {
+            background: rgba(255, 255, 255, 0.15);
+            border-left-color: #fff;
+            font-weight: 500;
+        }
+        
+        .submenu li a i {
+            font-size: 13px;
+            margin-right: 10px;
+            width: 16px;
+            text-align: center;
+            opacity: 0.8;
+        }
+        
+        /* Animation d'entrée pour les éléments du sous-menu */
+        .sidebar ul li.has-submenu.open .submenu li {
+            animation: slideIn 0.3s ease forwards;
+        }
+        
+        .sidebar ul li.has-submenu.open .submenu li:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+        
+        .sidebar ul li.has-submenu.open .submenu li:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Style pour le bouton de déconnexion */
+        .logout-btn {
+            margin-top: auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 15px;
+        }
+
+        .logout-btn a {
+            color: #ff6b6b !important;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn a:hover {
+            background: rgba(255, 107, 107, 0.1) !important;
+            padding-left: 25px;
+        }
+
+        /* Informations utilisateur */
+        .user-info {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 10px;
+        }
+
+        .user-info p {
+            margin: 0;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .user-info strong {
+            color: #fff;
+            font-size: 15px;
+        }
+    </style>
+    
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+    <div class="layout">
+        {# SIDEBAR #}
+        <aside class="sidebar">
+            <h2>📦 PackTrack</h2>
+
+            {# Informations utilisateur connecté #}
+            {% if app.user %}
+                <div class="user-info">
+                    <p><strong>{{ app.user.prenom }} {{ app.user.nom }}</strong></p>
+                    <p style="font-size: 12px;">{{ app.user.role.value }}</p>
+                </div>
+            {% endif %}
+
+            <ul>
+                <li class="{{ app.request.get('_route') == 'admin_dashboard' ? 'active' }}">
+                    <a href="{{ path('admin_dashboard') }}">
+                        <i class="fa-solid fa-chart-line"></i> Dashboard
+                    </a>
+                </li>
+                <li class="{{ app.request.get('_route') starts with 'admin_parcels' ? 'active' }}">
+                    <a href="{{ path('admin_parcels') }}">
+                        <i class="fa-solid fa-box"></i> Parcels
+                    </a>
+                </li>
+                <li class="{{ app.request.get('_route') starts with 'admin_invoices' ? 'active' }}">
+                    <a href="{{ path('admin_invoices') }}">
+                        <i class="fa-solid fa-file-invoice"></i> Invoices
+                    </a>
+                </li>
+                <li class="has-submenu {{ app.request.get('_route') starts with 'admin_vehicles' ? 'active open' : '' }}">
+                    <a href="javascript:void(0);" onclick="toggleSubmenu(this)">
+                        <span><i class="fa-solid fa-truck"></i> Vehicles</span>
+                        <i class="fa-solid fa-chevron-down arrow"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li class="{{ app.request.get('_route') == 'admin_vehicles_index' ? 'active' }}">
+                            <a href="{{ path('admin_vehicles_index') }}">
+                                <i class="fa-solid fa-list"></i> Liste
+                            </a>
+                        </li>
+                        <li class="{{ app.request.get('_route') == 'admin_vehicles_new' ? 'active' }}">
+                            <a href="{{ path('admin_vehicles_new') }}">
+                                <i class="fa-solid fa-plus"></i> Nouveau
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ path('admin_vehicles_export_pdf') }}">
+                                <i class="fa-solid fa-file-pdf"></i> Export PDF
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="has-submenu {{ app.request.get('_route') starts with 'admin_technicians' ? 'active open' : '' }}">
+                    <a href="javascript:void(0);" onclick="toggleSubmenu(this)">
+                        <span><i class="fa-solid fa-user-wrench"></i> Techniciens</span>
+                        <i class="fa-solid fa-chevron-down arrow"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li class="{{ app.request.get('_route') == 'admin_technicians_index' ? 'active' }}">
+                            <a href="{{ path('admin_technicians_index') }}">
+                                <i class="fa-solid fa-list"></i> Liste
+                            </a>
+                        </li>
+                        <li class="{{ app.request.get('_route') == 'admin_technicians_new' ? 'active' }}">
+                            <a href="{{ path('admin_technicians_new') }}">
+                                <i class="fa-solid fa-plus"></i> Nouveau
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="has-submenu {{ app.request.get('_route') starts with 'admin_forum' ? 'active open' : '' }}">
+                    <a href="javascript:void(0);" onclick="toggleSubmenu(this)">
+                        <span><i class="fa-solid fa-comments"></i> Forum</span>
+                        <i class="fa-solid fa-chevron-down arrow"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li class="{{ app.request.get('_route') == 'admin_forum_publication_index' or app.request.get('_route') starts with 'admin_forum_publication' ? 'active' }}">
+                            <a href="{{ path('admin_forum_publication_index') }}">
+                                <i class="fa-solid fa-newspaper"></i> Publications
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="{{ app.request.get('_route') starts with 'admin_incidents' ? 'active' }}">
+                    <a href="{{ path('admin_incidents') }}">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Incidents
+                    </a>
+                </li>
+                <li class="has-submenu {{ app.request.get('_route') starts with 'app_utilisateurs' ? 'active open' : '' }}">
+                    <a href="javascript:void(0);" onclick="toggleSubmenu(this)">
+                        <span><i class="fa-solid fa-users"></i> Utilisateurs</span>
+                        <i class="fa-solid fa-chevron-down arrow"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li class="{{ app.request.get('_route') == 'app_utilisateurs' ? 'active' }}">
+                            <a href="{{ path('app_utilisateurs') }}">
+                                <i class="fa-solid fa-list"></i> Liste
+                            </a>
+                        </li>
+                        <li class="{{ app.request.get('_route') == 'app_utilisateurs_new' ? 'active' }}">
+                            <a href="{{ path('app_utilisateurs_new') }}">
+                                <i class="fa-solid fa-user-plus"></i> Ajout
+                            </a>
+                        </li>
+                        <li class="{{ app.request.get('_route') == 'app_utilisateurs_stats' ? 'active' }}">
+                            <a href="{{ path('app_utilisateurs_stats') }}">
+                                <i class="fas fa-chart-bar"></i> Statistiques
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                {# Bouton de déconnexion #}
+                <li class="logout-btn">
+                    <a href="{{ path('app_logout') }}">
+                        <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        {# MAIN CONTENT #}
+        <main class="main">
+            {# Messages Flash #}
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+
+            {% block body %}{% endblock %}
+        </main>
+    </div>
+
+    <script>
+        function toggleSubmenu(element) {
+            const parentLi = element.parentElement;
+            parentLi.classList.toggle('open');
+        }
+    </script>
+
+    {% block javascripts %}{% endblock %}
+</body>
+</html>

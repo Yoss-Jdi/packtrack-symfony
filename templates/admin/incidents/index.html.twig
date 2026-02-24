@@ -1,0 +1,30 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Incidents - PackTrack{% endblock %}
+
+{% block body %}
+    <div class="table-section">
+        <h3>Reported Incidents</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>INC-01</td>
+                    <td><i class="fa-solid fa-triangle-exclamation"></i> Late delivery</td>
+                    <td class="status issue">Open</td>
+                </tr>
+                <tr>
+                    <td>INC-02</td>
+                    <td><i class="fa-solid fa-triangle-exclamation"></i> Damaged parcel</td>
+                    <td class="status processing">In Progress</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

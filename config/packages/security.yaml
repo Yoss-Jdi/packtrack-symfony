@@ -1,0 +1,75 @@
+security:
+    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+
+    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+    providers:
+        # Utiliser votre entité Utilisateurs comme provider
+        app_user_provider:
+            entity:
+                class: App\Entity\Utilisateurs
+                property: Email
+
+    firewalls:
+        dev:
+            pattern: ^/(_profiler|_wdt|assets|build)/
+            security: false
+            
+        main:
+            lazy: true
+            provider: app_user_provider
+
+            # Configuration du formulaire de connexion
+            form_login:
+                login_path: app_login
+                check_path: app_login
+                enable_csrf: true
+                username_parameter: email  # Changé pour correspondre au formulaire
+                password_parameter: password   # Changé pour correspondre au formulaire
+                # Handler de succès personnalisé
+                success_handler: App\Security\LoginSuccessHandler
+
+            # ====== CONFIGURATION REMEMBER ME ======
+            remember_me:
+                secret: '%kernel.secret%'          # Clé secrète pour signer les cookies
+                lifetime: 2592000                  # 30 jours (en secondes) - modifiable selon vos besoins
+                path: /                            # Cookie valide sur tout le site
+                always_remember_me: false          # Seulement si la checkbox est cochée
+                name: REMEMBERME                   # Nom du cookie
+                secure: auto                       # HTTPS uniquement en production
+                httponly: true                     # Protection XSS - empêche JS d'accéder au cookie
+                samesite: lax                      # Protection CSRF
+                signature_properties: [password]   # Invalider automatiquement si le mot de passe change
+                # token_provider: 'doctrine'       # Décommenter si vous voulez stocker en BDD
+            # ====== FIN CONFIGURATION REMEMBER ME ======
+
+            # Configuration de la déconnexion
+            logout:
+                path: app_logout
+                target: app_login
+                # Invalider le cookie remember_me à la déconnexion
+                invalidate_session: true
+
+    # Note: Only the *first* matching rule is applied
+    access_control:
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/forgot-password, roles: PUBLIC_ACCESS }
+        - { path: ^/reset-password, roles: PUBLIC_ACCESS }
+        - { path: ^/admin/redirect-choice, roles: ROLE_ADMIN }
+        - { path: ^/admin/choose-redirect, roles: ROLE_ADMIN }
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        # Décommentez ces lignes pour protéger d'autres routes selon les rôles
+        # - { path: ^/client, roles: ROLE_CLIENT }
+        # - { path: ^/gestionnaire, roles: ROLE_GESTIONNAIRE }
+        # - { path: ^/livreur, roles: ROLE_LIVREUR }
+
+when@test:
+    security:
+        password_hashers:
+            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+                algorithm: auto
+                cost: 4
+                time_cost: 3
+                memory_cost: 10

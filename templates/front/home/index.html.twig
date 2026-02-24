@@ -1,0 +1,56 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}PackTrack – Track Your Parcel{% endblock %}
+
+{% block body %}
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-icon">📦</div>
+        <h1>Track Your Parcel</h1>
+        <p>Enter your tracking number to see real-time updates</p>
+
+        <div class="search-box">
+            <input type="text" placeholder="PKT-2847">
+            <button>Track</button>
+        </div>
+    </div>
+</section>
+
+<!-- CONTENT -->
+<section class="content">
+
+    <!-- TIMELINE -->
+    <div class="card timeline">
+        <h2>Tracking: PKT-2847</h2>
+        <span class="status">In Transit</span>
+
+        <ul>
+            <li class="done">Order Placed <small>Boston, MA</small></li>
+            <li class="done">Processing <small>Boston Facility</small></li>
+            <li class="done">In Transit <small>En route to New York</small></li>
+            <li class="done">Out for Delivery <small>New York, NY</small></li>
+            <li class="pending">Delivered <small>Expected by 6:00 PM</small></li>
+        </ul>
+    </div>
+
+    <!-- DETAILS -->
+    <div class="side">
+        <div class="card">
+            <h3>Parcel Details</h3>
+            <p><strong>Weight:</strong> 2.5 kg</p>
+            <p><strong>Dimensions:</strong> 30×20×15 cm</p>
+            <p><strong>From:</strong> TechStore Inc.</p>
+            <p><strong>To:</strong> John Smith</p>
+        </div>
+
+        <div class="card success">
+            <h3>Estimated Delivery</h3>
+            <p>2026-02-05 by 6:00 PM</p>
+        </div>
+
+        <button class="download-btn">Download Receipt</button>
+    </div>
+
+</section>
+{% endblock %}

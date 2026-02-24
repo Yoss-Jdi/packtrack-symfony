@@ -1,0 +1,6 @@
+# config/packages/mailer.yaml
+framework:
+    mailer:
+        dsn: '%env(MAILER_DSN)%'
+        # DÉSACTIVER Messenger pour les emails
+        message_bus: false  # ← CETTE LIGNE EST CRUCIALE
