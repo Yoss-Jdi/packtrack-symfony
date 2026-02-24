@@ -512,6 +512,89 @@
         25% { transform: translateX(-10px); }
         75% { transform: translateX(10px); }
     }
+
+    /* === EXPORT BUTTONS === */
+    .btn-export-csv {
+        background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%);
+        color: white;
+    }
+
+    .btn-export-pdf {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+    }
+
+    /* === PAGINATION === */
+    .pagination-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 1.5rem;
+        border-top: 2px solid #e0e6ed;
+        background: #f8f9fa;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+    }
+
+    .pagination-info-text {
+        text-align: center;
+        padding: 0.4rem 1.5rem 1rem;
+        font-size: 0.85rem;
+        color: #7f8c8d;
+        background: #f8f9fa;
+    }
+
+    .pagination-wrapper .page-item {
+        list-style: none;
+    }
+
+    .pagination-wrapper .page-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+        height: 40px;
+        padding: 0 0.75rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-decoration: none;
+        border: 2px solid #e0e6ed;
+        color: #2c3e50;
+        background: white;
+        transition: all 0.2s ease;
+    }
+
+    .pagination-wrapper .page-link:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: #667eea;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
+    }
+
+    .pagination-wrapper .page-item.active .page-link {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: #667eea;
+        color: white;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
+    }
+
+    .pagination-wrapper .page-item.disabled .page-link {
+        background: #f8f9fa;
+        color: #bdc3c7;
+        border-color: #e0e6ed;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+    .pagination-list {
+        display: flex;
+        gap: 0.4rem;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
 </style>
 {% endblock %}
 
@@ -557,6 +640,16 @@
                 <i class="fa-solid fa-chart-pie"></i>
                 Statistiques
             </a>
+            
+            <a href="{{ path('app_utilisateurs_export_csv') }}" class="btn-modern btn-export-csv">
+                <i class="fa-solid fa-file-csv"></i>
+                Exporter CSV
+            </a>
+            
+            <a href="{{ path('app_utilisateurs_export_pdf') }}" class="btn-modern btn-export-pdf" target="_blank">
+                <i class="fa-solid fa-file-pdf"></i>
+                Exporter PDF
+            </a>
         </div>
     </div>
 
@@ -568,7 +661,7 @@
                 Liste des Utilisateurs
             </h2>
             <div class="result-count">
-                <span id="resultCount">{{ utilisateurs|length }}</span> résultat(s)
+                <span id="resultCount">{{ pagination.totalItemCount }}</span> résultat(s)
             </div>
         </div>
         
@@ -604,7 +697,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                {% for utilisateur in utilisateurs %}
+                {% for utilisateur in pagination %}
                     <tr data-role="{{ utilisateur.role.value }}" 
                         data-search="{{ utilisateur.email|lower }} {{ utilisateur.nom|lower }} {{ utilisateur.prenom|lower }} {{ utilisateur.telephone ?? '' }}">
                         <td data-value="{{ utilisateur.id }}">#{{ utilisateur.id }}</td>
@@ -654,6 +747,38 @@
                 </tbody>
             </table>
         </div>
+
+        {# PAGINATION INFO #}
+        {% if pagination.totalItemCount > 0 %}
+        <div class="pagination-info-text">
+            Affichage de {{ (pagination.currentPageNumber - 1) * pagination.itemNumberPerPage + 1 }}
+            à {{ pagination.currentPageNumber * pagination.itemNumberPerPage > pagination.totalItemCount ? pagination.totalItemCount : pagination.currentPageNumber * pagination.itemNumberPerPage }}
+            sur <strong>{{ pagination.totalItemCount }}</strong> utilisateurs
+        </div>
+
+        {# PAGINATION CONTROLS #}
+        {% set currentPage = pagination.currentPageNumber %}
+        {% set totalPages = pagination.pageCount %}
+        <div class="pagination-wrapper">
+            <ul class="pagination-list">
+                <li class="page-item {% if currentPage == 1 %}disabled{% endif %}">
+                    <a class="page-link" href="{{ currentPage > 1 ? path('app_utilisateurs', {'page': currentPage - 1}) : '#' }}">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </a>
+                </li>
+                {% for page in pagination.paginationData.pagesInRange %}
+                    <li class="page-item {% if page == currentPage %}active{% endif %}">
+                        <a class="page-link" href="{{ path('app_utilisateurs', {'page': page}) }}">{{ page }}</a>
+                    </li>
+                {% endfor %}
+                <li class="page-item {% if currentPage == totalPages %}disabled{% endif %}">
+                    <a class="page-link" href="{{ currentPage < totalPages ? path('app_utilisateurs', {'page': currentPage + 1}) : '#' }}">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        {% endif %}
     </div>
 
     {# MODAL DE CONFIRMATION DE SUPPRESSION #}
@@ -664,7 +789,7 @@
                 <h3>Confirmation de suppression</h3>
             </div>
             <div class="modal-body-custom">
-                <p>Êtes vous sûr de vouloir supprimer cet utilisateur ?</p>
+                <p>Êtes-vous sûr de vouloir supprimer cet utilisateur ?</p>
                 <p>Cette action est irréversible.</p>
                 <div class="user-info" id="userInfo"></div>
             </div>
@@ -715,7 +840,7 @@ function filterTable() {
         }
     });
     
-    resultCount.textContent = visibleCount;
+    resultCount.textContent = visibleCount + ' / {{ pagination.totalItemCount }}';
 }
 
 searchInput.addEventListener('input', filterTable);
