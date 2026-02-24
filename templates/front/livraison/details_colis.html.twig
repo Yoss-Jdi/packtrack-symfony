@@ -108,6 +108,10 @@
             <div class="detail-label">Adresse destination :</div>
             <div class="detail-value">{{ colis.adresseDestination }}</div>
         </div>
+        <div class="detail-row">
+            <div class="detail-label">Adresse de départ :</div>
+            <div class="detail-value">{{ colis.adresseDepart }}</div>
+        </div>
         
         <div class="detail-row">
             <div class="detail-label">Destinataire :</div>
@@ -145,6 +149,21 @@
             <div class="detail-label">Date de création :</div>
             <div class="detail-value">{{ colis.dateCreation|date('d/m/Y à H:i') }}</div>
         </div>
+        {% if colis.qrCode %}
+        <div class="detail-card full" style="text-align: center; margin-top: 20px;">
+            <h3>📱 QR Code de suivi</h3>
+            <img 
+                src="data:image/png;base64,{{ colis.qrCode }}" 
+                alt="QR Code Colis #{{ colis.id }}"
+                width="200"
+                height="200"
+                style="border: 2px solid #dee2e6; border-radius: 8px; padding: 10px;"
+            />
+            <p style="color: #6c757d; margin-top: 10px; font-size: 14px;">
+                Scannez pour obtenir les informations de ce colis
+            </p>
+        </div>
+        {% endif %}
         
         <div class="actions">
             <a href="{{ path('app_livraison_index') }}" class="btn btn-secondary">← Retour</a>

@@ -129,12 +129,23 @@
             {% endif %}
             
             <div class="detail-row">
-                <div class="detail-label">Distance :</div>
+                <div class="detail-label">📏 Distance estimée :</div>
                 <div class="detail-value">
                     {% if livraison.distanceKm %}
                         <strong>{{ livraison.distanceKm }} km</strong>
                     {% else %}
-                        <span style="color: #6c757d;">Non spécifiée</span>
+                        <span style="color: #6c757d;">Non disponible</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-label">🕐 Durée estimée :</div>
+                <div class="detail-value">
+                    {% if livraison.dureeFormatee %}
+                        <strong style="color: #007bff;">{{ livraison.dureeFormatee }}</strong>
+                    {% else %}
+                        <span style="color: #6c757d;">Non disponible</span>
                     {% endif %}
                 </div>
             </div>
@@ -168,6 +179,10 @@
             <div class="detail-row">
                 <div class="detail-label">Adresse destination :</div>
                 <div class="detail-value">{{ livraison.colis.adresseDestination }}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Adresse de départ :</div>
+                <div class="detail-value">{{ livraison.colis.adresseDepart }}</div>
             </div>
             
             <div class="detail-row">

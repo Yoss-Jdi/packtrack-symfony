@@ -35,13 +35,22 @@ class Colis
 
     #[ORM\Column(name: 'adresseDestination', type: Types::TEXT)]
     #[Assert\NotBlank(message: "L'adresse de destination est obligatoire")]
-    #[Assert\Length(
+    /*#[Assert\Length(
         min: 10,
         max: 500,
         minMessage: "L'adresse doit contenir au moins {{ limit }} caractères",
         maxMessage: "L'adresse ne peut pas dépasser {{ limit }} caractères"
-    )]
+    )]*/
     private ?string $adresseDestination = null;
+
+    #[ORM\Column(name: 'adresseDepart', type: Types::TEXT)]
+    #[Assert\NotBlank(message: "L'adresse de départ est obligatoire")]
+    /*#[Assert\Length(
+        min: 10,
+        max: 500,
+        minMessage: "L'adresse doit contenir au moins {{ limit }} caractères",
+    )]*/
+    private ?string $adresseDepart = null;
 
     #[ORM\Column(name: 'dateCreation', type: Types::DATETIME_MUTABLE, nullable: true, columnDefinition: 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP')]
     private ?\DateTimeInterface $dateCreation = null;
@@ -86,6 +95,11 @@ class Colis
 
     #[ORM\OneToMany(mappedBy: 'colis', targetEntity: Livraison::class)]
     private Collection $livraisons;
+
+    #[ORM\Column(name: 'qrCode', type: Types::TEXT, nullable: true)]
+    private ?string $qrCode = null;
+
+    
 
     public function __construct()
     {
@@ -208,6 +222,16 @@ class Colis
         $this->destinataire = $destinataire;
         return $this;
     }
+    public function getQrCode(): ?string
+    {
+        return $this->qrCode;
+    }
+
+    public function setQrCode(?string $qrCode): static
+    {
+        $this->qrCode = $qrCode;
+        return $this;
+    }
 
     public function getLivraisons(): Collection
     {
@@ -217,6 +241,17 @@ class Colis
     public function estDisponible(): bool
     {
         return $this->livraisons->isEmpty() && $this->statut === 'en_attente';
+    }
+
+    public function getAdresseDepart(): ?string
+    {
+        return $this->adresseDepart;
+    }
+
+    public function setAdresseDepart(string $adresseDepart): static
+    {
+        $this->adresseDepart = $adresseDepart;
+        return $this;
     }
 
     public function calculerMontant(): float
