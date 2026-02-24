@@ -24,14 +24,7 @@
         <a href="#">Report Issue</a>
     </nav>
 
-        <div style="display: flex; gap: 12px; align-items: center;">
-            <a href="{{ path('app_notifications_index') }}" style="position: relative; text-decoration: none; color: #495057; font-weight: 600; padding: 8px 16px; border-radius: 6px; transition: 0.2s;">
-                🔔
-            </a>
-            {% if app.user and is_granted('ROLE_ADMIN') %}
-                <a href="{{ path('admin_dashboard') }}" class="admin-btn">Admin Portal</a>
-            {% endif %}
-        </div>
+    <a href="{{ path('admin_dashboard') }}" class="admin-btn">Admin Portal</a>
 </header>
 
 <!-- CONTENU DYNAMIQUE -->

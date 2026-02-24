@@ -14,16 +14,10 @@ body {
     background: #fff;
 }
 
-.logo {
-    flex-shrink: 0;
-}
-
 .navbar nav {
     display: flex;
     gap: 15px;
     align-items: center;
-    flex: 1;
-    justify-content: center; /* Centre la navigation */
 }
 
 .navbar nav a {
@@ -49,20 +43,11 @@ body {
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
-    text-decoration: none;
-    flex-shrink: 0;
 }
 
 .admin-btn:hover {
     background: #0954a5;
     border-color: #0954a5;
-}
-
-/* Pour maintenir l'espace même quand le bouton admin n'est pas là */
-.navbar::after {
-    content: '';
-    flex-shrink: 0;
-    width: 120px; /* Approximativement la largeur du bouton admin */
 }
 
 /* HERO */
@@ -179,6 +164,6 @@ footer p {
     color: #666;
 }
 
-.copyright {
+footer copyright {
     text-align: center;
 }
