@@ -3,81 +3,251 @@
 {% block title %}Modifier Facture {{ facture.numero }}{% endblock %}
 
 {% block body %}
-<div style="background: #ffffff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); max-width: 700px; margin: 30px auto;">
 
-    <h1 style="margin-bottom: 20px; color: #333;">
-        Modifier la facture <strong>{{ facture.numero }}</strong>
-    </h1>
+<style>
+    .edit-wrapper {
+        background: #f4f6fb;
+        min-height: 100vh;
+        padding: 30px;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+    .page-header h1 { font-size: 26px; font-weight: 700; color: #2d3748; margin: 0; }
+    .btn-retour {
+        padding: 10px 20px;
+        background: #6c757d;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+    .btn-retour:hover { background: #5a6268; color: white; }
+    .alert-custom { padding: 12px 16px; border-radius: 10px; margin-bottom: 15px; font-size: 14px; }
+    .alert-success { background: #d1e7dd; color: #0f5132; }
+    .alert-danger  { background: #f8d7da; color: #842029; }
+    .form-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        max-width: 700px;
+        margin: 0 auto;
+        overflow: hidden;
+    }
+    .form-card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px 25px;
+        color: white;
+    }
+    .form-card-header h2 { margin: 0; font-size: 18px; font-weight: 700; }
+    .form-card-header p  { margin: 5px 0 0; font-size: 13px; opacity: 0.85; }
+    .form-card-body { padding: 30px; }
+    .form-group { margin-bottom: 20px; }
+    .form-label-custom {
+        font-size: 13px;
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 6px;
+        display: block;
+    }
+    .form-control-custom {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #2d3748;
+        outline: none;
+        transition: border 0.2s;
+        box-sizing: border-box;
+    }
+    .form-control-custom:focus { border-color: #6f42c1; box-shadow: 0 0 0 3px rgba(111,66,193,0.1); }
+    .form-control-custom.is-invalid { border-color: #dc3545; background: #fff5f5; }
+    .form-control-readonly { background: #f8f9fa; color: #6c757d; cursor: not-allowed; }
+    .invalid-feedback { color: #dc3545; font-size: 12px; margin-top: 5px; display: block; }
+    .calcul-box {
+        background: #f8f6ff;
+        border: 1px solid #e0d6ff;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    .calcul-box .titre { font-size: 14px; font-weight: 700; color: #6f42c1; margin-bottom: 15px; }
+    .calcul-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        font-size: 14px;
+        color: #4a5568;
+        border-bottom: 1px solid #ede9ff;
+    }
+    .calcul-row:last-child {
+        border-bottom: none;
+        font-size: 16px;
+        font-weight: 700;
+        color: #198754;
+        padding-top: 12px;
+    }
+    .calcul-row span:last-child { font-weight: 600; color: #2d3748; }
+    .calcul-row:last-child span:last-child { color: #198754; }
+    .form-actions { display: flex; justify-content: flex-end; gap: 10px; padding-top: 10px; }
+    .btn-submit {
+        padding: 11px 25px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+    .btn-submit:hover { opacity: 0.9; }
+    .btn-annuler {
+        padding: 11px 20px;
+        background: #f8f9fa;
+        color: #6c757d;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+</style>
 
-    <form action="{{ path('app_facture_edit', {'id': facture.id}) }}" method="post">
-        <input type="hidden" name="_token" value="{{ csrf_token('edit' ~ facture.id) }}">
+<div class="edit-wrapper">
 
-        <div style="display: grid; grid-template-columns: 160px 1fr; gap: 15px; align-items: center;">
+    <div class="page-header">
+        <h1>✏️ Modifier la Facture</h1>
+        <a href="{{ path('app_facture_index') }}" class="btn-retour">← Retour à la liste</a>
+    </div>
 
-            <label for="numero">Numéro</label>
-            <input type="text" id="numero" name="numero"
-                   value="{{ facture.numero }}" required
-                   style="padding:8px; border-radius:5px; border:1px solid #ddd;">
+    {# Flash messages #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert-custom {{ label == 'error' ? 'alert-danger' : 'alert-success' }}">
+                {{ label == 'error' ? '❌' : '✅' }} {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
 
-            <label for="dateEmission">Date d'émission</label>
-            <input type="datetime-local" id="dateEmission" name="dateEmission"
-                   value="{{ facture.dateEmission ? facture.dateEmission|date('Y-m-d\\TH:i') : '' }}"
-                   required
-                   style="padding:8px; border-radius:5px; border:1px solid #ddd;">
-
-            <label for="montantHT">Montant HT</label>
-            <input type="number" id="montantHT" name="montantHT" step="0.01"
-                   value="{{ facture.montantHT }}" required
-                   style="padding:8px; border-radius:5px; border:1px solid #ddd;">
-
-            <label>Montant TTC</label>
-            <input type="text" id="montantTTC" readonly
-                   value="{{ facture.montantHT * (1 + (facture.tva / 100)) | number_format(2, '.', '') }}"
-                   style="padding:8px; border-radius:5px; border:1px solid #e0e0e0; background:#f8f9fa;">
-
-            <label>TVA (20%)</label>
-            <input type="text" id="tva" readonly
-                   value="{{ facture.tva }}"
-                   style="padding:8px; border-radius:5px; border:1px solid #e0e0e0; background:#f8f9fa;">
+    <div class="form-card">
+        <div class="form-card-header">
+            <h2>📋 Facture <strong>{{ facture.numero }}</strong></h2>
+            <p>Modifiez les informations de la facture</p>
         </div>
 
-        <div style="margin-top: 25px; text-align: right;">
-            <button type="submit"
-                    style="padding: 8px 22px; border-radius: 5px; background-color: #0d6efd; color: white; border: none; cursor:pointer;">
-                Enregistrer
-            </button>
+        <div class="form-card-body">
+            <form action="{{ path('app_facture_edit', {'id': facture.id}) }}"
+                  method="post" novalidate>
 
-            <a href="{{ path('app_facture_index') }}"
-               style="margin-left: 15px; color: #555; text-decoration: none;">
-                ← Retour à la liste
-            </a>
+                <input type="hidden" name="_token"
+                       value="{{ csrf_token('edit' ~ facture.id) }}">
+
+                {# Numéro #}
+                <div class="form-group">
+                    <label class="form-label-custom">
+                        Numéro de facture <span style="color:red">*</span>
+                    </label>
+                    <input type="text"
+                           name="numero"
+                           value="{{ facture.numero }}"
+                           class="form-control-custom {{ errors.numero is defined ? 'is-invalid' : '' }}">
+                    {% if errors.numero is defined %}
+                        <span class="invalid-feedback">❌ {{ errors.numero }}</span>
+                    {% endif %}
+                </div>
+
+                {# Date d'émission #}
+                <div class="form-group">
+                    <label class="form-label-custom">
+                        Date d'émission <span style="color:red">*</span>
+                    </label>
+                    <input type="datetime-local"
+                           name="dateEmission"
+                           value="{{ facture.dateEmission ? facture.dateEmission|date('Y-m-d\\TH:i') : '' }}"
+                           class="form-control-custom {{ errors.dateEmission is defined ? 'is-invalid' : '' }}">
+                    {% if errors.dateEmission is defined %}
+                        <span class="invalid-feedback">❌ {{ errors.dateEmission }}</span>
+                    {% endif %}
+                </div>
+
+                {# Montant HT #}
+                <div class="form-group">
+                    <label class="form-label-custom">
+                        Montant HT (DT) <span style="color:red">*</span>
+                    </label>
+                    <input type="number"
+                           name="montantHT"
+                           id="montantHT"
+                           step="0.01"
+                           min="0"
+                           value="{{ facture.montantHT }}"
+                           class="form-control-custom {{ errors.montantHT is defined ? 'is-invalid' : '' }}">
+                    {% if errors.montantHT is defined %}
+                        <span class="invalid-feedback">❌ {{ errors.montantHT }}</span>
+                    {% endif %}
+                </div>
+
+                {# Résumé calcul readonly #}
+                <div class="calcul-box">
+                    <div class="titre">📊 Calcul automatique</div>
+                    <div class="calcul-row">
+                        <span>Montant HT</span>
+                        <span id="display-ht">
+                            {{ facture.montantHT|number_format(2, '.', '') }} DT
+                        </span>
+                    </div>
+                    <div class="calcul-row">
+                        <span>TVA (20%)</span>
+                        <span id="display-tva">
+                            {{ (facture.montantHT * 0.20)|number_format(2, '.', '') }} DT
+                        </span>
+                    </div>
+                    <div class="calcul-row">
+                        <span>💰 Montant TTC</span>
+                        <span id="display-ttc">
+                            {{ (facture.montantHT * 1.20)|number_format(2, '.', '') }} DT
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="{{ path('app_facture_index') }}" class="btn-annuler">Annuler</a>
+                    <button type="submit" class="btn-submit">💾 Enregistrer</button>
+                </div>
+
+            </form>
         </div>
-    </form>
+    </div>
 
 </div>
 {% endblock %}
 
 {% block javascripts %}
 <script>
-    const montantHTInput = document.getElementById('montantHT');
-    const tvaInput = document.getElementById('tva');
-    const ttcInput = document.getElementById('montantTTC');
+document.addEventListener('DOMContentLoaded', function () {
+    const htInput    = document.getElementById('montantHT');
+    const displayHT  = document.getElementById('display-ht');
+    const displayTVA = document.getElementById('display-tva');
+    const displayTTC = document.getElementById('display-ttc');
 
-    function calculer() {
-        const ht = parseFloat(montantHTInput.value);
-
-        if (!isNaN(ht)) {
-            const tva = ht * 0.20;
-            const ttc = ht * 1.20;
-
-            tvaInput.value = tva.toFixed(2);
-            ttcInput.value = ttc.toFixed(2);
+    htInput.addEventListener('input', function () {
+        const ht = parseFloat(this.value);
+        if (!isNaN(ht) && ht > 0) {
+            displayHT.textContent  = ht.toFixed(2)          + ' DT';
+            displayTVA.textContent = (ht * 0.20).toFixed(2) + ' DT';
+            displayTTC.textContent = (ht * 1.20).toFixed(2) + ' DT';
         } else {
-            tvaInput.value = '';
-            ttcInput.value = '';
+            displayHT.textContent  = '—';
+            displayTVA.textContent = '—';
+            displayTTC.textContent = '—';
         }
-    }
-
-    montantHTInput.addEventListener('input', calculer);
+    });
+});
 </script>
 {% endblock %}

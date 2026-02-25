@@ -1,0 +1,245 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Statistiques Récompenses{% endblock %}
+
+{% block body %}
+
+<style>
+    .stats-wrapper {
+        background: #f4f6fb;
+        min-height: 100vh;
+        padding: 30px;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .page-header h1 { font-size: 26px; font-weight: 700; color: #2d3748; margin: 0; }
+
+    .btn-retour {
+        padding: 10px 20px;
+        background: #6c757d;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+
+    .btn-retour:hover { background: #5a6268; color: white; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
+
+    .card-gradient {
+        border-radius: 16px;
+        padding: 25px;
+        color: white;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    .card-gradient .icon  { font-size: 36px; margin-bottom: 10px; opacity: 0.85; }
+    .card-gradient .label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; opacity: 0.9; }
+    .card-gradient .value { font-size: 28px; font-weight: 700; }
+
+    .g1 { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+    .g2 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .g3 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+
+    .card-white {
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+
+    .card-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .top-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #f8f9fa;
+    }
+
+    .top-item:last-child { border-bottom: none; }
+
+    .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #f0ebff;
+        color: #6f42c1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+        margin-right: 12px;
+        flex-shrink: 0;
+    }
+
+    .badge-valeur {
+        background: #d1e7dd;
+        color: #0f5132;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+        .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="stats-wrapper">
+
+    {# Header #}
+    <div class="page-header">
+        <h1>📊 Statistiques des Récompenses</h1>
+        <a href="{{ path('app_recompense_index') }}" class="btn-retour">← Retour</a>
+    </div>
+
+    {# Cartes résumé #}
+    {% set totalValeur = 0 %}
+    {% for v in parLivreur %}{% set totalValeur = totalValeur + v %}{% endfor %}
+
+    <div class="grid-3">
+        <div class="card-gradient g1">
+            <div class="icon">💰</div>
+            <div class="label">Total Commissions</div>
+            <div class="value">{{ totalValeur|number_format(2) }} DT</div>
+        </div>
+        <div class="card-gradient g2">
+            <div class="icon">👥</div>
+            <div class="label">Livreurs Récompensés</div>
+            <div class="value">{{ parLivreur|length }}</div>
+        </div>
+        <div class="card-gradient g3">
+            <div class="icon">📅</div>
+            <div class="label">Mois Actifs</div>
+            <div class="value">{{ parMois|length }}</div>
+        </div>
+    </div>
+
+    {# Graphiques #}
+    <div class="grid-2">
+        <div class="card-white">
+            <div class="card-title">📈 Commissions par Livreur</div>
+            <canvas id="chartLivreur" height="200"></canvas>
+        </div>
+        <div class="card-white">
+            <div class="card-title">📅 Évolution Mensuelle</div>
+            <canvas id="chartMois" height="200"></canvas>
+        </div>
+    </div>
+
+    {# Top livreurs #}
+    <div class="card-white">
+        <div class="card-title">🏆 Top 5 Livreurs</div>
+        {% if topLivreurs is empty %}
+            <p style="text-align:center; color:#6c757d; padding:20px;">Aucune donnée disponible</p>
+        {% else %}
+            {% for nom, valeur in topLivreurs %}
+            <div class="top-item">
+                <div style="display:flex; align-items:center;">
+                    <div class="avatar">{{ nom|slice(0,1)|upper }}</div>
+                    <span style="font-weight:600; color:#2d3748;">{{ nom }}</span>
+                </div>
+                <span class="badge-valeur">{{ valeur|number_format(2) }} DT</span>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    // Données correctement extraites
+    const donneesLivreur = {{ parLivreur|json_encode|raw }};
+    const donneesMois    = {{ parMois|json_encode|raw }};
+
+    const labelsLivreur = Object.keys(donneesLivreur);
+    const dataLivreur   = Object.values(donneesLivreur);
+
+    const labelsMois = Object.keys(donneesMois);
+    const dataMois   = Object.values(donneesMois);
+
+    // Graphique par livreur
+    new Chart(document.getElementById('chartLivreur'), {
+        type: 'bar',
+        data: {
+            labels: labelsLivreur,
+            datasets: [{
+                label: 'Commissions (DT)',
+                data: dataLivreur,
+                backgroundColor: [
+                    '#667eea','#764ba2','#f093fb',
+                    '#f5576c','#11998e','#38ef7d',
+                    '#4facfe','#00f2fe','#fa709a'
+                ],
+                borderRadius: 8,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { callback: v => v + ' DT' },
+                    grid: { color: '#f0f0f0' }
+                },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // Graphique mensuel
+    new Chart(document.getElementById('chartMois'), {
+        type: 'line',
+        data: {
+            labels: labelsMois,
+            datasets: [{
+                label: 'Total (DT)',
+                data: dataMois,
+                borderColor: '#11998e',
+                backgroundColor: 'rgba(17,153,142,0.1)',
+                tension: 0.4,
+                fill: true,
+                borderWidth: 3,
+                pointBackgroundColor: '#11998e',
+                pointRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { callback: v => v + ' DT' },
+                    grid: { color: '#f0f0f0' }
+                },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+</script>
+{% endblock %}

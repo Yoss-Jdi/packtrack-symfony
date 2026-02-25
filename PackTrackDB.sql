@@ -176,4 +176,11 @@ INSERT INTO `utilisateurs` (`email`, `nom`, `prenom`, `telephone`, `mot_de_passe
 ('admin@trackpack.com', 'Admin', 'Super', '0123456789', '$2y$10$example_hash', 'Administrateur'),
 ('livreur1@trackpack.com', 'Dupont', 'Jean', '0612345678', '$2y$10$example_hash', 'Livreur'),
 ('entreprise@trackpack.com', 'LogiExpress', 'SA', '0145678901', '$2y$10$example_hash', 'Entreprise'),
-('client@trackpack.com', 'Martin', 'Sophie', '0698765432', '$2y$10$example_hash', 'Client');
+('client@trackpack.com', 'Martin', 'Sophie', '0698765432', '$2y$10$example_hash', 'Client'),
+('admin2@trackpack.com', 'Martin', 'Sophie', '0698765432', '$2y$10$example_hash', 'administrateur');
+
+
+
+
+
+

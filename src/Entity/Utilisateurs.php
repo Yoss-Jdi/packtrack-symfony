@@ -16,32 +16,31 @@ class Utilisateurs implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(name: 'ID_Utilisateur')]
     private ?int $id = null;
 
-    #[ORM\Column(length: 180, unique: true)]
+    #[ORM\Column(name: 'email', length: 180, unique: true)]
     private ?string $Email = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(name: 'mot_de_passe', length: 255)]
     private ?string $MotDePasse = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(name: 'nom', length: 100)]  // ⬅️ AJOUTÉ name: 'nom'
     private ?string $Nom = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(name: 'prenom', length: 100)]  // ⬅️ AJOUTÉ name: 'prenom'
     private ?string $Prenom = null;
 
-    #[ORM\Column(length: 20, nullable: true)]
+    #[ORM\Column(name: 'telephone', length: 20, nullable: true)]
     private ?string $Telephone = null;
 
-    #[ORM\Column(type: Types::STRING, enumType: Role::class)]
+    #[ORM\Column(name: 'role', type: Types::STRING, enumType: Role::class)]
     private ?Role $role = null;
 
-    // ====== NOUVEAU CHAMP ======
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[ORM\Column(name: 'created_at', type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $createdAt = null;
 
     // ====== CONSTRUCTEUR ======
     public function __construct()
     {
-        $this->createdAt = new \DateTimeImmutable(); // date de création automatique
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     // ====== GETTERS ET SETTERS ======
@@ -121,7 +120,6 @@ class Utilisateurs implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    // ====== GETTER/SETTER POUR CREATEDAT ======
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;

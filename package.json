@@ -17,9 +17,13 @@
         "build": "encore production --progress"
     },
     "dependencies": {
+        "@fullcalendar/core": "^6.1.20",
+        "@fullcalendar/daygrid": "^6.1.20",
+        "@fullcalendar/interaction": "^6.1.20",
         "@hotwired/stimulus": "^3.2.2",
         "@symfony/stimulus-bridge": "^4.0.1",
         "bootstrap": "^5.3.8",
+        "cloudinary": "^2.9.0",
         "popper.js": "^1.16.1"
     }
 }

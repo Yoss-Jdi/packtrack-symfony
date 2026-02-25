@@ -1521,6 +1521,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     script_attributes?: array<string, scalar|Param|null>,
  *     link_attributes?: array<string, scalar|Param|null>,
  * }
+ * @psalm-type EndroidQrCodeConfig = array<string, mixed>
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -1535,6 +1536,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     security?: SecurityConfig,
  *     monolog?: MonologConfig,
  *     webpack_encore?: WebpackEncoreConfig,
+ *     endroid_qr_code?: EndroidQrCodeConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -1552,6 +1554,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         monolog?: MonologConfig,
  *         maker?: MakerConfig,
  *         webpack_encore?: WebpackEncoreConfig,
+ *         endroid_qr_code?: EndroidQrCodeConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -1567,6 +1570,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         security?: SecurityConfig,
  *         monolog?: MonologConfig,
  *         webpack_encore?: WebpackEncoreConfig,
+ *         endroid_qr_code?: EndroidQrCodeConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -1583,6 +1587,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         security?: SecurityConfig,
  *         monolog?: MonologConfig,
  *         webpack_encore?: WebpackEncoreConfig,
+ *         endroid_qr_code?: EndroidQrCodeConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,

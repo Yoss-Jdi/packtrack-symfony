@@ -4,33 +4,317 @@
     <meta charset="UTF-8">
     <title>Facture {{ facture.numero }}</title>
     <style>
-        body { font-family: Arial, sans-serif; font-size: 14px; }
-        h1 { text-align: center; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #333; padding: 8px; text-align: left; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            font-size: 12px;
+            color: #333;
+            line-height: 1.6;
+            padding: 40px;
+        }
+        
+        .header {
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .header .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .company-info {
+            text-align: right;
+            margin-bottom: 30px;
+        }
+        
+        .company-info h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .company-info p {
+            font-size: 11px;
+            color: #666;
+            margin: 2px 0;
+        }
+        
+        .invoice-details {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        
+        .invoice-details table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .invoice-details td {
+            padding: 8px;
+            border: none;
+        }
+        
+        .invoice-details .label {
+            font-weight: bold;
+            color: #667eea;
+            width: 40%;
+        }
+        
+        .client-info {
+            margin-bottom: 30px;
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        
+        .client-info h3 {
+            color: #667eea;
+            font-size: 14px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 5px;
+        }
+        
+        .client-info p {
+            margin: 5px 0;
+            font-size: 11px;
+        }
+        
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        
+        .items-table thead {
+            background: #667eea;
+            color: white;
+        }
+        
+        .items-table th {
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .items-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .items-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .items-table .text-right {
+            text-align: right;
+        }
+        
+        .totals {
+            width: 40%;
+            margin-left: auto;
+            border-collapse: collapse;
+        }
+        
+        .totals td {
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .totals .label {
+            font-weight: bold;
+            text-align: left;
+        }
+        
+        .totals .amount {
+            text-align: right;
+            font-weight: bold;
+        }
+        
+        .totals .total-row {
+            background: #667eea;
+            color: white;
+            font-size: 16px;
+        }
+        
+        .totals .total-row td {
+            border-bottom: none;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+        }
+        
+        .footer p {
+            margin: 5px 0;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .status-emise {
+            background: #fff3cd;
+            color: #664d03;
+        }
+        
+        .status-payee {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+        
+        .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 80px;
+            color: rgba(0, 0, 0, 0.05);
+            z-index: -1;
+        }
     </style>
 </head>
 <body>
-    <h1>Facture {{ facture.numero }}</h1>
 
-    <p><strong>Date d'émission :</strong> {{ facture.dateEmission ? facture.dateEmission|date('Y-m-d H:i') : 'N/A' }}</p>
-    <p><strong>Statut :</strong> {{ facture.statut }}</p>
+    <!-- Watermark -->
+    <div class="watermark">{{ facture.numero }}</div>
 
-    <table>
+    <!-- Header -->
+    <div class="header">
+        <h1>FACTURE</h1>
+        <p class="subtitle">{{ facture.numero }}</p>
+    </div>
+
+    <!-- Company Info -->
+    <div class="company-info">
+        <h2>TrackPack</h2>
+        <p>Service de livraison professionnel</p>
+        <p>Adresse : 123 Rue de la Livraison, Tunis</p>
+        <p>Tél : +216 XX XXX XXX</p>
+        <p>Email : contact@trackpack.com</p>
+    </div>
+
+    <!-- Invoice Details -->
+    <div class="invoice-details">
+        <table>
+            <tr>
+                <td class="label">N° Facture :</td>
+                <td>{{ facture.numero }}</td>
+                <td class="label">Date d'émission :</td>
+                <td>{{ facture.dateEmission ? facture.dateEmission|date('d/m/Y à H:i') : 'N/A' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Statut :</td>
+                <td>
+                    <span class="status-badge status-{{ facture.statut }}">
+                        {{ facture.statut|upper }}
+                    </span>
+                </td>
+                <td class="label">ID Colis :</td>
+                <td>Colis #{{ facture.livraison.colis.id }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Client Info -->
+    <div style="display: flex; justify-content: space-between;">
+        <div class="client-info" style="width: 48%;">
+            <h3>📦 Informations Client</h3>
+            <p><strong>Nom :</strong> {{ facture.livraison.colis.destinataire.nom }} {{ facture.livraison.colis.destinataire.prenom }}</p>
+            <p><strong>Email :</strong> {{ facture.livraison.colis.destinataire.email }}</p>
+            <p><strong>Téléphone :</strong> {{ facture.livraison.colis.destinataire.telephone ?? 'N/A' }}</p>
+            <p><strong>Adresse :</strong> {{ facture.livraison.colis.adresseDestination }}</p>
+        </div>
+
+        <div class="client-info" style="width: 48%;">
+            <h3>🚚 Informations Livraison</h3>
+            <p><strong>Livreur :</strong> {{ facture.livraison.livreur.nom }} {{ facture.livraison.livreur.prenom }}</p>
+            <p><strong>Date début :</strong> {{ facture.livraison.dateDebut ? facture.livraison.dateDebut|date('d/m/Y H:i') : 'N/A' }}</p>
+            <p><strong>Date fin :</strong> {{ facture.livraison.dateFin ? facture.livraison.dateFin|date('d/m/Y H:i') : 'N/A' }}</p>
+            <p><strong>Distance :</strong> {{ facture.livraison.distanceKm ? facture.livraison.distanceKm ~ ' km' : 'N/A' }}</p>
+            <p><strong>Statut :</strong> {{ facture.livraison.statut|capitalize }}</p>
+        </div>
+    </div>
+
+    <!-- Items Table -->
+    <table class="items-table">
         <thead>
             <tr>
-                <th>Montant HT</th>
-                <th>TVA</th>
-                <th>Montant TTC</th>
+                <th style="width: 60%;">Description</th>
+                <th style="width: 20%;" class="text-right">Quantité</th>
+                <th style="width: 20%;" class="text-right">Montant</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td>{{ facture.montantHT }}</td>
-                <td>{{ facture.tva }}</td>
-                <td>{{ facture.montantTTC }}</td>
+                <td>
+                    <strong>Service de livraison - Colis #{{ facture.livraison.colis.id }}</strong><br>
+                    <small style="color: #666;">
+                        {{ facture.livraison.colis.description ?? 'Livraison standard' }}
+                        {% if facture.livraison.colis.poids %}
+                            <br>Poids: {{ facture.livraison.colis.poids }} kg
+                        {% endif %}
+                        {% if facture.livraison.colis.dimensions %}
+                            <br>Dimensions: {{ facture.livraison.colis.dimensions }}
+                        {% endif %}
+                    </small>
+                </td>
+                <td class="text-right">1</td>
+                <td class="text-right">{{ facture.montantHT|number_format(2, '.', ' ') }} DT</td>
             </tr>
         </tbody>
     </table>
+
+    <!-- Totals -->
+    <table class="totals">
+        <tr>
+            <td class="label">Sous-total HT :</td>
+            <td class="amount">{{ facture.montantHT|number_format(2, '.', ' ') }} DT</td>
+        </tr>
+        <tr>
+            <td class="label">TVA (20%) :</td>
+            <td class="amount">{{ facture.tva|number_format(2, '.', ' ') }} DT</td>
+        </tr>
+        <tr class="total-row">
+            <td class="label">TOTAL TTC :</td>
+            <td class="amount">{{ facture.montantTTC|number_format(2, '.', ' ') }} DT</td>
+        </tr>
+    </table>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p><strong>TrackPack</strong> - Service de livraison professionnel</p>
+        <p>Merci de votre confiance !</p>
+        <p style="margin-top: 10px; font-size: 9px;">
+            Cette facture est générée électroniquement et est valable sans signature.
+        </p>
+    </div>
+
 </body>
 </html>

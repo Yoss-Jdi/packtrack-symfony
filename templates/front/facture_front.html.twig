@@ -1,0 +1,194 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Factures – PackTrack{% endblock %}
+
+{% block body %}
+
+<style>
+    .factures-wrapper {
+        max-width: 1100px;
+        margin: 40px auto;
+        padding: 0 20px;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    .page-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 25px;
+    }
+    .card-total {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 20px 25px;
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+    .card-total .label   { font-size: 14px; opacity: 0.85; }
+    .card-total .montant { font-size: 28px; font-weight: 700; }
+    .table-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+   thead tr {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    color: white;
+}
+    thead th {
+        padding: 14px 16px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        text-align: left;
+    }
+    tbody tr {
+        border-bottom: 1px solid #f0f0f0;
+        transition: background 0.15s;
+    }
+    tbody tr:hover { background: #f8f6ff; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody td {
+        padding: 13px 16px;
+        font-size: 14px;
+        color: #4a5568;
+    }
+    .statut-badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .statut-emise   { background: #fff3cd; color: #664d03; }
+    .statut-payee   { background: #d1e7dd; color: #0f5132; }
+    .statut-annulee { background: #f8d7da; color: #842029; }
+    .montant-ttc { font-weight: 700; color: #198754; }
+    .btn-pdf {
+    padding: 5px 12px;
+    background: #e8f0fe;
+    color: #0d6efd;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+}
+.btn-pdf:hover { background: #0d6efd; color: white; }
+    .btn-pdf:hover { background: #dc3545; color: white; }
+    .empty-state {
+        text-align: center;
+        padding: 60px;
+        color: #6c757d;
+    }
+    .empty-state .icon { font-size: 48px; margin-bottom: 15px; }
+    .role-badge {
+        display: inline-block;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        background: #e8f4fd;
+        color: #0d6efd;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="factures-wrapper">
+
+    <div class="page-title">🧾 Mes Factures</div>
+
+    {# Badge rôle #}
+    <div class="role-badge">
+        👤 {{ role.value }}
+    </div>
+
+    {# Flash messages #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div style="padding:12px 16px; border-radius:10px; margin-bottom:15px;
+                        background:{{ label == 'error' ? '#f8d7da' : '#d1e7dd' }};
+                        color:{{ label == 'error' ? '#842029' : '#0f5132' }};">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    {# Card total #}
+    {% if factures|length > 0 %}
+        <div class="card-total">
+            <div>
+                <div class="label">Total de vos factures</div>
+                <div class="montant">{{ total|number_format(2, '.', ' ') }} DT</div>
+            </div>
+            <div style="font-size: 48px; opacity: 0.3;">🧾</div>
+        </div>
+    {% endif %}
+
+    {# Tableau #}
+    <div class="table-card">
+        {% if factures|length == 0 %}
+            <div class="empty-state">
+                <div class="icon">📭</div>
+                <p>Aucune facture trouvée pour votre compte.</p>
+            </div>
+        {% else %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>N° Facture</th>
+                        <th>Date d'émission</th>
+                        <th style="text-align:right;">Montant HT</th>
+                        <th style="text-align:right;">TVA</th>
+                        <th style="text-align:right;">Montant TTC</th>
+                        <th style="text-align:center;">Statut</th>
+                        <th style="text-align:center;">PDF</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for facture in factures %}
+                    <tr>
+                        <td><strong>{{ facture.numero }}</strong></td>
+                        <td>
+                            {{ facture.dateEmission
+                                ? facture.dateEmission|date('d/m/Y H:i')
+                                : '—' }}
+                        </td>
+                        <td style="text-align:right;">
+                            {{ facture.montantHT|number_format(2, '.', ' ') }} DT
+                        </td>
+                        <td style="text-align:right;">
+                            {{ facture.tva|number_format(2, '.', ' ') }} DT
+                        </td>
+                        <td style="text-align:right;" class="montant-ttc">
+                            {{ facture.montantTTC|number_format(2, '.', ' ') }} DT
+                        </td>
+                        <td style="text-align:center;">
+                            <span class="statut-badge statut-{{ facture.statut }}">
+                                {% if facture.statut == 'emise' %}🟡 Émise
+                                {% elseif facture.statut == 'payee' %}🟢 Payée
+                                {% elseif facture.statut == 'annulee' %}🔴 Annulée
+                                {% else %}{{ facture.statut }}
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td style="text-align:center;">
+                            <a href="{{ path('app_facture_pdf', {'id': facture.id}) }}"
+                               class="btn-pdf" target="_blank">
+                                📄 PDF
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+</div>
+
+{% endblock %}

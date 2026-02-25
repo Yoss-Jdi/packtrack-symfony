@@ -1,99 +1,252 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block title %}Nouvelle facture{% endblock %}
-
-
+{% block title %}Nouvelle Facture{% endblock %}
 
 {% block body %}
 
-<div style="background:#ffffff; min-height:100vh; padding-top:30px;">
+<style>
+    .new-wrapper {
+        background: #f4f6fb;
+        min-height: 100vh;
+        padding: 30px;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+    .page-header h1 { font-size: 26px; font-weight: 700; color: #2d3748; margin: 0; }
+    .btn-retour {
+        padding: 10px 20px;
+        background: #6c757d;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+    .btn-retour:hover { background: #5a6268; color: white; }
+    .alert-custom { padding: 12px 16px; border-radius: 10px; margin-bottom: 15px; font-size: 14px; }
+    .alert-success { background: #d1e7dd; color: #0f5132; }
+    .alert-danger  { background: #f8d7da; color: #842029; }
+    .form-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        max-width: 650px;
+        margin: 0 auto;
+        overflow: hidden;
+    }
+    .form-card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px 25px;
+        color: white;
+    }
+    .form-card-header h2 { margin: 0; font-size: 18px; font-weight: 700; }
+    .form-card-header p  { margin: 5px 0 0; font-size: 13px; opacity: 0.85; }
+    .form-card-body { padding: 25px; }
+    .form-group { margin-bottom: 18px; }
+    .form-label-custom {
+        font-size: 13px;
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 6px;
+        display: block;
+    }
+    .form-control-custom {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #2d3748;
+        outline: none;
+        transition: border 0.2s;
+        box-sizing: border-box;
+    }
+    .form-control-custom:focus { border-color: #6f42c1; box-shadow: 0 0 0 3px rgba(111,66,193,0.1); }
+    .form-control-custom.is-invalid { border-color: #dc3545; background: #fff5f5; }
+    .form-control-readonly { background: #f8f9fa; color: #6c757d; cursor: not-allowed; }
+    .invalid-feedback { color: #dc3545; font-size: 12px; margin-top: 5px; display: block; }
+    .divider { border: none; border-top: 2px dashed #f0f0f0; margin: 20px 0; }
+    .calcul-box {
+        background: #f8f6ff;
+        border: 1px solid #e0d6ff;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    .calcul-box .titre { font-size: 14px; font-weight: 700; color: #6f42c1; margin-bottom: 15px; }
+    .calcul-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        font-size: 14px;
+        color: #4a5568;
+        border-bottom: 1px solid #ede9ff;
+    }
+    .calcul-row:last-child {
+        border-bottom: none;
+        font-size: 16px;
+        font-weight: 700;
+        color: #198754;
+        padding-top: 12px;
+    }
+    .calcul-row span:last-child { font-weight: 600; color: #2d3748; }
+    .calcul-row:last-child span:last-child { color: #198754; }
+    .form-actions { display: flex; justify-content: flex-end; gap: 10px; padding-top: 10px; }
+    .btn-submit {
+        padding: 11px 25px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+    .btn-submit:hover { opacity: 0.9; }
+    .btn-annuler {
+        padding: 11px 20px;
+        background: #f8f9fa;
+        color: #6c757d;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+</style>
 
+<div class="new-wrapper">
 
-<div style="position: relative; z-index: 10;">
+    <div class="page-header">
+        <h1>🧾 Nouvelle Facture</h1>
+        <a href="{{ path('app_facture_index') }}" class="btn-retour">← Retour à la liste</a>
+    </div>
 
-<h1 style="text-align:center; margin-bottom:30px;">
-    Créer une nouvelle facture
-</h1>
-{% for label, messages in app.flashes %}
-    {% for message in messages %}
-        <div style="padding:10px; margin-bottom:15px; border-radius:5px; background: {% if label == 'error' %}#f8d7da{% else %}#d1e7dd{% endif %}; color: {% if label == 'error' %}#842029{% else %}#0f5132{% endif %};">
-            {{ message }}
-        </div>
+    {# Flash messages #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert-custom {{ label == 'error' ? 'alert-danger' : 'alert-success' }}">
+                {{ label == 'error' ? '❌' : '✅' }} {{ message }}
+            </div>
+        {% endfor %}
     {% endfor %}
-{% endfor %}
-<div style="padding:20px; max-width:600px; margin:20px auto; background:#ffffff; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-    {{ form_start(form) }}
 
-        <div style="display:grid; grid-template-columns:150px 1fr; gap:15px; align-items:center;">
-
-            {{ form_label(form.numero) }}
-            {{ form_widget(form.numero, {'attr': {'class':'input-field'}}) }}
-
-            {{ form_label(form.dateEmission) }}
-            {{ form_widget(form.dateEmission, {'attr': {'class':'input-field'}}) }}
-
-            {{ form_label(form.montantHT) }}
-            {{ form_widget(form.montantHT, {
-                'attr': {
-                    'class':'input-field',
-                    'id': form.montantHT.vars.id
-                }
-            }) }}
-
-            <label for="tva">TVA (20%)</label>
-            <input type="text" id="tva" class="input-field" readonly
-                   style="padding:8px; border-radius:5px; border:1px solid #e0e0e0; background:#f8f9fa;">
-
-            <label for="montantTTC">Montant TTC</label>
-            <input type="text" id="montantTTC" class="input-field" readonly
-                   style="padding:8px; border-radius:5px; border:1px solid #e0e0e0; background:#f8f9fa;">
+    <div class="form-card">
+        <div class="form-card-header">
+            <h2>📋 Informations de la Facture</h2>
+            <p>Sélectionnez un colis pour générer automatiquement la facture</p>
         </div>
 
-        <div style="margin-top:20px; text-align:right;">
-            <button type="submit"
-                    style="padding:8px 20px; border-radius:5px; background:#0d6efd; color:white; border:none; cursor:pointer;">
-                Enregistrer
-            </button>
+        <div class="form-card-body">
+            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
 
-            <a href="{{ path('app_facture_index') }}"
-               style="margin-left:10px; text-decoration:none; color:#555; cursor:pointer;">
-                ← Retour à la liste
-            </a>
+            {# Colis #}
+            <div class="form-group">
+                <label class="form-label-custom">
+                    Sélectionner un colis <span style="color:red">*</span>
+                </label>
+                {{ form_widget(form.colis, {
+                    'attr': {
+                        'class': 'form-control-custom' ~ (errors.colis is defined ? ' is-invalid' : '')
+                    }
+                }) }}
+                {% if errors.colis is defined %}
+                    <span class="invalid-feedback">❌ {{ errors.colis }}</span>
+                {% endif %}
+            </div>
+
+            {# Montant livraison readonly #}
+            <div class="form-group">
+                <label class="form-label-custom">Montant de la livraison (DT)</label>
+                {{ form_widget(form.montantLivraison, {
+                    'attr': {'class': 'form-control-custom form-control-readonly'}
+                }) }}
+            </div>
+
+            <hr class="divider">
+
+            {# Résumé calcul automatique #}
+            <div class="calcul-box">
+                <div class="titre">📊 Calcul automatique</div>
+                <div class="calcul-row">
+                    <span>Montant HT</span>
+                    <span id="montantHT">—</span>
+                </div>
+                <div class="calcul-row">
+                    <span>TVA (20%)</span>
+                    <span id="tva">—</span>
+                </div>
+                <div class="calcul-row">
+                    <span>💰 Montant TTC</span>
+                    <span id="montantTTC">—</span>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="{{ path('app_facture_index') }}" class="btn-annuler">Annuler</a>
+                <button type="submit" class="btn-submit">⚡ Générer la Facture</button>
+            </div>
+
+            {{ form_end(form) }}
         </div>
-
-    {{ form_end(form) }}
-</div>
+    </div>
 
 </div>
-
 {% endblock %}
 
 {% block javascripts %}
 <script>
-    const montantHTInput = document.getElementById('{{ form.montantHT.vars.id }}');
-    const tvaInput = document.getElementById('tva');
-    const ttcInput = document.getElementById('montantTTC');
+document.addEventListener('DOMContentLoaded', function () {
+    const selectColis           = document.querySelector('select[name="facture[colis]"]');
+    const montantLivraisonInput = document.querySelector('input[name="facture[montantLivraison]"]');
+    const montantHTEl           = document.getElementById('montantHT');
+    const tvaEl                 = document.getElementById('tva');
+    const ttcEl                 = document.getElementById('montantTTC');
 
-    if (montantHTInput && tvaInput && ttcInput) {
-        function calculer() {
-            const ht = parseFloat(montantHTInput.value);
-            if (!isNaN(ht)) {
-                const tva = ht * 0.20;
-                const ttc = ht * 1.20;
-                tvaInput.value = tva.toFixed(2);
-                ttcInput.value = ttc.toFixed(2);
-            } else {
-                tvaInput.value = '';
-                ttcInput.value = '';
-            }
+    if (!selectColis || !montantLivraisonInput) return;
+
+    selectColis.addEventListener('change', function () {
+        const colisId = this.value;
+
+        if (!colisId) {
+            montantLivraisonInput.value = '';
+            montantHTEl.textContent = '—';
+            tvaEl.textContent       = '—';
+            ttcEl.textContent       = '—';
+            return;
         }
 
-        // Initialise si valeur déjà présente
-        calculer();
+        fetch(`/facture/api/colis/${colisId}/montant`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.montant) {
+                    const ht  = data.montant;
+                    const tva = ht * 0.20;
+                    const ttc = ht + tva;
 
-        // Recalcul automatique au changement de Montant HT
-        montantHTInput.addEventListener('input', calculer);
-    }
+                    montantLivraisonInput.value = ht.toFixed(2);
+                    montantHTEl.textContent     = ht.toFixed(2)  + ' DT';
+                    tvaEl.textContent           = tva.toFixed(2) + ' DT';
+                    ttcEl.textContent           = ttc.toFixed(2) + ' DT';
+
+                    if (data.statut !== 'termine') {
+                        alert('⚠️ Cette livraison n\'est pas encore terminée !');
+                    }
+                } else {
+                    montantLivraisonInput.value = '';
+                    montantHTEl.textContent = '—';
+                    tvaEl.textContent       = '—';
+                    ttcEl.textContent       = '—';
+                    alert('❌ Aucune livraison trouvée pour ce colis.');
+                }
+            })
+            .catch(() => alert('❌ Erreur lors de la récupération du montant.'));
+    });
+});
 </script>
-</div>
 {% endblock %}
