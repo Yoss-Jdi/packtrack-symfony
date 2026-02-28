@@ -1,0 +1,246 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau Colis - PackTrack{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+    
+    .form-card {
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .form-group {
+        margin-bottom: 24px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+
+    .form-group textarea {
+        resize: vertical;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 32px;
+    }
+    
+    .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: 0.3s;
+    }
+    
+    .btn-primary {
+        background: #007bff;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: #0056b3;
+    }
+    
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .btn-secondary:hover {
+        background: #545b62;
+    }
+
+    .field-error {
+        color: #dc3545;
+        font-size: 12px;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .field-help {
+        color: #6c757d;
+        display: block;
+        margin-top: 5px;
+        font-size: 12px;
+    }
+
+    .form-errors {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .form-errors strong {
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .form-errors ul {
+        margin: 0;
+        padding-left: 20px;
+    }
+
+    .form-errors li {
+        margin-bottom: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>📦 Nouveau Colis</h1>
+    
+    <div class="form-card">
+
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+        
+        <div class="form-group">
+            {{ form_label(form.description) }}
+            {{ form_widget(form.description) }}
+            {% if form.description.vars.errors|length > 0 %}
+                <div>
+                    {% for error in form.description.vars.errors %}
+                        <span class="field-error">{{ error.message }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if form.description.vars.help %}
+                <span class="field-help">{{ form.description.vars.help }}</span>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            {{ form_label(form.articles) }}
+            {{ form_widget(form.articles) }}
+            {% if form.articles.vars.errors|length > 0 %}
+                <div>
+                    {% for error in form.articles.vars.errors %}
+                        <span class="field-error">{{ error.message }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if form.articles.vars.help %}
+                <span class="field-help">{{ form.articles.vars.help }}</span>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            {{ form_label(form.adresseDestination) }}
+            {{ form_widget(form.adresseDestination) }}
+            {% if form.adresseDestination.vars.errors|length > 0 %}
+                <div>
+                    {% for error in form.adresseDestination.vars.errors %}
+                        <span class="field-error">{{ error.message }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if form.adresseDestination.vars.help %}
+                <span class="field-help">{{ form.adresseDestination.vars.help }}</span>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.adresseDepart) }}
+            {{ form_widget(form.adresseDepart) }}
+            {% if form.adresseDepart.vars.errors|length > 0 %}
+                <div>
+                    {% for error in form.adresseDepart.vars.errors %}
+                        <span class="field-error">{{ error.message }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if form.adresseDepart.vars.help %}
+                <span class="field-help">{{ form.adresseDepart.vars.help }}</span>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            {{ form_label(form.destinataire) }}
+            {{ form_widget(form.destinataire) }}
+            {% if form.destinataire.vars.errors|length > 0 %}
+                <div>
+                    {% for error in form.destinataire.vars.errors %}
+                        <span class="field-error">{{ error.message }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            {{ form_label(form.poids) }}
+            {{ form_widget(form.poids) }}
+            {% if form.poids.vars.errors|length > 0 %}
+                <div>
+                    {% for error in form.poids.vars.errors %}
+                        <span class="field-error">{{ error.message }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if form.poids.vars.help %}
+                <span class="field-help">{{ form.poids.vars.help }}</span>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            {{ form_label(form.dimensions) }}
+            {{ form_widget(form.dimensions) }}
+            {% if form.dimensions.vars.errors|length > 0 %}
+                <div>
+                    {% for error in form.dimensions.vars.errors %}
+                        <span class="field-error">{{ error.message }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if form.dimensions.vars.help %}
+                <span class="field-help">{{ form.dimensions.vars.help }}</span>
+            {% endif %}
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">💾 Créer le colis</button>
+            <a href="{{ path('app_colis_index') }}" class="btn btn-secondary">❌ Annuler</a>
+        </div>
+        
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

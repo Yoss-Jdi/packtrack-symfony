@@ -12,6 +12,7 @@ class ForumController extends AbstractController
     #[Route('/forum', name: 'admin_forum')]
     public function index(): Response
     {
-        return $this->redirectToRoute('admin_forum_publication_index');
+        //return $this->redirectToRoute('admin_forum_publication_index');
+        return $this->render('admin/forum/index.html.twig');
     }
 }

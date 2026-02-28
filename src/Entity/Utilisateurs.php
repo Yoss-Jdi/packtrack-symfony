@@ -34,8 +34,11 @@ class Utilisateurs implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::STRING, enumType: Role::class)]
     private ?Role $role = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $photo = null;
+
     // ====== NOUVEAU CHAMP ======
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $createdAt = null;
 
     // ====== CONSTRUCTEUR ======
@@ -136,21 +139,19 @@ class Utilisateurs implements UserInterface, PasswordAuthenticatedUserInterface
     // ====== MÉTHODES UserInterface ======
     public function getRoles(): array
     {
-        $roles = ['ROLE_USER'];
-        $label = $this->role->value;
-        if ($label === 'Administrateur') {
-            $roles[] = 'ROLE_ADMIN';
-        } elseif ($label === 'Client') {
-            $roles[] = 'ROLE_CLIENT';
-        } elseif ($label === 'Livreur') {
-            $roles[] = 'ROLE_LIVREUR';
-        } elseif ($label === 'Entreprise') {
-            $roles[] = 'ROLE_ENTREPRISE';
-        } elseif ($label === 'Gestionnaire') {
-            $roles[] = 'ROLE_GESTIONNAIRE';
-        }
-        return $roles;
+        return ['ROLE_' . $this->role->value];
     }
+
+    public function getPhoto(): ?string
+{
+    return $this->photo;
+}
+
+public function setPhoto(?string $photo): static
+{
+    $this->photo = $photo;
+    return $this;
+}
 
     public function eraseCredentials(): void
     {

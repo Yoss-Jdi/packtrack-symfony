@@ -60,7 +60,7 @@ class FrontForumController extends AbstractController
     #[Route('/community/new', name: 'front_forum_publication_new', methods: ['GET', 'POST'])]
     public function newPublication(Request $request, EntityManagerInterface $em): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_USER');
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
 
         $publication = new Publication();
 
@@ -96,7 +96,7 @@ class FrontForumController extends AbstractController
     #[Route('/community/{id}/edit', name: 'front_forum_publication_edit', methods: ['GET', 'POST'])]
     public function editPublication(Publication $publication, Request $request, EntityManagerInterface $em): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_USER');
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
 
         /** @var Utilisateurs|null $user */
         $user = $this->getUser();
@@ -132,7 +132,7 @@ class FrontForumController extends AbstractController
     #[Route('/community/{id}/delete', name: 'front_forum_publication_delete', methods: ['POST'])]
     public function deletePublication(Publication $publication, Request $request, EntityManagerInterface $em): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_USER');
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
 
         /** @var Utilisateurs|null $user */
         $user = $this->getUser();
@@ -233,7 +233,7 @@ class FrontForumController extends AbstractController
         EntityManagerInterface $em,
         PublicationReactionRepository $reactionRepository
     ): Response {
-        $this->denyAccessUnlessGranted('ROLE_USER');
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
 
         /** @var Utilisateurs $user */
         $user = $this->getUser();
@@ -274,7 +274,7 @@ class FrontForumController extends AbstractController
     #[Route('/community/comment/{id}/edit', name: 'front_forum_comment_edit', methods: ['GET', 'POST'])]
     public function editComment(Commentaire $commentaire, Request $request, EntityManagerInterface $em): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_USER');
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
 
         /** @var Utilisateurs|null $user */
         $user = $this->getUser();
@@ -310,7 +310,7 @@ class FrontForumController extends AbstractController
     #[Route('/community/comment/{id}/delete', name: 'front_forum_comment_delete', methods: ['POST'])]
     public function deleteComment(Commentaire $commentaire, Request $request, EntityManagerInterface $em): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_USER');
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
 
         /** @var Utilisateurs|null $user */
         $user = $this->getUser();
