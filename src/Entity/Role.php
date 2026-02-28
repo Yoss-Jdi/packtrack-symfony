@@ -7,4 +7,5 @@ enum Role: string
     case CLIENT = 'CLIENT';
     case GESTIONNAIRE = 'GESTIONNAIRE';
     case LIVREUR = 'LIVREUR';
+    case TECHNICIEN = 'TECHNICIEN';
 }

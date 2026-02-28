@@ -141,6 +141,7 @@ class UtilisateursType extends AbstractType
                         Role::CLIENT => 'Client',
                         Role::GESTIONNAIRE => 'Gestionnaire',
                         Role::LIVREUR => 'Livreur',
+                        Role::TECHNICIEN => 'Technicien'
                     };
                 },
                 'constraints' => [
