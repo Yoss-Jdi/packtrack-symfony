@@ -7,6 +7,34 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         /* ===== DROPDOWN SESSION UTILISATEUR ===== */
+        /* ✅ Fix dropdown bloqué par les pages enfants */
+header.navbar {
+    position: relative;
+    z-index: 1000;
+    overflow: visible !important;
+}
+
+.navbar-user-area {
+    position: relative;
+    z-index: 1001;
+}
+
+.navbar-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 220px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.14);
+    border: 1px solid rgba(0,0,0,0.07);
+    overflow: visible !important;  /* ✅ important */
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+    transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+    pointer-events: none;
+    z-index: 9999;  /* ✅ augmenté */
+}
         .navbar-user-area {
             position: relative;
         }
@@ -334,7 +362,8 @@
     <p class="copyright">© 2026 PackTrack. All rights reserved.</p>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script>
 function toggleUserDropdown() {
     const btn      = document.getElementById('navbar-user-btn');
     const dropdown = document.getElementById('navbar-dropdown');
@@ -344,11 +373,13 @@ function toggleUserDropdown() {
     dropdown.classList.toggle('open', !isOpen);
 }
 
-// Fermer en cliquant ailleurs
+// ✅ Fix : déclare btn et dropdown dans ce scope aussi
 document.addEventListener('click', function(e) {
-    const area = document.getElementById('navbar-user-area');
+    const area     = document.getElementById('navbar-user-area');
+    const btn      = document.getElementById('navbar-user-btn');
+    const dropdown = document.getElementById('navbar-dropdown');
     if (area && !area.contains(e.target)) {
-                btn.classList.remove('open');
+        btn.classList.remove('open');
         dropdown.classList.remove('open');
     }
 });
