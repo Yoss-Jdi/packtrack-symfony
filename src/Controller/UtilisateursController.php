@@ -126,7 +126,6 @@ final class UtilisateursController extends AbstractController
     public function stats(UtilisateursRepository $repository): Response
     {
         $utilisateurs = $repository->findAll();
-
         return $this->render('admin/utilisateurs/statsutilisateurs.html.twig', [
             'utilisateurs' => $utilisateurs,
         ]);

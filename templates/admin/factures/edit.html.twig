@@ -1,0 +1,83 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Modifier Facture {{ facture.numero }}{% endblock %}
+
+{% block body %}
+<div style="background: #ffffff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); max-width: 700px; margin: 30px auto;">
+
+    <h1 style="margin-bottom: 20px; color: #333;">
+        Modifier la facture <strong>{{ facture.numero }}</strong>
+    </h1>
+
+    <form action="{{ path('app_facture_edit', {'id': facture.id}) }}" method="post">
+        <input type="hidden" name="_token" value="{{ csrf_token('edit' ~ facture.id) }}">
+
+        <div style="display: grid; grid-template-columns: 160px 1fr; gap: 15px; align-items: center;">
+
+            <label for="numero">Numéro</label>
+            <input type="text" id="numero" name="numero"
+                   value="{{ facture.numero }}" required
+                   style="padding:8px; border-radius:5px; border:1px solid #ddd;">
+
+            <label for="dateEmission">Date d'émission</label>
+            <input type="datetime-local" id="dateEmission" name="dateEmission"
+                   value="{{ facture.dateEmission ? facture.dateEmission|date('Y-m-d\\TH:i') : '' }}"
+                   required
+                   style="padding:8px; border-radius:5px; border:1px solid #ddd;">
+
+            <label for="montantHT">Montant HT</label>
+            <input type="number" id="montantHT" name="montantHT" step="0.01"
+                   value="{{ facture.montantHT }}" required
+                   style="padding:8px; border-radius:5px; border:1px solid #ddd;">
+
+            <label>Montant TTC</label>
+            <input type="text" id="montantTTC" readonly
+                   value="{{ facture.montantHT * (1 + (facture.tva / 100)) | number_format(2, '.', '') }}"
+                   style="padding:8px; border-radius:5px; border:1px solid #e0e0e0; background:#f8f9fa;">
+
+            <label>TVA (20%)</label>
+            <input type="text" id="tva" readonly
+                   value="{{ facture.tva }}"
+                   style="padding:8px; border-radius:5px; border:1px solid #e0e0e0; background:#f8f9fa;">
+        </div>
+
+        <div style="margin-top: 25px; text-align: right;">
+            <button type="submit"
+                    style="padding: 8px 22px; border-radius: 5px; background-color: #0d6efd; color: white; border: none; cursor:pointer;">
+                Enregistrer
+            </button>
+
+            <a href="{{ path('app_facture_index') }}"
+               style="margin-left: 15px; color: #555; text-decoration: none;">
+                ← Retour à la liste
+            </a>
+        </div>
+    </form>
+
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    const montantHTInput = document.getElementById('montantHT');
+    const tvaInput = document.getElementById('tva');
+    const ttcInput = document.getElementById('montantTTC');
+
+    function calculer() {
+        const ht = parseFloat(montantHTInput.value);
+
+        if (!isNaN(ht)) {
+            const tva = ht * 0.20;
+            const ttc = ht * 1.20;
+
+            tvaInput.value = tva.toFixed(2);
+            ttcInput.value = ttc.toFixed(2);
+        } else {
+            tvaInput.value = '';
+            ttcInput.value = '';
+        }
+    }
+
+    montantHTInput.addEventListener('input', calculer);
+</script>
+{% endblock %}

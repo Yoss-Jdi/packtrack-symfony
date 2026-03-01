@@ -159,4 +159,9 @@ class Utilisateurs implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->Email;
     }
+
+    public function getDisplayName(): string
+    {
+        return trim(($this->Prenom ?? '') . ' ' . ($this->Nom ?? ''));
+    }
 }

@@ -1687,6 +1687,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         internal_logging?: bool|Param, // Enable internal logging for Doctrine Doctor analyzers. Can add ~133ms overhead. Enable only for debugging. // Default: false
  *     },
  * }
+ * @psalm-type EndroidQrCodeConfig = array<string, mixed>
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -1702,6 +1703,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     monolog?: MonologConfig,
  *     webpack_encore?: WebpackEncoreConfig,
  *     knp_paginator?: KnpPaginatorConfig,
+ *     endroid_qr_code?: EndroidQrCodeConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -1721,6 +1723,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         webpack_encore?: WebpackEncoreConfig,
  *         knp_paginator?: KnpPaginatorConfig,
  *         doctrine_doctor?: DoctrineDoctorConfig,
+ *         endroid_qr_code?: EndroidQrCodeConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -1737,6 +1740,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         monolog?: MonologConfig,
  *         webpack_encore?: WebpackEncoreConfig,
  *         knp_paginator?: KnpPaginatorConfig,
+ *         endroid_qr_code?: EndroidQrCodeConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -1754,6 +1758,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         monolog?: MonologConfig,
  *         webpack_encore?: WebpackEncoreConfig,
  *         knp_paginator?: KnpPaginatorConfig,
+ *         endroid_qr_code?: EndroidQrCodeConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,

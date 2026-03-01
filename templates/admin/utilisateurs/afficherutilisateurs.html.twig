@@ -192,7 +192,7 @@
         color: white;
     }
     
-    .role-badge-large.gestionnaire {
+    .role-badge-large.entreprise {
         background: linear-gradient(135deg, #f39c12 0%, #d68910 100%);
         color: white;
     }
@@ -469,7 +469,7 @@
                         <span class="role-badge-large {{ utilisateur.role.value|lower }}">
                             {% if utilisateur.role.value == 'ADMIN' %}
                                 <i class="fa-solid fa-user-shield"></i>
-                            {% elseif utilisateur.role.value == 'GESTIONNAIRE' %}
+                            {% elseif utilisateur.role.value == 'ENTREPRISE' %}
                                 <i class="fa-solid fa-user-tie"></i>
                             {% elseif utilisateur.role.value == 'LIVREUR' %}
                                 <i class="fa-solid fa-truck"></i>

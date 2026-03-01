@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Facture {{ facture.numero }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 14px; }
+        h1 { text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #333; padding: 8px; text-align: left; }
+    </style>
+</head>
+<body>
+    <h1>Facture {{ facture.numero }}</h1>
+
+    <p><strong>Date d'émission :</strong> {{ facture.dateEmission ? facture.dateEmission|date('Y-m-d H:i') : 'N/A' }}</p>
+    <p><strong>Statut :</strong> {{ facture.statut }}</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Montant HT</th>
+                <th>TVA</th>
+                <th>Montant TTC</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ facture.montantHT }}</td>
+                <td>{{ facture.tva }}</td>
+                <td>{{ facture.montantTTC }}</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
