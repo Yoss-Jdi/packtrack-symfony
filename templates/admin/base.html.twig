@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}PackTrack - Admin{% endblock %}</title>
+    
     <link rel="stylesheet" href="{{ asset('css/back-style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
     <style>
         .sidebar ul li.has-submenu { position: relative; }
         .sidebar ul li.has-submenu > a { display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.3s ease; }
@@ -31,55 +33,18 @@
         .logout-btn a:hover { background: rgba(255,107,107,0.1) !important; padding-left: 25px; }
 
         /* ===== USER INFO AVEC PHOTO ===== */
-        .user-info {
-            padding: 16px 18px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .user-avatar {
-            width: 46px;
-            height: 46px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid rgba(255,255,255,0.35);
-            flex-shrink: 0;
-            transition: border-color 0.3s ease;
-        }
-
+        .user-info { padding: 16px 18px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 10px; display: flex; align-items: center; gap: 12px; }
+        .user-avatar { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.35); flex-shrink: 0; transition: border-color 0.3s ease; }
         .user-avatar:hover { border-color: rgba(255,255,255,0.7); }
-
-        .user-avatar-placeholder {
-            width: 46px;
-            height: 46px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            flex-shrink: 0;
-            border: 2px solid rgba(255,255,255,0.2);
-        }
-
+        .user-avatar-placeholder { width: 46px; height: 46px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.2); }
         .user-details { flex: 1; min-width: 0; }
         .user-details strong { color: #fff; font-size: 14px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .user-details .user-role { font-size: 11px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; display: block; }
         .user-details .user-email { font-size: 11px; color: rgba(255,255,255,0.5); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-        .user-profil-link {
-            display: inline-block;
-            margin-top: 4px;
-            font-size: 11px;
-            color: rgba(255,255,255,0.5);
-            text-decoration: none;
-            transition: color 0.2s;
-        }
+        .user-profil-link { display: inline-block; margin-top: 4px; font-size: 11px; color: rgba(255,255,255,0.5); text-decoration: none; transition: color 0.2s; }
         .user-profil-link:hover { color: rgba(255,255,255,0.9); }
     </style>
+    
     {% block stylesheets %}{% endblock %}
 </head>
 <body>
@@ -108,50 +73,72 @@
             </div>
         {% endif %}
 
-<ul>
-    <li class="{{ app.request.get('_route') == 'admin_dashboard' ? 'active' }}">
-        <a href="{{ path('admin_dashboard') }}"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
-    </li>
-    <li class="{{ app.request.get('_route') starts with 'admin_parcels' ? 'active' }}">
-        <a href="{{ path('admin_parcels') }}"><i class="fa-solid fa-box"></i> Colis</a>
-    </li>
-    <li class="{{ app.request.get('_route') starts with 'app_facture_' ? 'active' }}">
-        <a href="{{ path('app_facture_index') }}"><i class="fa-solid fa-file-invoice"></i> Factures</a>
-    </li>
-    <li class="{{ app.request.get('_route') starts with 'admin_vehicles' ? 'active' }}">
-        <a href="{{ path('admin_vehicles') }}"><i class="fa-solid fa-truck"></i> Vehicles</a>
-    </li>
-    <li class="{{ app.request.get('_route') starts with 'admin_forum' ? 'active' }}">
-        <a href="{{ path('admin_forum') }}"><i class="fa-solid fa-comments"></i> Forum</a>
-    </li>
-    <li class="{{ app.request.get('_route') starts with 'admin_incidents' ? 'active' }}">
-        <a href="{{ path('admin_incidents') }}"><i class="fa-solid fa-triangle-exclamation"></i> Incidents</a>
-    </li>
-    <li class="has-submenu {{ app.request.get('_route') starts with 'app_utilisateurs' ? 'active open' : '' }}">
-        <a href="javascript:void(0);" onclick="toggleSubmenu(this)">
-            <span><i class="fa-solid fa-users"></i> Utilisateurs</span>
-            <i class="fa-solid fa-chevron-down arrow"></i>
-        </a>
-        <ul class="submenu">
-            <li class="{{ app.request.get('_route') == 'app_utilisateurs' ? 'active' }}">
-                <a href="{{ path('app_utilisateurs') }}"><i class="fa-solid fa-list"></i> Liste</a>
+        <ul>
+            <li class="{{ app.request.get('_route') == 'admin_dashboard' ? 'active' }}">
+                <a href="{{ path('admin_dashboard') }}"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
             </li>
-            <li class="{{ app.request.get('_route') == 'app_utilisateurs_new' ? 'active' }}">
-                <a href="{{ path('app_utilisateurs_new') }}"><i class="fa-solid fa-user-plus"></i> Ajout</a>
+            <li class="{{ app.request.get('_route') starts with 'admin_parcels' ? 'active' }}">
+                <a href="{{ path('admin_parcels') }}"><i class="fa-solid fa-box"></i> Colis</a>
             </li>
-            <li class="{{ app.request.get('_route') == 'app_utilisateurs_stats' ? 'active' }}">
-                <a href="{{ path('app_utilisateurs_stats') }}"><i class="fas fa-chart-bar"></i> Statistiques</a>
+            <li class="{{ app.request.get('_route') starts with 'app_facture_' ? 'active' }}">
+                <a href="{{ path('app_facture_index') }}"><i class="fa-solid fa-file-invoice"></i> Factures</a>
+            </li>
+            <li class="has-submenu {{ app.request.get('_route') starts with 'admin_vehicles' ? 'active open' : '' }}">
+                <a href="javascript:void(0);" onclick="toggleSubmenu(this)">
+                    <span><i class="fa-solid fa-truck"></i> Vehicles</span>
+                    <i class="fa-solid fa-chevron-down arrow"></i>
+                </a>
+                <ul class="submenu">
+                    <li class="{{ app.request.get('_route') == 'admin_vehicles_index' ? 'active' }}">
+                        <a href="{{ path('admin_vehicles_index') }}"><i class="fa-solid fa-list"></i> Liste</a>
+                    </li>
+                    <li class="{{ app.request.get('_route') == 'admin_vehicles_new' ? 'active' }}">
+                        <a href="{{ path('admin_vehicles_new') }}"><i class="fa-solid fa-plus"></i> Nouveau</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('admin_vehicles_export_pdf') }}"><i class="fa-solid fa-file-pdf"></i> Export PDF</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="has-submenu {{ app.request.get('_route') starts with 'admin_forum' ? 'active open' : '' }}">
+                <a href="javascript:void(0);" onclick="toggleSubmenu(this)">
+                    <span><i class="fa-solid fa-comments"></i> Forum</span>
+                    <i class="fa-solid fa-chevron-down arrow"></i>
+                </a>
+                <ul class="submenu">
+                    <li class="{{ app.request.get('_route') starts with 'admin_forum_publication' ? 'active' }}">
+                        <a href="{{ path('admin_forum_publication_index') }}"><i class="fa-solid fa-newspaper"></i> Publications</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="{{ app.request.get('_route') starts with 'admin_incidents' ? 'active' }}">
+                <a href="{{ path('admin_incidents') }}"><i class="fa-solid fa-triangle-exclamation"></i> Incidents</a>
+            </li>
+            <li class="has-submenu {{ app.request.get('_route') starts with 'app_utilisateurs' ? 'active open' : '' }}">
+                <a href="javascript:void(0);" onclick="toggleSubmenu(this)">
+                    <span><i class="fa-solid fa-users"></i> Utilisateurs</span>
+                    <i class="fa-solid fa-chevron-down arrow"></i>
+                </a>
+                <ul class="submenu">
+                    <li class="{{ app.request.get('_route') == 'app_utilisateurs' ? 'active' }}">
+                        <a href="{{ path('app_utilisateurs') }}"><i class="fa-solid fa-list"></i> Liste</a>
+                    </li>
+                    <li class="{{ app.request.get('_route') == 'app_utilisateurs_new' ? 'active' }}">
+                        <a href="{{ path('app_utilisateurs_new') }}"><i class="fa-solid fa-user-plus"></i> Ajout</a>
+                    </li>
+                    <li class="{{ app.request.get('_route') == 'app_utilisateurs_stats' ? 'active' }}">
+                        <a href="{{ path('app_utilisateurs_stats') }}"><i class="fas fa-chart-bar"></i> Statistiques</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="{{ app.request.get('_route') starts with 'app_notifications' ? 'active' }}">
+                <a href="{{ path('app_notifications_admin') }}"><i class="fa-solid fa-bell"></i> Notifications</a>
+            </li>
+            <li class="logout-btn">
+                <a href="{{ path('app_logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</a>
             </li>
         </ul>
-    </li>
-    <li class="{{ app.request.get('_route') starts with 'app_notifications' ? 'active' }}">
-        <a href="{{ path('app_notifications_admin') }}"><i class="fa-solid fa-bell"></i> Notifications</a>
-    </li>
-    <li class="logout-btn">
-        <a href="{{ path('app_logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</a>
-    </li>
-</ul>
-</aside>
+    </aside>
 
     <main class="main">
         {% for label, messages in app.flashes %}
@@ -160,22 +147,17 @@
             {% endfor %}
         {% endfor %}
 
-            {% block body %}{% endblock %}
-        </main>
-    </div>
+        {% block body %}{% endblock %}
+    </main>
+</div>
 
-    
+<script>
+    function toggleSubmenu(element) {
+        const parentLi = element.parentElement;
+        parentLi.classList.toggle('open');
+    }
+</script>
 
-    <script>
-        function toggleSubmenu(element) {
-            const parentLi = element.parentElement
-            parentLi.classList.toggle('open')
-        }
-    </script>
-
-    {% block javascripts %}{% endblock %}
-
-</body>
-</html>
+{% block javascripts %}{% endblock %}
 </body>
 </html>

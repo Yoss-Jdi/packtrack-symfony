@@ -238,76 +238,81 @@
         {% if app.user and is_granted('ROLE_LIVREUR') %}
             <a href="{{ path('app_livraison_index') }}" class="{{ app.request.get('_route') in ['app_livraison_index', 'app_livraison_mes_livraisons', 'app_livraison_terminer', 'app_livraison_colis_details', 'app_livraison_details'] ? 'active' }}">Livraisons</a>
         {% endif %}
-        <a href="#">Community</a>
-        <a href="#">Report Issue</a>
-    {% if app.user and is_granted('ROLE_ADMIN') %}
-        <a href="{{ path('app_facture_index') }}" class="{{ app.request.get('_route') == 'app_facture_index' ? 'active' }}">Factures</a>
-    {% endif %}
-    </nav>
-{# ===== ZONE UTILISATEUR ===== #}
-<a href="{{ path('app_notifications_index') }}" style="position: relative; text-decoration: none; color: #495057; font-weight: 600; padding: 8px 16px; border-radius: 6px; transition: 0.2s;">
-    🔔
-</a>
-
-{% if app.user %}
-    <div class="navbar-user-area" id="navbar-user-area">
-        <div class="navbar-user-btn" id="navbar-user-btn" onclick="toggleUserDropdown()">
-            {% if app.user.photo %}
-                <img src="{{ asset('uploads/profils/' ~ app.user.photo) }}"
-                     alt="Photo de profil"
-                     class="navbar-avatar">
-            {% else %}
-                <div class="navbar-avatar-initial">
-                    {{ app.user.prenom|slice(0,1)|upper }}
-                </div>
+        {% if app.user %}
+            <a href="{{ path('front_forum_index') }}" class="{{ app.request.get('_route') starts with 'front_forum' ? 'active' }}">Community</a>
+            {% if app.user and is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_facture_index') }}" class="{{ app.request.get('_route') == 'app_facture_index' ? 'active' }}">Factures</a>
             {% endif %}
-            <span class="navbar-user-name">{{ app.user.prenom }}</span>
-            <i class="fas fa-chevron-down navbar-chevron"></i>
-        </div>
-        <div class="navbar-dropdown" id="navbar-dropdown">
-            <div class="dropdown-header">
-                <div class="dropdown-header-avatar">
+        {% endif %}
+        <a href="#">Report Issue</a>
+    </nav>
+
+    {# ===== ZONE UTILISATEUR ===== #}
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <a href="{{ path('app_notifications_index') }}" style="position: relative; text-decoration: none; color: #495057; font-weight: 600; padding: 8px 16px; border-radius: 6px; transition: 0.2s;">
+            🔔
+        </a>
+
+        {% if app.user %}
+            <div class="navbar-user-area" id="navbar-user-area">
+                <div class="navbar-user-btn" id="navbar-user-btn" onclick="toggleUserDropdown()">
                     {% if app.user.photo %}
                         <img src="{{ asset('uploads/profils/' ~ app.user.photo) }}"
                              alt="Photo de profil"
-                             class="dropdown-avatar-img">
+                             class="navbar-avatar">
                     {% else %}
-                        <div class="dropdown-avatar-initial">
+                        <div class="navbar-avatar-initial">
                             {{ app.user.prenom|slice(0,1)|upper }}
                         </div>
                     {% endif %}
-                    <div class="dropdown-user-info">
-                        <strong>{{ app.user.prenom }} {{ app.user.nom }}</strong>
-                        <span class="dropdown-role">{{ app.user.role.value }}</span>
+                    <span class="navbar-user-name">{{ app.user.prenom }}</span>
+                    <i class="fas fa-chevron-down navbar-chevron"></i>
+                </div>
+                <div class="navbar-dropdown" id="navbar-dropdown">
+                    <div class="dropdown-header">
+                        <div class="dropdown-header-avatar">
+                            {% if app.user.photo %}
+                                <img src="{{ asset('uploads/profils/' ~ app.user.photo) }}"
+                                     alt="Photo de profil"
+                                     class="dropdown-avatar-img">
+                            {% else %}
+                                <div class="dropdown-avatar-initial">
+                                    {{ app.user.prenom|slice(0,1)|upper }}
+                                </div>
+                            {% endif %}
+                            <div class="dropdown-user-info">
+                                <strong>{{ app.user.prenom }} {{ app.user.nom }}</strong>
+                                <span class="dropdown-role">{{ app.user.role.value }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown-items">
+                        <a href="{{ path('app_profil_front') }}" class="dropdown-item">
+                            <i class="fas fa-user-circle"></i>
+                            Mon profil
+                        </a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <div class="dropdown-divider"></div>
+                            <a href="{{ path('admin_dashboard') }}" class="dropdown-item">
+                                <i class="fas fa-tachometer-alt"></i>
+                                Dashboard Admin
+                                <span class="dropdown-admin-badge">ADMIN</span>
+                            </a>
+                        {% endif %}
+                        <div class="dropdown-divider"></div>
+                        <a href="{{ path('app_logout') }}" class="dropdown-item danger">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Se déconnecter
+                        </a>
                     </div>
                 </div>
             </div>
-            <div class="dropdown-items">
-                <a href="{{ path('app_profil_front') }}" class="dropdown-item">
-                    <i class="fas fa-user-circle"></i>
-                    Mon profil
-                </a>
-                {% if is_granted('ROLE_ADMIN') %}
-                    <div class="dropdown-divider"></div>
-                    <a href="{{ path('admin_dashboard') }}" class="dropdown-item">
-                        <i class="fas fa-tachometer-alt"></i>
-                        Dashboard Admin
-                        <span class="dropdown-admin-badge">ADMIN</span>
-                    </a>
-                {% endif %}
-                <div class="dropdown-divider"></div>
-                <a href="{{ path('app_logout') }}" class="dropdown-item danger">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Se déconnecter
-                </a>
-            </div>
-        </div>
+        {% else %}
+            <a href="{{ path('app_login') }}" class="navbar-login-btn">
+                <i class="fas fa-sign-in-alt"></i> Connexion
+            </a>
+        {% endif %}
     </div>
-{% else %}
-    <a href="{{ path('app_login') }}" class="navbar-login-btn">
-        <i class="fas fa-sign-in-alt"></i> Connexion
-    </a>
-{% endif %}
 </header>
 <!-- CONTENU DYNAMIQUE -->
 {% block body %}{% endblock %}
@@ -334,7 +339,8 @@
     <p class="copyright">© 2026 PackTrack. All rights reserved.</p>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script>
 function toggleUserDropdown() {
     const btn      = document.getElementById('navbar-user-btn');
     const dropdown = document.getElementById('navbar-dropdown');
@@ -347,8 +353,10 @@ function toggleUserDropdown() {
 // Fermer en cliquant ailleurs
 document.addEventListener('click', function(e) {
     const area = document.getElementById('navbar-user-area');
+    const btn = document.getElementById('navbar-user-btn');
+    const dropdown = document.getElementById('navbar-dropdown');
     if (area && !area.contains(e.target)) {
-                btn.classList.remove('open');
+        btn.classList.remove('open');
         dropdown.classList.remove('open');
     }
 });

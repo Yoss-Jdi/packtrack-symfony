@@ -194,6 +194,22 @@
                 <div class="detail-label">Dimensions :</div>
                 <div class="detail-value">{{ livraison.colis.dimensions|default('N/A') }}</div>
             </div>
+            
+            {% if livraison.colis.qrCode %}
+            <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid #dee2e6;">
+                <h3 style="color: #495057; margin-bottom: 16px;">📱 QR Code de suivi</h3>
+                <img 
+                    src="data:image/png;base64,{{ livraison.colis.qrCode }}" 
+                    alt="QR Code Colis #{{ livraison.colis.id }}"
+                    width="200"
+                    height="200"
+                    style="border: 2px solid #dee2e6; border-radius: 8px; padding: 10px;"
+                />
+                <p style="color: #6c757d; margin-top: 10px; font-size: 14px;">
+                    Scannez pour obtenir les informations de ce colis
+                </p>
+            </div>
+            {% endif %}
         </div>
         
         <!-- Informations du destinataire -->

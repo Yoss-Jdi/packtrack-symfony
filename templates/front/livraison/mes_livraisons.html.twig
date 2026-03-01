@@ -29,26 +29,30 @@
     .livraison-table {
         background: white;
         border-radius: 12px;
-        overflow: hidden;
+        overflow-x: auto;       /* ✅ scroll horizontal */
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    
     table {
         width: 100%;
+        min-width: 900px;       /* ✅ empêche les colonnes de trop se rétrécir */
         border-collapse: collapse;
     }
     
     th {
         background: #f8f9fa;
-        padding: 16px;
+        padding: 12px 10px;     /* ✅ padding réduit */
         text-align: left;
         font-weight: 600;
+        font-size: 13px;
         border-bottom: 2px solid #dee2e6;
+        white-space: nowrap;    /* ✅ headers sur une seule ligne */
     }
     
     td {
-        padding: 16px;
+        padding: 12px 10px;     /* ✅ padding réduit */
         border-bottom: 1px solid #dee2e6;
+        font-size: 13px;
+        vertical-align: middle;
     }
     
     .badge {
@@ -68,15 +72,6 @@
         color: #155724;
     }
     
-    .btn-finish {
-        padding: 8px 16px;
-        background: #28a745;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 13px;
-    }
     
     .btn-finish:hover {
         background: #218838;
@@ -126,8 +121,8 @@
                     <th>Destination</th>
                     <th>Poids</th>
                     <th>Date début</th>
-                    <th>📏 Distance Estimée</th>
-                    <th>🕐 Durée Estimée</th>
+                    <th>Distance Estimée</th>
+                    <th>Durée Estimée</th>
                     <th>Total</th>
                     <th>Statut</th>
                     <th>Actions</th>
@@ -175,11 +170,15 @@
                         </a>
                         {% if livraison.statut == 'en_cours' %}
                             <form method="post" action="{{ path('app_livraison_terminer', {id: livraison.id}) }}"
-                                onsubmit="return confirm('Confirmer la fin de cette livraison ?')">
-                                <button type="submit" class="btn-finish">✅ Terminer</button>
+                                onsubmit="return confirm('Confirmer la fin de cette livraison ?')"
+                                style="display: inline;">
+                                <button type="submit" class="btn-info-icon" title="Terminer la livraison" 
+                                        style="background: none; border: none; cursor: pointer;">
+                                    ✅
+                                </button>
                             </form>
                         {% else %}
-                            <span style="color: #28a745;">✓ Terminée</span>
+                            <span title="Terminée">✓</span>
                         {% endif %}
                     </td>
                 </tr>

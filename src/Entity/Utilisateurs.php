@@ -161,4 +161,9 @@ public function setPhoto(?string $photo): static
     {
         return $this->Email;
     }
+
+    public function getDisplayName(): string
+    {
+        return trim(($this->Prenom ?? '') . ' ' . ($this->Nom ?? ''));
+    }
 }
