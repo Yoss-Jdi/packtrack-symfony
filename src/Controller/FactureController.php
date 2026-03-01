@@ -9,11 +9,13 @@ use App\Entity\Recompense;
 use App\Entity\Role;
 use App\Form\FactureType;
 use App\Service\CloudinaryService;
+use App\Service\FraudeDetectionService;
 use App\Repository\FactureRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Dompdf\Dompdf;
@@ -28,15 +30,8 @@ final class FactureController extends AbstractController
     private function checkAdminAccess(): ?Response
     {
         $user = $this->getUser();
-
-        if (!$user) {
-            return $this->redirectToRoute('app_login');
-        }
-
-        if ($user->getRole() !== Role::ADMIN) {
-            return $this->redirectToRoute('app_login');
-        }
-
+        if (!$user) return $this->redirectToRoute('app_login');
+        if ($user->getRole() !== Role::ADMIN) return $this->redirectToRoute('app_login');
         return null;
     }
 
@@ -47,7 +42,6 @@ final class FactureController extends AbstractController
     public function index(): Response
     {
         if ($redirect = $this->checkAdminAccess()) return $redirect;
-
         return $this->render('admin/factures/index_new.html.twig');
     }
 
@@ -89,9 +83,7 @@ final class FactureController extends AbstractController
         if ($form->isSubmitted()) {
 
             $errors = [];
-
-            // ── Validations métier ──
-            $colis = $form->get('colis')->getData();
+            $colis  = $form->get('colis')->getData();
 
             if (!$colis) {
                 $errors['colis'] = 'Vous devez obligatoirement sélectionner un colis.';
@@ -113,7 +105,6 @@ final class FactureController extends AbstractController
                 }
             }
 
-            // ── Si aucune erreur → on persiste ──
             if (empty($errors)) {
 
                 $lastFacture = $factureRepository->findOneBy([], ['ID_Facture' => 'DESC']);
@@ -147,12 +138,9 @@ final class FactureController extends AbstractController
                 try {
                     $entityManager->persist($facture);
                     $entityManager->flush();
-
                     $this->creerRecompenseAutomatique($facture, $entityManager);
-
                     $this->addFlash('success', '✅ Facture N° ' . $facture->getNumero() . ' créée avec succès !');
                     return $this->redirectToRoute('app_facture_index');
-
                 } catch (\Doctrine\DBAL\Exception\UniqueConstraintViolationException $e) {
                     $this->addFlash('error', '❌ Ce numéro de facture existe déjà. Veuillez réessayer.');
                 } catch (\Exception $e) {
@@ -275,7 +263,6 @@ final class FactureController extends AbstractController
     public function calendar(): Response
     {
         if ($redirect = $this->checkAdminAccess()) return $redirect;
-
         return $this->render('admin/factures/calendar.html.twig');
     }
 
@@ -289,10 +276,10 @@ final class FactureController extends AbstractController
 
         foreach ($factures as $facture) {
             $events[] = [
-                'id'           => $facture->getId(),
-                'title'        => $facture->getNumero() . ' — ' . number_format($facture->getMontantTTC(), 2) . ' DT',
-                'start'        => $facture->getDateEmission()->format('Y-m-d'),
-                'color'        => match ($facture->getStatut()) {
+                'id'            => $facture->getId(),
+                'title'         => $facture->getNumero() . ' — ' . number_format($facture->getMontantTTC(), 2) . ' DT',
+                'start'         => $facture->getDateEmission()->format('Y-m-d'),
+                'color'         => match ($facture->getStatut()) {
                     'payee'   => '#198754',
                     'emise'   => '#ffc107',
                     'annulee' => '#dc3545',
@@ -304,6 +291,163 @@ final class FactureController extends AbstractController
         }
 
         return $this->json($events);
+    }
+
+    // ─────────────────────────────────────────
+    //  PREVISION CA — IA
+    // ─────────────────────────────────────────
+    #[Route('/prevision-ca', name: 'app_facture_prevision_ca', methods: ['GET'])]
+    public function previsionCA(FactureRepository $factureRepository): Response
+    {
+        if ($redirect = $this->checkAdminAccess()) return $redirect;
+
+        $factures  = $factureRepository->findAll();
+        $caParMois = [];
+        $nbParMois = [];
+
+        foreach ($factures as $facture) {
+            $mois = (int) $facture->getDateEmission()->format('n');
+            $caParMois[$mois] = ($caParMois[$mois] ?? 0) + $facture->getMontantTTC();
+            $nbParMois[$mois] = ($nbParMois[$mois] ?? 0) + 1;
+        }
+
+        $moisActuel = (int) date('n');
+        $moisFuturs = [];
+
+        for ($i = 1; $i <= 3; $i++) {
+            $moisFutur    = (($moisActuel + $i - 1) % 12) + 1;
+            $moisFuturs[] = [
+                'mois'              => $moisFutur,
+                'nb_factures_prevu' => (int) round(array_sum($nbParMois) / max(count($nbParMois), 1)),
+            ];
+        }
+
+        $inputData  = json_encode(['mois_futurs' => $moisFuturs]);
+        $projectDir = $this->getParameter('kernel.project_dir');
+
+        $scriptPath = $projectDir . '/ml/predict_ca.py';
+        $inputFile  = $projectDir . '/ml/input.json';
+
+        file_put_contents($inputFile, $inputData);
+
+        $command = "python " . escapeshellarg($scriptPath);
+        $output  = shell_exec($command);
+
+        $predictionsData = json_decode($output, true);
+
+        if (!$predictionsData || !isset($predictionsData['predictions'])) {
+            $this->addFlash('error', '❌ Erreur lors de l\'exécution du modèle IA.');
+            return $this->redirectToRoute('app_facture_index');
+        }
+
+        $predictions = [];
+        $base = array_slice(array_values($caParMois), -3);
+
+        foreach ($predictionsData['predictions'] as $pred) {
+            $tendance = (!empty($base) && $pred['ca_prevu'] >= end($base))
+                ? 'hausse'
+                : 'baisse';
+
+            $predictions[] = [
+                'mois'      => $pred['mois'],
+                'ca_prevu'  => $pred['ca_prevu'],
+                'tendance'  => $tendance,
+                'base_sur'  => 'Basé sur: ' . implode(', ', $base) . ' DT'
+            ];
+
+            array_unshift($base, $pred['ca_prevu']);
+            $base = array_slice($base, 0, 3);
+        }
+
+        $historiqueCA = [];
+        $moisNoms     = ['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sep','Oct','Nov','Déc'];
+
+        for ($i = 5; $i >= 0; $i--) {
+            $mois = (($moisActuel - $i - 1 + 12) % 12) + 1;
+            $historiqueCA[] = [
+                'mois' => $moisNoms[$mois - 1],
+                'ca'   => $caParMois[$mois] ?? 0,
+                'reel' => true,
+            ];
+        }
+
+        foreach ($predictions as $pred) {
+            $historiqueCA[] = [
+                'mois' => $pred['mois'],
+                'ca'   => $pred['ca_prevu'],
+                'reel' => false,
+            ];
+        }
+
+        return $this->render('admin/factures/prevision_ca.html.twig', [
+            'predictions'  => $predictions,
+            'historiqueCA' => $historiqueCA,
+            'caParMois'    => $caParMois,
+        ]);
+    }
+
+    #[Route('/prevision-ca/entrainer', name: 'app_facture_entrainer_ia', methods: ['GET'])]
+    public function entrainerIA(FactureRepository $factureRepository): Response
+    {
+        if ($redirect = $this->checkAdminAccess()) return $redirect;
+
+        $factures  = $factureRepository->findAll();
+        $caParMois = [];
+        $nbParMois = [];
+
+        foreach ($factures as $facture) {
+            $mois = (int) $facture->getDateEmission()->format('n');
+            $caParMois[$mois] = ($caParMois[$mois] ?? 0) + $facture->getMontantTTC();
+            $nbParMois[$mois] = ($nbParMois[$mois] ?? 0) + 1;
+        }
+
+        $trainData = [];
+        for ($mois = 1; $mois <= 12; $mois++) {
+            $trainData[] = [
+                'mois'         => $mois,
+                'nb_factures'  => $nbParMois[$mois] ?? 0,
+                'ca'           => $caParMois[$mois] ?? 0,
+            ];
+        }
+
+        $trainFile = $this->getParameter('kernel.project_dir') . '/ml/train_data.json';
+        file_put_contents($trainFile, json_encode(['data' => $trainData]));
+
+        $scriptPath = $this->getParameter('kernel.project_dir') . '/ml/train_ca.py';
+        $command    = "python " . escapeshellarg($scriptPath);
+        $output     = shell_exec($command);
+
+        $this->addFlash('success', '✅ Modèle IA re-entraîné avec vos données réelles ! ' . $output);
+        return $this->redirectToRoute('app_facture_prevision_ca');
+    }
+
+    // ─────────────────────────────────────────
+    //  🔏 VERIFIER FRAUDE IA  ← NOUVEAU
+    // ─────────────────────────────────────────
+    #[Route('/{id}/verifier-fraude', name: 'app_facture_verifier_fraude', methods: ['POST'])]
+    public function verifierFraude(
+        int $id,
+        FactureRepository $factureRepository,
+        FraudeDetectionService $fraudeService
+    ): JsonResponse {
+        if ($redirect = $this->checkAdminAccess()) {
+            return $this->json(['error' => 'Non autorisé'], 403);
+        }
+
+        // Récupérer la facture
+        $facture = $factureRepository->find($id);
+        if (!$facture) {
+            return $this->json(['error' => 'Facture introuvable'], 404);
+        }
+
+        // Vérifier que le PDF existe
+        if (!$facture->getPdfUrl()) {
+            return $this->json(['error' => 'Aucun PDF associé à cette facture'], 400);
+        }
+
+        // Appeler le service IA
+            $resultat = $fraudeService->verifierFacture($facture);
+        return $this->json($resultat);
     }
 
     // ─────────────────────────────────────────
