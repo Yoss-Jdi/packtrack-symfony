@@ -32,7 +32,7 @@ class Utilisateurs implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 100)]
     private string $Prenom = '';
 
-    #[ORM\Column(length: 20, nullable: true)]
+    #[ORM\Column(name: 'telephone', length: 20, nullable: true)]
     private ?string $Telephone = null;
 
     // FIX: enumType only - Doctrine auto-converts string <-> Role enum
@@ -127,6 +127,10 @@ class Utilisateurs implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /*public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }*/
     public function getPhoto(): ?string
     {
         return $this->photo;

@@ -1,0 +1,267 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}QR Code — Récompense #{{ recompense.id }}{% endblock %}
+
+{% block body %}
+<style>
+    .qr-wrapper {
+        background: #f4f6fb;
+        min-height: 100vh;
+        padding: 40px 30px;
+        font-family: 'Segoe UI', sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .qr-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        width: 100%;
+        max-width: 480px;
+        overflow: hidden;
+    }
+
+    .qr-card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 25px;
+        text-align: center;
+        color: white;
+    }
+
+    .qr-card-header .company {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        opacity: 0.85;
+        margin-bottom: 5px;
+    }
+
+    .qr-card-header h2 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    .qr-card-header .subtitle {
+        font-size: 13px;
+        opacity: 0.8;
+        margin-top: 5px;
+    }
+
+    .qr-body {
+        padding: 30px 25px;
+    }
+
+    .qr-image-box {
+        background: #f8f6ff;
+        border: 3px solid #e0d6ff;
+        border-radius: 16px;
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .qr-image-box svg {
+        width: 200px;
+        height: 200px;
+    }
+
+    .qr-image-box .scan-text {
+        font-size: 12px;
+        color: #6f42c1;
+        margin-top: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .info-item {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 12px 15px;
+    }
+
+    .info-item .info-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #6c757d;
+        margin-bottom: 4px;
+    }
+
+    .info-item .info-value {
+        font-size: 14px;
+        font-weight: 700;
+        color: #2d3748;
+    }
+
+    .info-item.full { grid-column: 1 / -1; }
+
+    .valeur-box {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        border-radius: 12px;
+        padding: 15px;
+        text-align: center;
+        color: white;
+        margin-bottom: 20px;
+    }
+
+    .valeur-box .valeur-label {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        opacity: 0.9;
+        margin-bottom: 5px;
+    }
+
+    .valeur-box .valeur-montant {
+        font-size: 32px;
+        font-weight: 700;
+    }
+
+    .badge-type {
+        display: inline-block;
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        background: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .qr-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-print {
+        flex: 1;
+        padding: 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        text-align: center;
+    }
+
+    .btn-print:hover { opacity: 0.9; }
+
+    .btn-retour {
+        flex: 1;
+        padding: 12px;
+        background: #f8f9fa;
+        color: #6c757d;
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .qr-footer {
+        padding: 15px 25px;
+        background: #f8f9fa;
+        text-align: center;
+        font-size: 11px;
+        color: #6c757d;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    @media print {
+        .qr-actions, .btn-retour { display: none; }
+        .qr-wrapper { background: white; padding: 0; }
+        .qr-card { box-shadow: none; }
+    }
+</style>
+
+<div class="qr-wrapper">
+    <div class="qr-card">
+
+        {# Header #}
+        <div class="qr-card-header">
+            <div class="company">🚀 PackTrack</div>
+            <h2>Récompense #{{ recompense.id }}</h2>
+            <div class="subtitle">{{ recompense.dateObtention|date('d MMMM Y') }}</div>
+        </div>
+
+        <div class="qr-body">
+
+            {# QR Code #}
+            <div class="qr-image-box">
+                {{ qrSvg|raw }}
+                <div class="scan-text">📱 Scanner pour vérifier</div>
+            </div>
+
+            {# Valeur #}
+            <div class="valeur-box">
+                <div class="valeur-label">💰 Montant de la récompense</div>
+                <div class="valeur-montant">{{ recompense.valeur|number_format(2) }} DT</div>
+            </div>
+
+            {# Infos #}
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Type</div>
+                    <div class="info-value">
+                        <span class="badge-type">{{ recompense.type }}</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Date</div>
+                    <div class="info-value">{{ recompense.dateObtention|date('d/m/Y') }}</div>
+                </div>
+                <div class="info-item full">
+                    <div class="info-label">👤 Livreur</div>
+                    <div class="info-value">
+                        {{ recompense.livreur ? recompense.livreur.prenom ~ ' ' ~ recompense.livreur.nom : 'N/A' }}
+                    </div>
+                </div>
+                {% if recompense.facture %}
+                <div class="info-item full">
+                    <div class="info-label">🧾 Facture associée</div>
+                    <div class="info-value">{{ recompense.facture.numero }}</div>
+                </div>
+                {% endif %}
+                {% if recompense.description %}
+                <div class="info-item full">
+                    <div class="info-label">📝 Description</div>
+                    <div class="info-value" style="font-weight:400; font-size:13px;">
+                        {{ recompense.description }}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            {# Actions #}
+            <div class="qr-actions">
+                <button class="btn-print" onclick="window.print()">🖨️ Imprimer</button>
+                <a href="{{ path('app_recompense_index') }}" class="btn-retour">← Retour</a>
+            </div>
+
+        </div>
+
+        <div class="qr-footer">
+            Généré automatiquement par PackTrack • {{ "now"|date('d/m/Y H:i') }}
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

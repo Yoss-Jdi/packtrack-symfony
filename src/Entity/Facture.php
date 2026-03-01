@@ -50,6 +50,35 @@ class Facture
     #[ORM\Column(name: "statut", type: "string", length: 50, nullable: true)]
     private ?string $statut = 'emise';
 
+
+    #[ORM\Column(name: "pdfUrl", type: "string", length: 500, nullable: true)]
+private ?string $pdfUrl = null;
+
+public function getPdfUrl(): ?string
+{
+    return $this->pdfUrl;
+}
+
+public function setPdfUrl(?string $pdfUrl): self
+{
+    $this->pdfUrl = $pdfUrl;
+    return $this;
+}
+
+
+#[ORM\ManyToOne(targetEntity: Livraison::class)]
+#[ORM\JoinColumn(name: "ID_Livraison", referencedColumnName: "ID_Livraison", nullable: false)]
+#[Assert\NotNull(message: "La livraison est obligatoire.")]
+private ?Livraison $livraison = null;
+
+
+
+
+
+
+
+
+
     // -------- GETTERS / SETTERS --------
 
     public function getId(): ?int
@@ -122,4 +151,22 @@ class Facture
         $this->statut = $statut;
         return $this;
     }
+
+
+
+
+
+public function getLivraison(): ?Livraison
+{
+    return $this->livraison;
+}
+
+public function setLivraison(?Livraison $livraison): self
+{
+    $this->livraison = $livraison;
+    return $this;
+}
+
+
+
 }
