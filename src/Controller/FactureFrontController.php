@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Role;
+use App\Entity\User;
 use App\Repository\FactureRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,48 +14,34 @@ class FactureFrontController extends AbstractController
     #[Route('/mes-factures', name: 'app_facture_front', methods: ['GET'])]
     public function index(FactureRepository $factureRepository): Response
     {
-        $user     = $this->getUser();
-        $factures = [];
+        $user = $this->getUser();
 
-        if (!$user) {
+        if (!$user instanceof \App\Entity\Utilisateurs) {
             return $this->redirectToRoute('app_login');
         }
 
+        $userId         = $user->getId();
         $toutesFactures = $factureRepository->findAll();
-        $role           = $user->getRole();
+        $roles          = $user->getRoles();
+        $role           = $roles[0] ?? null;
+        $factures       = [];
 
         if ($role === Role::LIVREUR) {
             // Livreur → ses propres livraisons
             foreach ($toutesFactures as $f) {
-                if ($f->getLivraison()?->getLivreur()?->getId() === $user->getId()) {
-                    $factures[] = $f;
-                }
-            }
-
-        } elseif ($role === Role::EXPEDITEUR) {
-            // Expéditeur → ses colis envoyés
-            foreach ($toutesFactures as $f) {
-                if ($f->getLivraison()?->getColis()?->getExpediteur()?->getId() === $user->getId()) {
-                    $factures[] = $f;
-                }
-            }
-
-        } elseif ($role === Role::DESTINATAIRE) {
-            // Destinataire → ses colis reçus
-            foreach ($toutesFactures as $f) {
-                if ($f->getLivraison()?->getColis()?->getDestinataire()?->getId() === $user->getId()) {
+                if ($f->getLivraison()?->getLivreur()?->getId() === $userId) {
                     $factures[] = $f;
                 }
             }
 
         } elseif ($role === Role::CLIENT) {
-            // CLIENT → expéditeur OU destinataire
+            // CLIENT → expéditeur OU destinataire du colis (via les relations sur Colis)
             foreach ($toutesFactures as $f) {
                 $colis = $f->getLivraison()?->getColis();
                 if (!$colis) continue;
 
-                $estExpediteur   = $colis->getExpediteur()?->getId() === $user->getId();
-                $estDestinataire = $colis->getDestinataire()?->getId() === $user->getId();
+                $estExpediteur   = $colis->getExpediteur()?->getId() === $userId;
+                $estDestinataire = $colis->getDestinataire()?->getId() === $userId;
 
                 if ($estExpediteur || $estDestinataire) {
                     $factures[] = $f;

@@ -1633,6 +1633,8 @@ final class App
     public static function config(array $config): array
     {
         /** @var ConfigType $config */
+        $config = AppReference::config($config);
+
         return $config;
     }
 }

@@ -32,7 +32,7 @@ class Recompense
     private ?\DateTimeInterface $dateObtention = null;
 
     #[ORM\ManyToOne(targetEntity: Utilisateurs::class)]  // ← CORRECTION ICI
-    #[ORM\JoinColumn(name: 'ID_Livreur', referencedColumnName: 'ID_Utilisateur', nullable: false)]
+    #[ORM\JoinColumn(name: 'ID_Livreur', referencedColumnName: 'id_utilisateur', nullable: false)]
     private ?Utilisateurs $livreur = null;  // ← CORRECTION ICI
 
     #[ORM\ManyToOne(targetEntity: Facture::class)]
