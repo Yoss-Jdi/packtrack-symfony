@@ -31,7 +31,7 @@ class PublicationReaction
     private ?Publication $publication = null;
 
     #[ORM\ManyToOne(targetEntity: Utilisateurs::class)]
-    #[ORM\JoinColumn(name: 'ID_Auteur', referencedColumnName: 'ID_Utilisateur', nullable: false, onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(name: 'ID_Auteur', referencedColumnName: 'id_utilisateur', nullable: false, onDelete: 'CASCADE')]
     private ?Utilisateurs $auteur = null;
 
     public function __construct()

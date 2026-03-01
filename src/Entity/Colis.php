@@ -81,16 +81,14 @@ class Colis
     )]
     private ?string $statut = null;
 
-    // ✅ CORRECTION : Utilisateur → Utilisateurs
+    // Expéditeur
     #[ORM\ManyToOne(targetEntity: Utilisateurs::class)]
-    #[ORM\JoinColumn(name: 'ID_Expediteur', referencedColumnName: 'ID_Utilisateur', nullable: false)]
-    #[Assert\NotNull(message: "L'expéditeur est obligatoire")]
+    #[ORM\JoinColumn(name: 'ID_Expediteur', referencedColumnName: 'id_utilisateur', nullable: false)]
     private ?Utilisateurs $expediteur = null;
 
-    // ✅ CORRECTION : Utilisateur → Utilisateurs
+    // Destinataire
     #[ORM\ManyToOne(targetEntity: Utilisateurs::class)]
-    #[ORM\JoinColumn(name: 'ID_Destinataire', referencedColumnName: 'ID_Utilisateur', nullable: false)]
-    #[Assert\NotNull(message: "Le destinataire est obligatoire")]
+    #[ORM\JoinColumn(name: 'ID_Destinataire', referencedColumnName: 'id_utilisateur', nullable: false)]
     private ?Utilisateurs $destinataire = null;
 
     #[ORM\OneToMany(mappedBy: 'colis', targetEntity: Livraison::class)]

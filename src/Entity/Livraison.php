@@ -62,7 +62,7 @@ class Livraison
 
 
     #[ORM\ManyToOne(targetEntity: Utilisateurs::class)]
-    #[ORM\JoinColumn(name: 'ID_Livreur', referencedColumnName: 'ID_Utilisateur', nullable: false)]
+    #[ORM\JoinColumn(name: 'ID_Livreur', referencedColumnName: 'id_utilisateur', nullable: false)]
     private ?Utilisateurs $livreur = null;
 
 
