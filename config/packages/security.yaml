@@ -53,13 +53,14 @@ security:
 
     # Note: Only the *first* matching rule is applied
     access_control:
-        - { path: ^/login, roles: PUBLIC_ACCESS }
-        - { path: ^/register, roles: PUBLIC_ACCESS }
-        - { path: ^/forgot-password, roles: PUBLIC_ACCESS }
-        - { path: ^/reset-password, roles: PUBLIC_ACCESS }
+        - { path: ^/login,               roles: PUBLIC_ACCESS }
+        - { path: ^/register,            roles: PUBLIC_ACCESS }
+        - { path: ^/setup-photo,         roles: PUBLIC_ACCESS }
+        - { path: ^/forgot-password,     roles: PUBLIC_ACCESS }
+        - { path: ^/reset-password,      roles: PUBLIC_ACCESS }
         - { path: ^/admin/redirect-choice, roles: ROLE_ADMIN }
         - { path: ^/admin/choose-redirect, roles: ROLE_ADMIN }
-        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/admin,               roles: ROLE_ADMIN }
         # Décommentez ces lignes pour protéger d'autres routes selon les rôles
         # - { path: ^/client, roles: ROLE_CLIENT }
         # - { path: ^/gestionnaire, roles: ROLE_GESTIONNAIRE }

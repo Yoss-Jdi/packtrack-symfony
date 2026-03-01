@@ -1,0 +1,289 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}
+    {% if mode == 'edit' %}Modifier la publication{% else %}Nouvelle publication{% endif %} - PackTrack
+{% endblock %}
+
+{% block stylesheets %}
+<style>
+    /* === PAGE HEADER === */
+    .page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        animation: slideDown 0.5s ease;
+    }
+    
+    .page-header h1 {
+        color: white;
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .page-header h1 i {
+        font-size: 2.5rem;
+    }
+    
+    /* === FORM CONTAINER === */
+    .form-container {
+        max-width: 900px;
+        margin: 0 auto;
+        animation: fadeInUp 0.6s ease;
+    }
+    
+    .form-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .form-card-header h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+    
+    .form-card-header i {
+        font-size: 1.8rem;
+    }
+    
+    .form-card-body {
+        padding: 2.5rem;
+    }
+    
+    /* === FORM GROUPS === */
+    .form-group {
+        margin-bottom: 1.8rem;
+        animation: fadeIn 0.5s ease;
+    }
+    
+    .form-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+    }
+    
+    .form-label i {
+        color: #667eea;
+        font-size: 1.1rem;
+    }
+    
+    .required-asterisk {
+        color: #e74c3c;
+        margin-left: 0.25rem;
+    }
+    
+    /* === FORM CONTROLS === */
+    .form-control, .form-select, textarea {
+        width: 100%;
+        padding: 0.85rem 1.2rem;
+        border: 2px solid #e0e6ed;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+        font-family: inherit;
+    }
+    
+    textarea {
+        min-height: 200px;
+        resize: vertical;
+    }
+    
+    .form-control:focus, .form-select:focus, textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    .form-control:hover, .form-select:hover, textarea:hover {
+        border-color: #a8b3cf;
+    }
+    
+    /* === ROW LAYOUT === */
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    /* === ACTION BUTTONS === */
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 2.5rem;
+        padding-top: 2rem;
+        border-top: 2px solid #f0f3f7;
+    }
+    
+    .btn-modern {
+        padding: 0.9rem 2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        border: none;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        text-decoration: none;
+    }
+    
+    .btn-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-modern i {
+        font-size: 1.1rem;
+    }
+    
+    .btn-cancel {
+        background: #95a5a6;
+        color: white;
+    }
+    
+    .btn-cancel:hover {
+        background: #7f8c8d;
+    }
+    
+    .btn-submit {
+        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        color: white;
+    }
+    
+    .btn-submit:hover {
+        background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+    }
+    
+    /* === ANIMATIONS === */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    {# PAGE HEADER #}
+    <div class="page-header">
+        <h1>
+            <i class="fa-solid fa-{{ mode == 'edit' ? 'pen-to-square' : 'plus-circle' }}"></i>
+            {% if mode == 'edit' %}Modifier la publication #{{ publication.id }}{% else %}Nouvelle publication{% endif %}
+        </h1>
+    </div>
+
+    {# FORM CONTAINER #}
+    <div class="form-container">
+        <div class="form-card">
+            <div class="form-card-header">
+                <i class="fa-solid fa-newspaper"></i>
+                <h2>Informations de la publication</h2>
+            </div>
+            
+            <div class="form-card-body">
+                {{ form_start(form) }}
+
+                {# Titre et Statut #}
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fa-solid fa-heading"></i>
+                            {{ form_label(form.titre) }}
+                            <span class="required-asterisk">*</span>
+                        </label>
+                        {{ form_widget(form.titre, {'attr': {'placeholder': 'Titre de la publication'}}) }}
+                        {{ form_errors(form.titre) }}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fa-solid fa-circle-info"></i>
+                            {{ form_label(form.statut) }}
+                            <span class="required-asterisk">*</span>
+                        </label>
+                        {{ form_widget(form.statut) }}
+                        {{ form_errors(form.statut) }}
+                    </div>
+                </div>
+
+                {# Contenu #}
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fa-solid fa-align-left"></i>
+                        {{ form_label(form.contenu) }}
+                    </label>
+                    {{ form_widget(form.contenu, {'attr': {'placeholder': 'Écrivez le contenu de votre publication...', 'rows': 10}}) }}
+                    {{ form_errors(form.contenu) }}
+                </div>
+
+                {# ACTION BUTTONS #}
+                <div class="form-actions">
+                    <a href="{{ path('admin_forum_publication_index') }}" class="btn-modern btn-cancel">
+                        <i class="fa-solid fa-xmark"></i>
+                        Annuler
+                    </a>
+                    <button type="submit" class="btn-modern btn-submit">
+                        <i class="fa-solid fa-check"></i>
+                        {% if mode == 'edit' %}Enregistrer les modifications{% else %}Créer la publication{% endif %}
+                    </button>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -51,6 +51,9 @@ class Livraison
     )]
     private ?string $methodePaiement = null;
 
+    #[ORM\Column(name: 'dureeEstimeeMinutes', nullable: true)]
+    private ?float $dureeEstimeeMinutes = null;
+
     #[ORM\ManyToOne(targetEntity: Colis::class)]
     #[ORM\JoinColumn(name: 'ID_Colis', referencedColumnName: 'ID_Colis', nullable: false)]
     #[Assert\NotNull(message: "Le colis est obligatoire")]
@@ -59,7 +62,7 @@ class Livraison
 
 
     #[ORM\ManyToOne(targetEntity: Utilisateurs::class)]
-    #[ORM\JoinColumn(name: 'ID_Livreur', referencedColumnName: 'ID_Utilisateur', nullable: false)]
+    #[ORM\JoinColumn(name: 'ID_Livreur', referencedColumnName: 'id_utilisateur', nullable: false)]
     private ?Utilisateurs $livreur = null;
 
 
@@ -174,6 +177,23 @@ class Livraison
         $this->colis = $colis;
         return $this;
     }
+    public function getDureeEstimeeMinutes(): ?float
+    {
+        return $this->dureeEstimeeMinutes;
+    }
 
+    public function setDureeEstimeeMinutes(?float $duree): static
+    {
+        $this->dureeEstimeeMinutes = $duree;
+        return $this;
+    }
+
+    public function getDureeFormatee(): ?string
+{
+    if (!$this->dureeEstimeeMinutes) return null;
+    $h = intdiv((int)$this->dureeEstimeeMinutes, 60);
+    $m = (int)$this->dureeEstimeeMinutes % 60;
+    return $h > 0 ? "{$h}h {$m}min" : "{$m} min";
+}
    
 }

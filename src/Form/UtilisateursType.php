@@ -8,12 +8,14 @@ use App\Validator\UniqueEmail;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
@@ -139,11 +141,25 @@ class UtilisateursType extends AbstractType
                         Role::CLIENT => 'Client',
                         Role::ENTREPRISE => 'Entreprise',
                         Role::LIVREUR => 'Livreur',
+                        Role::TECHNICIEN => 'Technicien'
                     };
                 },
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Le rôle est obligatoire'
+                    ]),
+                ],
+            ])
+            ->add('photoFile', FileType::class, [
+                'label'    => 'Photo de profil',
+                'mapped'   => false,
+                'required' => false,
+                'attr'     => ['class' => 'form-control', 'accept' => 'image/*'],
+                'constraints' => [
+                    new Image([
+                        'maxSize'            => '5M',
+                        'maxSizeMessage'     => 'L\'image ne doit pas dépasser 5 Mo',
+                        'mimeTypesMessage'   => 'Format invalide (JPG, PNG, WEBP)',
                     ]),
                 ],
             ]);

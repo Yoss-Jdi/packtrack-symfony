@@ -45,6 +45,16 @@ class ColisType extends AbstractType
                 ],
                 'help' => 'Entre 10 et 500 caractères (validation côté serveur)'
             ])
+            ->add('adresseDepart', TextareaType::class, [
+                'label' => 'Adresse de départ',
+                'required' => true,
+                'attr' => [
+                    'rows' => 2,
+                    'placeholder' => 'Ex: 12 Rue de la République, Tunis',
+                    'novalidate' => 'novalidate'
+                ],
+                'help' => 'Adresse depuis laquelle le colis sera expédié'
+            ])
             ->add('poids', NumberType::class, [
                 'label' => 'Poids (kg) *',
                 'required' => true,

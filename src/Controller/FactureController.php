@@ -31,7 +31,7 @@ final class FactureController extends AbstractController
     {
         $user = $this->getUser();
         if (!$user) return $this->redirectToRoute('app_login');
-        if ($user->getRole() !== Role::ADMIN) return $this->redirectToRoute('app_login');
+        if (!in_array('ROLE_ADMIN', $user->getRoles())) return $this->redirectToRoute('app_login');
         return null;
     }
 

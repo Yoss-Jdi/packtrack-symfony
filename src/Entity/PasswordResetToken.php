@@ -4,42 +4,50 @@ namespace App\Entity;
 
 use App\Repository\PasswordResetTokenRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Ignore;
+use SensitiveParameter;
+use Symfony\Component\Uid\UuidV7;
 
 #[ORM\Entity(repositoryClass: PasswordResetTokenRepository::class)]
 #[ORM\Table(name: 'password_reset_tokens')]
 class PasswordResetToken
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private ?int $id = null;
+    #[ORM\Column(type: 'uuid')]
+    private UuidV7 $id;
 
+    // FIX: non-nullable string (was ?string)
     #[ORM\Column(type: 'string', length: 255)]
-    private ?string $email = null;
+    private string $email = '';
 
+    // FIX: non-nullable string (was ?string)
     #[ORM\Column(type: 'string', length: 255, unique: true)]
-    private ?string $token = null;
+    #[Ignore]
+    private string $token = '';
 
+    // FIX: non-nullable \DateTimeInterface (was ?\DateTimeInterface)
     #[ORM\Column(type: 'datetime')]
-    private ?\DateTimeInterface $expiresAt = null;
+    private \DateTimeInterface $expiresAt;
 
+    // FIX: non-nullable \DateTimeInterface (was ?\DateTimeInterface)
     #[ORM\Column(type: 'datetime')]
-    private ?\DateTimeInterface $createdAt = null;
+    private \DateTimeInterface $createdAt;
 
     #[ORM\Column(type: 'boolean')]
     private bool $used = false;
 
     public function __construct()
     {
+        $this->id = new UuidV7();
         $this->createdAt = new \DateTime();
     }
 
-    public function getId(): ?int
+    public function getId(): UuidV7
     {
         return $this->id;
     }
 
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
         return $this->email;
     }
@@ -50,38 +58,35 @@ class PasswordResetToken
         return $this;
     }
 
-    public function getToken(): ?string
+    public function getToken(): string
     {
         return $this->token;
     }
 
-    public function setToken(string $token): self
+    public function setToken(#[SensitiveParameter] string $token): self
     {
         $this->token = $token;
         return $this;
     }
 
-    public function getExpiresAt(): ?\DateTimeInterface
+    public function getExpiresAt(): \DateTimeInterface
     {
         return $this->expiresAt;
     }
 
+    // FIX: kept setter for expiresAt as it must be set explicitly at creation (not auto-managed)
     public function setExpiresAt(\DateTimeInterface $expiresAt): self
     {
         $this->expiresAt = $expiresAt;
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeInterface
+    public function getCreatedAt(): \DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-        return $this;
-    }
+    // FIX: removed public setCreatedAt() - set automatically in constructor
 
     public function isUsed(): bool
     {

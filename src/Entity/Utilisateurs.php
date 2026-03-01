@@ -3,53 +3,60 @@
 namespace App\Entity;
 
 use App\Repository\UtilisateursRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UtilisateursRepository::class)]
+#[ORM\Table(name: 'utilisateurs')]
 class Utilisateurs implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: 'ID_Utilisateur')]
+    #[ORM\Column(name: 'id_utilisateur')]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'email', length: 180, unique: true)]
-    private ?string $Email = null;
+    // FIX: non-nullable string (was ?string)
+    #[ORM\Column(length: 180, unique: true)]
+    private string $Email = '';
 
-    #[ORM\Column(name: 'mot_de_passe', length: 255)]
-    private ?string $MotDePasse = null;
+    // FIX: non-nullable string (was ?string)
+    #[ORM\Column(length: 255)]
+    private string $MotDePasse = '';
 
-    #[ORM\Column(name: 'nom', length: 100)]  // ⬅️ AJOUTÉ name: 'nom'
-    private ?string $Nom = null;
+    // FIX: non-nullable string (was ?string)
+    #[ORM\Column(length: 100)]
+    private string $Nom = '';
 
-    #[ORM\Column(name: 'prenom', length: 100)]  // ⬅️ AJOUTÉ name: 'prenom'
-    private ?string $Prenom = null;
+    // FIX: non-nullable string (was ?string)
+    #[ORM\Column(length: 100)]
+    private string $Prenom = '';
 
     #[ORM\Column(name: 'telephone', length: 20, nullable: true)]
     private ?string $Telephone = null;
 
-    #[ORM\Column(name: 'role', type: Types::STRING, enumType: Role::class)]
-    private ?Role $role = null;
+    // FIX: enumType only - Doctrine auto-converts string <-> Role enum
+    #[ORM\Column(type: 'string', length: 50, enumType: Role::class)]
+    private Role $role;
 
-    #[ORM\Column(name: 'created_at', type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private ?\DateTimeImmutable $createdAt = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $photo = null;
 
-    // ====== CONSTRUCTEUR ======
+    // FIX: non-nullable DateTimeImmutable (was ?DateTimeImmutable)
+    #[ORM\Column]
+    private \DateTimeImmutable $createdAt;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
     }
 
-    // ====== GETTERS ET SETTERS ======
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
         return $this->Email;
     }
@@ -60,7 +67,7 @@ class Utilisateurs implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getMotDePasse(): ?string
+    public function getMotDePasse(): string
     {
         return $this->MotDePasse;
     }
@@ -71,12 +78,12 @@ class Utilisateurs implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getPassword(): ?string
+    public function getPassword(): string
     {
         return $this->MotDePasse;
     }
 
-    public function getNom(): ?string
+    public function getNom(): string
     {
         return $this->Nom;
     }
@@ -87,7 +94,7 @@ class Utilisateurs implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getPrenom(): ?string
+    public function getPrenom(): string
     {
         return $this->Prenom;
     }
@@ -109,7 +116,7 @@ class Utilisateurs implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getRole(): ?Role
+    public function getRole(): Role
     {
         return $this->role;
     }
@@ -120,18 +127,29 @@ class Utilisateurs implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    /*public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }*/
+    public function getPhoto(): ?string
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto(?string $photo): static
+    {
+        $this->photo = $photo;
+        return $this;
+    }
+
+    // FIX: removed setCreatedAt() - timestamps should not be manually settable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-        return $this;
-    }
-
     // ====== MÉTHODES UserInterface ======
+
     public function getRoles(): array
     {
         return ['ROLE_' . $this->role->value];
@@ -144,5 +162,10 @@ class Utilisateurs implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUserIdentifier(): string
     {
         return $this->Email;
+    }
+
+    public function getDisplayName(): string
+    {
+        return trim(($this->Prenom ?? '') . ' ' . ($this->Nom ?? ''));
     }
 }

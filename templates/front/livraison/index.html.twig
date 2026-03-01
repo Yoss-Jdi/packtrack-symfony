@@ -141,8 +141,8 @@
             
             <div class="colis-info">
                 📍 <strong>Destination :</strong><br>
-                {{ colis.adresseDestination|slice(0, 80) }}...
-                
+                {{ colis.adresseDestination|slice(0, 80) }}... <br>
+                🏠 <strong>Départ :</strong> <br>{{ colis.adresseDepart|slice(0, 60) }}<br>
                 <br><br>
                 
                 ⚖️ <strong>Poids :</strong> {{ colis.poids ? colis.poids ~ ' kg' : 'Non spécifié' }}<br>

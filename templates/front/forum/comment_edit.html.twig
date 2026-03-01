@@ -1,0 +1,30 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Éditer le commentaire – Community{% endblock %}
+
+{% block body %}
+<section class="hero hero--compact">
+    <div class="hero-content">
+        <div class="hero-icon">💬</div>
+        <h1>Éditer votre commentaire</h1>
+        <p>Modifiez votre message pour cette publication.</p>
+    </div>
+</section>
+
+<section class="content content--one">
+    <div class="card">
+        <div class="forum-header" style="margin-bottom:12px;">
+            <h2 style="margin:0;">Commentaire sur « {{ publication.titre }} »</h2>
+            <a class="btn btn-light" href="{{ path('front_forum_show', {id: publication.id}) }}">← Retour à la publication</a>
+        </div>
+
+        {{ form_start(form) }}
+            <div class="form-row">
+                {{ form_widget(form.contenu) }}
+                {{ form_errors(form.contenu) }}
+            </div>
+            <button class="btn btn-primary" type="submit">Enregistrer</button>
+        {{ form_end(form) }}
+    </div>
+</section>
+{% endblock %}
