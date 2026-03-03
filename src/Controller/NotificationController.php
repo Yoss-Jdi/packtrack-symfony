@@ -90,7 +90,7 @@ class NotificationController extends AbstractController
         });
 
         // Notify admin about pending colis
-        if (!empty($colisEnAttente)) {
+        if (!empty($colisEnAttente) && $user instanceof \App\Entity\Utilisateurs) {
             $notificationService->notifierColisEnAttente($user, array_values($colisEnAttente));
         }
 
@@ -119,12 +119,11 @@ class NotificationController extends AbstractController
         NotificationRepository $notificationRepository,
         EntityManagerInterface $entityManager
     ): Response {
-        // Contrôles liés à l'utilisateur connecté commentés pour les tests
-         $user = $this->getUser();
-        // 
-         if (!$user) {
-         throw $this->createAccessDeniedException('Vous devez être connecté');
-         }
+        $user = $this->getUser();
+
+        if (!$user) {
+            throw $this->createAccessDeniedException('Vous devez être connecté');
+        }
 
         $notifications = $notificationRepository->findBy(['utilisateur' => $user, 'lu' => false]);
 
@@ -144,24 +143,20 @@ class NotificationController extends AbstractController
         EntityManagerInterface $entityManager,
         Request $request
     ): Response {
-        // Contrôles liés à l'utilisateur connecté commentés pour les tests
-         $user = $this->getUser();
-        // 
-         if (!$user) {
+        $user = $this->getUser();
+
+        if (!$user) {
             throw $this->createAccessDeniedException('Vous devez être connecté');
-         }
+        }
 
         $notification = $notificationRepository->find($id);
 
-        // Vérifier que la notification appartient à l'utilisateur (désactivé pour test)
-         if (!$notification || $notification->getUtilisateur() !== $user) {
+        if (!$notification || $notification->getUtilisateur() !== $user) {
             throw $this->createAccessDeniedException('Accès non autorisé');
-         }
-
-        if ($notification) {
-            $notification->setLu(true);
-            $entityManager->flush();
         }
+
+        $notification->setLu(true);
+        $entityManager->flush();
 
         $this->addFlash('success', 'Notification marquée comme lue (mode test)');
 
@@ -175,21 +170,19 @@ class NotificationController extends AbstractController
         EntityManagerInterface $entityManager,
         Request $request
     ): Response {
-        // Contrôles liés à l'utilisateur connecté commentés pour les tests
-         $user = $this->getUser();
-        // 
-         if (!$user) {
-         throw $this->createAccessDeniedException('Vous devez être connecté');
-         }
+        $user = $this->getUser();
+
+        if (!$user) {
+            throw $this->createAccessDeniedException('Vous devez être connecté');
+        }
 
         $notification = $notificationRepository->find($id);
 
-        // Vérifier que la notification appartient à l'utilisateur (désactivé pour test)
-         if (!$notification || $notification->getUtilisateur() !== $user) {
-             throw $this->createAccessDeniedException('Accès non autorisé');
-         }
+        if (!$notification || $notification->getUtilisateur() !== $user) {
+            throw $this->createAccessDeniedException('Accès non autorisé');
+        }
 
-        if ($notification && $this->isCsrfTokenValid('delete'.$notification->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete'.$notification->getId(), $request->request->get('_token'))) {
             $entityManager->remove($notification);
             $entityManager->flush();
             $this->addFlash('success', 'Notification supprimée (mode test)');

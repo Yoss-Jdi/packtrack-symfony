@@ -14,7 +14,7 @@ class Utilisateurs implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'id_utilisateur')]
-    private ?int $id = null;
+    private ?int $id = null; // @phpstan-ignore property.unusedType
 
     // FIX: non-nullable string (was ?string)
     #[ORM\Column(length: 180, unique: true)]

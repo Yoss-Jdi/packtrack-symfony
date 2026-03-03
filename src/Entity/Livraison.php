@@ -13,7 +13,7 @@ class Livraison
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'ID_Livraison')]
-    private ?int $id = null;
+    private ?int $id = null; // @phpstan-ignore property.unusedType
 
     #[ORM\Column(length: 50, nullable: true)]
     #[Assert\Choice(

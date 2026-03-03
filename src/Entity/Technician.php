@@ -15,7 +15,7 @@ class Technician
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'ID_Technicien')]
-    private ?int $id = null;
+    private ?int $id = null; // @phpstan-ignore property.unusedType
 
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank]
@@ -44,7 +44,7 @@ class Technician
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank]
     #[Assert\Choice(choices: ['disponible', 'occupe', 'en_conge'])]
-    private ?string $statut = 'disponible';
+    private string $statut = 'disponible';
 
     /** @var Collection<int, Vehicule> */
     #[ORM\OneToMany(mappedBy: 'technician', targetEntity: Vehicule::class)]

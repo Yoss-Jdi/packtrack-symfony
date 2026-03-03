@@ -40,7 +40,10 @@ class ColisController extends AbstractController
         UrlGeneratorInterface $urlGenerator
     ): Response {
         $colis = new Colis();
-        $colis->setExpediteur($this->getUser());
+        $user = $this->getUser();
+        if ($user instanceof \App\Entity\Utilisateurs) {
+            $colis->setExpediteur($user);
+        }
 
         $form = $this->createForm(ColisType::class, $colis);
         $form->handleRequest($request);

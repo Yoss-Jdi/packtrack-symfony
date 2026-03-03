@@ -16,7 +16,7 @@ class Publication
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'ID_Publication', type: 'integer')]
-    private ?int $id = null;
+    private ?int $id = null; // @phpstan-ignore property.unusedType
 
     #[ORM\Column(name: 'titre', type: 'string', length: 200)]
     #[Assert\NotBlank(message: 'Le titre est obligatoire.')]

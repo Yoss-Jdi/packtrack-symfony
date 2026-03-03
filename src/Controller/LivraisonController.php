@@ -61,7 +61,9 @@ class LivraisonController extends AbstractController
         $livreur   = $this->getUser();
         $livraison = new Livraison();
         $livraison->setColis($colis);
-        $livraison->setLivreur($livreur);
+        if ($livreur instanceof \App\Entity\Utilisateurs) {
+            $livraison->setLivreur($livreur);
+        }
         $livraison->setTotal($colis->calculerMontant());
 
         // ✅ Appel ML : distance + durée automatiques

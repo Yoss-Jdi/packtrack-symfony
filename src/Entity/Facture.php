@@ -18,7 +18,7 @@ class Facture
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: "ID_Facture", type: "integer")]
-    private ?int $ID_Facture = null;
+    private ?int $ID_Facture = null; // @phpstan-ignore property.unusedType
 
     #[ORM\Column(name: "numero", length: 50, unique: true)]
     #[Assert\NotBlank(message: "Le numéro de facture est obligatoire.")]

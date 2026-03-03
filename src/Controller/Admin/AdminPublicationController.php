@@ -28,7 +28,6 @@ class AdminPublicationController extends AbstractController
     {
         $publication = new Publication();
 
-        /** @var Utilisateurs $user */
         $user = $this->getUser();
         if ($user instanceof Utilisateurs) {
             $publication->setAuteur($user);

@@ -13,7 +13,7 @@ class Commentaire
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'ID_Commentaire', type: 'integer')]
-    private ?int $id = null;
+    private ?int $id = null; // @phpstan-ignore property.unusedType
 
     #[ORM\Column(name: 'contenu', type: 'text')]
     #[Assert\NotBlank(message: 'Le commentaire est obligatoire.')]

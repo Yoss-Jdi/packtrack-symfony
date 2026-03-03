@@ -17,7 +17,7 @@ class PublicationReaction
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'ID_Reaction', type: 'integer')]
-    private ?int $id = null;
+    private ?int $id = null; // @phpstan-ignore property.unusedType
 
     #[ORM\Column(name: 'reaction', type: 'smallint')]
     #[Assert\Choice(choices: [self::LIKE, self::DISLIKE])]

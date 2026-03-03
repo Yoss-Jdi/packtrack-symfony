@@ -14,7 +14,7 @@ class Recompense
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'ID_Recompense', type: 'integer')]
-    private ?int $id = null;
+    private ?int $id = null; // @phpstan-ignore property.unusedType
 
     #[ORM\Column(name: 'type', type: 'string', length: 50, nullable: true)]
     private ?string $type = null;

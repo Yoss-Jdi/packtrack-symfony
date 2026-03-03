@@ -15,25 +15,26 @@ body{
 }
 
 /* SIDEBAR */
-.sidebar{
-    width:250px;
-    background:#0f172a;
-    color:white;
-    padding:25px;
+.sidebar {
+    width: 250px;
+    background: #0f172a;
+    color: white;
+    padding: 25px 0;  /* ← supprime le padding gauche/droite, garde haut/bas */
 }
 
-.sidebar h2{
-    margin-bottom:30px;
+.sidebar h2 {
+    margin-bottom: 30px;
+    padding: 0 18px;  /* ← re-donne un padding uniquement au titre */
 }
 
 .sidebar ul{
     list-style:none;
 }
 
-.sidebar li{
-    padding:12px;
-    border-radius:8px;
-    margin-bottom:10px;
+.sidebar li {
+    padding: 12px 18px;  /* ← padding horizontal contrôlé */
+    border-radius: 8px;
+    margin-bottom: 10px;
 }
 
 .sidebar li a{

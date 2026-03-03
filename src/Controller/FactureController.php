@@ -112,7 +112,7 @@ final class FactureController extends AbstractController
                 if ($lastFacture) {
                     $nextNumber = (int) substr($lastFacture->getNumero(), 4) + 1;
                 }
-                $numeroFacture = 'FAC-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+                $numeroFacture = 'FAC-' . str_pad((string) $nextNumber, 3, '0', STR_PAD_LEFT);
 
                 if ($factureRepository->findOneBy(['numero' => $numeroFacture])) {
                     $this->addFlash('error', 'Erreur lors de la génération du numéro. Veuillez réessayer.');

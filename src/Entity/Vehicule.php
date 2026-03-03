@@ -13,7 +13,7 @@ class Vehicule
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'ID_Vehicule')]
-    private ?int $id = null;
+    private ?int $id = null; // @phpstan-ignore property.unusedType
 
     #[ORM\Column(length: 50, nullable: true)]
     #[Assert\NotBlank(message: 'La marque est obligatoire.')]
@@ -47,7 +47,7 @@ class Vehicule
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank]
     #[Assert\Choice(choices: ['disponible', 'en_maintenance', 'hors_service'])]
-    private ?string $statut = 'disponible';
+    private string $statut = 'disponible';
 
     #[ORM\ManyToOne(targetEntity: Technician::class, inversedBy: 'vehicules')]
     #[ORM\JoinColumn(name: 'ID_Technicien', referencedColumnName: 'ID_Technicien', nullable: true, onDelete: 'SET NULL')]

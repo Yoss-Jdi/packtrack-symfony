@@ -22,8 +22,7 @@ class FactureFrontController extends AbstractController
 
         $userId         = $user->getId();
         $toutesFactures = $factureRepository->findAll();
-        $roles          = $user->getRoles();
-        $role           = $roles[0] ?? null;
+        $role           = $user->getRole();
         $factures       = [];
 
         if ($role === Role::LIVREUR) {

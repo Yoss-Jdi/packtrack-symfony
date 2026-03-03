@@ -187,9 +187,9 @@ class PostSummarizer
             $negativeCount += substr_count($lowerContent, $word);
         }
 
-        if ($positiveCount > $negativeCount && $positiveCount > 0) {
+        if ($positiveCount > 0 && $positiveCount > $negativeCount) {
             $sentiment = 'positive';
-        } elseif ($negativeCount > $positiveCount && $negativeCount > 0) {
+        } elseif ($negativeCount > 0 && $negativeCount > $positiveCount) {
             $sentiment = 'negative';
         }
 

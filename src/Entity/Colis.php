@@ -15,7 +15,7 @@ class Colis
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'ID_Colis')]
-    private ?int $id = null;
+    private ?int $id = null; // @phpstan-ignore property.unusedType
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Assert\Length(

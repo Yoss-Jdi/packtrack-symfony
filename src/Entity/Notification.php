@@ -13,7 +13,7 @@ class Notification
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id = null; // @phpstan-ignore property.unusedType
 
     #[ORM\ManyToOne(targetEntity: Utilisateurs::class)]
     #[ORM\JoinColumn(name: 'ID_Utilisateur', referencedColumnName: 'id_utilisateur', nullable: false)]
@@ -29,7 +29,7 @@ class Notification
     private ?\DateTimeInterface $dateCreation = null;
 
     #[ORM\Column(type: Types::BOOLEAN)]
-    private ?bool $lu = false;
+    private bool $lu = false;
 
     #[ORM\ManyToOne(targetEntity: Colis::class)]
     #[ORM\JoinColumn(name: 'ID_Colis', referencedColumnName: 'ID_Colis', nullable: true)]

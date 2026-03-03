@@ -41,12 +41,12 @@ final class RecompenseController extends AbstractController
             ->addSelect('l', 'f')
             ->orderBy('r.dateObtention', 'DESC');
 
-        if ($searchType && $searchType !== '') {
+        if ($searchType) {
             $queryBuilder->andWhere('r.type = :type')
                 ->setParameter('type', $searchType);
         }
 
-        if ($searchLivreur && $searchLivreur !== '') {
+        if ($searchLivreur) {
             $queryBuilder->andWhere(
                 $queryBuilder->expr()->orX(
                     $queryBuilder->expr()->like('l.Nom', ':livreur'),
