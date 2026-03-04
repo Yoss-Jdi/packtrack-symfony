@@ -36,7 +36,7 @@ class Publication
     private string $statut = 'active';
 
     #[ORM\ManyToOne(targetEntity: Utilisateurs::class)]
-    #[ORM\JoinColumn(name: 'ID_Auteur', referencedColumnName: 'id_utilisateur', nullable: false, onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(name: 'auteur_id', referencedColumnName: 'id_utilisateur', nullable: false, onDelete: 'CASCADE')]
     private ?Utilisateurs $auteur = null;
 
     /**

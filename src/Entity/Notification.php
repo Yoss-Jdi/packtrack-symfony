@@ -16,7 +16,7 @@ class Notification
     private ?int $id = null; // @phpstan-ignore property.unusedType
 
     #[ORM\ManyToOne(targetEntity: Utilisateurs::class)]
-    #[ORM\JoinColumn(name: 'ID_Utilisateur', referencedColumnName: 'id_utilisateur', nullable: false)]
+    #[ORM\JoinColumn(name: 'utilisateur_id', referencedColumnName: 'id_utilisateur', nullable: false)]
     private ?Utilisateurs $utilisateur = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -32,7 +32,7 @@ class Notification
     private bool $lu = false;
 
     #[ORM\ManyToOne(targetEntity: Colis::class)]
-    #[ORM\JoinColumn(name: 'ID_Colis', referencedColumnName: 'ID_Colis', nullable: true)]
+    #[ORM\JoinColumn(name: 'colis_id', referencedColumnName: 'ID_Colis', nullable: true)]
     private ?Colis $colis = null;
 
     public function __construct()

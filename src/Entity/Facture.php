@@ -67,7 +67,7 @@ public function setPdfUrl(?string $pdfUrl): self
 
 
 #[ORM\ManyToOne(targetEntity: Livraison::class)]
-#[ORM\JoinColumn(name: "ID_Livraison", referencedColumnName: "ID_Livraison", nullable: false)]
+#[ORM\JoinColumn(name: "livraison_id", referencedColumnName: "ID_Livraison", nullable: false)]
 #[Assert\NotNull(message: "La livraison est obligatoire.")]
 private ?Livraison $livraison = null;
 

@@ -64,7 +64,7 @@ class LivraisonController extends AbstractController
         if ($livreur instanceof \App\Entity\Utilisateurs) {
             $livraison->setLivreur($livreur);
         }
-        $livraison->setTotal($colis->calculerMontant());
+        $livraison->setTotal((string) $colis->calculerMontant());
 
         // ✅ Appel ML : distance + durée automatiques
         $prediction = $predictionService->predictComplet($colis);
@@ -108,7 +108,7 @@ class LivraisonController extends AbstractController
         $notificationService->notifierChangementStatut($livraison->getColis(), $ancienStatut, 'livre');
 
         $total = $livraison->getTotal();
-        $this->addFlash('success', '✅ Livraison terminée ! Montant : ' . number_format($total, 2, ',', ' ') . ' €');
+        $this->addFlash('success', '✅ Livraison terminée ! Montant : ' . number_format((float) $total, 2, ',', ' ') . ' €');
 
         return $this->redirectToRoute('app_livraison_mes_livraisons');
     }

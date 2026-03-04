@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PublicationReactionRepository::class)]
 #[ORM\Table(name: 'publication_reactions')]
-#[ORM\UniqueConstraint(name: 'uniq_publication_auteur', columns: ['ID_Publication', 'ID_Auteur'])]
+#[ORM\UniqueConstraint(name: 'uniq_publication_auteur', columns: ['publication_id', 'auteur_id'])]
 class PublicationReaction
 {
     public const LIKE = 1;
@@ -27,11 +27,11 @@ class PublicationReaction
     private ?\DateTimeImmutable $dateCreation = null;
 
     #[ORM\ManyToOne(targetEntity: Publication::class, inversedBy: 'reactions')]
-    #[ORM\JoinColumn(name: 'ID_Publication', referencedColumnName: 'ID_Publication', nullable: false, onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(name: 'publication_id', referencedColumnName: 'ID_Publication', nullable: false, onDelete: 'CASCADE')]
     private ?Publication $publication = null;
 
     #[ORM\ManyToOne(targetEntity: Utilisateurs::class)]
-    #[ORM\JoinColumn(name: 'ID_Auteur', referencedColumnName: 'id_utilisateur', nullable: false, onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(name: 'auteur_id', referencedColumnName: 'id_utilisateur', nullable: false, onDelete: 'CASCADE')]
     private ?Utilisateurs $auteur = null;
 
     public function __construct()

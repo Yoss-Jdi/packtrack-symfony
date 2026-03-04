@@ -100,7 +100,7 @@ final class FactureController extends AbstractController
                     $errors['colis'] = 'La livraison doit être terminée. Statut actuel : ' . $livraison->getStatut();
                 } elseif ($factureRepository->findOneBy(['livraison' => $livraison])) {
                     $errors['colis'] = 'Cette livraison a déjà une facture associée.';
-                } elseif ($livraison->getTotal() === null || $livraison->getTotal() <= 0) {
+                } elseif ($livraison->getTotal() === null || (float) $livraison->getTotal() <= 0) {
                     $errors['colis'] = 'La livraison ne contient pas de montant valide.';
                 }
             }
@@ -123,7 +123,7 @@ final class FactureController extends AbstractController
                     ]);
                 }
 
-                $montantHT  = $livraison->getTotal();
+                $montantHT  = (float) $livraison->getTotal();
                 $tva        = $montantHT * 0.20;
                 $montantTTC = $montantHT + $tva;
 

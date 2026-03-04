@@ -83,12 +83,12 @@ class Colis
 
     // Expéditeur
     #[ORM\ManyToOne(targetEntity: Utilisateurs::class)]
-    #[ORM\JoinColumn(name: 'ID_Expediteur', referencedColumnName: 'id_utilisateur', nullable: false)]
+    #[ORM\JoinColumn(name: 'expediteur_id', referencedColumnName: 'id_utilisateur', nullable: false)]
     private ?Utilisateurs $expediteur = null;
 
     // Destinataire
     #[ORM\ManyToOne(targetEntity: Utilisateurs::class)]
-    #[ORM\JoinColumn(name: 'ID_Destinataire', referencedColumnName: 'id_utilisateur', nullable: false)]
+    #[ORM\JoinColumn(name: 'destinataire_id', referencedColumnName: 'id_utilisateur', nullable: false)]
     private ?Utilisateurs $destinataire = null;
 
     #[ORM\OneToMany(mappedBy: 'colis', targetEntity: Livraison::class)]

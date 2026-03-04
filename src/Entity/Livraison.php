@@ -36,13 +36,13 @@ class Livraison
     )]
     private ?float $distanceKm = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
     //#[Assert\PositiveOrZero(message: "Le paiement ne peut pas être négatif")]
-    private ?float $payment = null;
+    private ?string $payment = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
     //#[Assert\PositiveOrZero(message: "Le total ne peut pas être négatif")]
-    private ?float $total = null;
+    private ?string $total = null;
 
     #[ORM\Column(name: 'methodePaiement', length: 50, nullable: true)]
     #[Assert\Choice(
@@ -55,14 +55,14 @@ class Livraison
     private ?float $dureeEstimeeMinutes = null;
 
     #[ORM\ManyToOne(targetEntity: Colis::class)]
-    #[ORM\JoinColumn(name: 'ID_Colis', referencedColumnName: 'ID_Colis', nullable: false)]
+    #[ORM\JoinColumn(name: 'colis_id', referencedColumnName: 'ID_Colis', nullable: false)]
     #[Assert\NotNull(message: "Le colis est obligatoire")]
     private ?Colis $colis = null;
 
 
 
     #[ORM\ManyToOne(targetEntity: Utilisateurs::class)]
-    #[ORM\JoinColumn(name: 'ID_Livreur', referencedColumnName: 'id_utilisateur', nullable: false)]
+    #[ORM\JoinColumn(name: 'livreur_id', referencedColumnName: 'id_utilisateur', nullable: false)]
     private ?Utilisateurs $livreur = null;
 
 
@@ -134,23 +134,23 @@ class Livraison
         return $this;
     }
 
-    public function getPayment(): ?float
+    public function getPayment(): ?string
     {
         return $this->payment;
     }
 
-    public function setPayment(?float $payment): static
+    public function setPayment(?string $payment): static
     {
         $this->payment = $payment;
         return $this;
     }
 
-    public function getTotal(): ?float
+    public function getTotal(): ?string
     {
         return $this->total;
     }
 
-    public function setTotal(?float $total): static
+    public function setTotal(?string $total): static
     {
         $this->total = $total;
         return $this;

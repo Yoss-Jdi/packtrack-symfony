@@ -39,10 +39,10 @@ class Vehicule
     #[Assert\Length(max: 50)]
     private ?string $typeVehicule = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
     #[Assert\NotBlank(message: 'La capacité est obligatoire.')]
     #[Assert\Positive(message: 'La capacité doit être un nombre positif.')]
-    private ?float $capacite = null;
+    private ?string $capacite = null;
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank]
@@ -50,7 +50,7 @@ class Vehicule
     private string $statut = 'disponible';
 
     #[ORM\ManyToOne(targetEntity: Technician::class, inversedBy: 'vehicules')]
-    #[ORM\JoinColumn(name: 'ID_Technicien', referencedColumnName: 'ID_Technicien', nullable: true, onDelete: 'SET NULL')]
+    #[ORM\JoinColumn(name: 'technicien_id', referencedColumnName: 'ID_Technicien', nullable: true, onDelete: 'SET NULL')]
     private ?Technician $technician = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
@@ -105,12 +105,12 @@ class Vehicule
         return $this;
     }
 
-    public function getCapacite(): ?float
+    public function getCapacite(): ?string
     {
         return $this->capacite;
     }
 
-    public function setCapacite(?float $capacite): self
+    public function setCapacite(?string $capacite): self
     {
         $this->capacite = $capacite;
         return $this;
