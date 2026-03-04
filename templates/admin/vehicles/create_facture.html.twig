@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer une facture de maintenance{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-file-invoice"></i> Facture de maintenance requise
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Véhicule:</strong> {{ vehicule.marque }} {{ vehicule.modele }} ({{ vehicule.immatriculation }})<br>
+                        <strong>Statut actuel:</strong> <span class="badge bg-warning">{{ vehicule.statut }}</span><br>
+                        <strong>Nouveau statut:</strong> <span class="badge bg-success">Disponible</span>
+                    </div>
+
+                    <p class="text-muted">
+                        Pour passer ce véhicule en statut "disponible", vous devez créer une facture de maintenance.
+                    </p>
+
+                    {{ form_start(form) }}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(form.numero) }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(form.fournisseur) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                {{ form_row(form.montantHT) }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                {{ form_row(form.tauxTVA) }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Montant TTC (calculé auto)</label>
+                                <input type="text" class="form-control" id="montantTTC" readonly value="0.00">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_row(form.descriptionTravaux) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_row(form.pieceChangees) }}
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ path('admin_vehicles_edit', {id: vehicule.id}) }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Annuler
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check"></i> Créer la facture et mettre à jour le véhicule
+                            </button>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const montantHTInput = document.querySelector('#facture_maintenance_montantHT');
+    const tauxTVAInput = document.querySelector('#facture_maintenance_tauxTVA');
+    const montantTTCInput = document.querySelector('#montantTTC');
+
+    function calculateTTC() {
+        const ht = parseFloat(montantHTInput.value) || 0;
+        const tva = parseFloat(tauxTVAInput.value) || 0;
+        const ttc = ht * (1 + tva / 100);
+        montantTTCInput.value = ttc.toFixed(2);
+    }
+
+    montantHTInput.addEventListener('input', calculateTTC);
+    tauxTVAInput.addEventListener('input', calculateTTC);
+    calculateTTC();
+});
+</script>
+{% endblock %}

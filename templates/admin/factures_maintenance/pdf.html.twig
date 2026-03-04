@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Facture {{ facture.numero }}</title>
+    <style>
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 12px;
+            margin: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+        .header h1 {
+            margin: 0;
+            color: #333;
+        }
+        .info-section {
+            margin-bottom: 20px;
+        }
+        .info-section h3 {
+            background-color: #f0f0f0;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table.info td {
+            padding: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+        table.info td:first-child {
+            font-weight: bold;
+            width: 30%;
+        }
+        .description-box {
+            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: #f9f9f9;
+            margin-bottom: 20px;
+        }
+        table.totals {
+            width: 50%;
+            margin-left: auto;
+            border: 1px solid #333;
+        }
+        table.totals td, table.totals th {
+            padding: 8px;
+            border: 1px solid #333;
+        }
+        table.totals .total-row {
+            background-color: #e8f5e9;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>FACTURE DE MAINTENANCE</h1>
+        <p><strong>{{ facture.numero }}</strong></p>
+        <p>Date: {{ facture.dateEmission|date('d/m/Y à H:i') }}</p>
+    </div>
+
+    <div class="info-section">
+        <h3>Informations du véhicule</h3>
+        <table class="info">
+            <tr>
+                <td>Marque / Modèle:</td>
+                <td>{{ facture.vehicule.marque }} {{ facture.vehicule.modele }}</td>
+            </tr>
+            <tr>
+                <td>Immatriculation:</td>
+                <td>{{ facture.vehicule.immatriculation }}</td>
+            </tr>
+            <tr>
+                <td>Type:</td>
+                <td>{{ facture.vehicule.typeVehicule }}</td>
+            </tr>
+        </table>
+    </div>
+
+    {% if facture.technician %}
+    <div class="info-section">
+        <h3>Technicien</h3>
+        <table class="info">
+            <tr>
+                <td>Nom:</td>
+                <td>{{ facture.technician.prenom }} {{ facture.technician.nom }}</td>
+            </tr>
+            <tr>
+                <td>Email:</td>
+                <td>{{ facture.technician.email }}</td>
+            </tr>
+        </table>
+    </div>
+    {% endif %}
+
+    {% if facture.fournisseur %}
+    <div class="info-section">
+        <h3>Fournisseur</h3>
+        <p>{{ facture.fournisseur }}</p>
+    </div>
+    {% endif %}
+
+    <div class="info-section">
+        <h3>Description des travaux</h3>
+        <div class="description-box">
+            {{ facture.descriptionTravaux|nl2br }}
+        </div>
+    </div>
+
+    {% if facture.pieceChangees %}
+    <div class="info-section">
+        <h3>Pièces changées</h3>
+        <div class="description-box">
+            {{ facture.pieceChangees|nl2br }}
+        </div>
+    </div>
+    {% endif %}
+
+    <table class="totals">
+        <tr>
+            <th>Montant HT:</th>
+            <td style="text-align: right;">{{ facture.montantHT|number_format(2, '.', ' ') }} TND</td>
+        </tr>
+        <tr>
+            <th>TVA ({{ facture.tauxTVA }}%):</th>
+            <td style="text-align: right;">{{ ((facture.montantTTC - facture.montantHT))|number_format(2, '.', ' ') }} TND</td>
+        </tr>
+        <tr class="total-row">
+            <th>Montant TTC:</th>
+            <td style="text-align: right;">{{ facture.montantTTC|number_format(2, '.', ' ') }} TND</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <p>Document généré le {{ "now"|date('d/m/Y à H:i') }}</p>
+    </div>
+</body>
+</html>

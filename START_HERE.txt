@@ -1,0 +1,144 @@
+╔══════════════════════════════════════════════════════════════╗
+║                    PACKTRACK - START HERE                    ║
+║              Database Reset & Admin Setup Guide              ║
+╚══════════════════════════════════════════════════════════════╝
+
+YOU ASKED TO: Delete old database and create fresh one with migrations
+
+═══════════════════════════════════════════════════════════════
+
+EASIEST WAY - ONE COMMAND:
+───────────────────────────────────────────────────────────────
+Run this script (it does everything):
+
+    COMPLETE_SETUP.bat
+
+This will:
+  1. Drop old database
+  2. Create new database  
+  3. Run all migrations (creates all tables)
+  4. Clear cache
+  5. Prompt you to create admin account
+
+═══════════════════════════════════════════════════════════════
+
+MANUAL WAY - STEP BY STEP:
+───────────────────────────────────────────────────────────────
+
+Step 1: Drop old database
+    php bin/console doctrine:database:drop --force --if-exists
+
+Step 2: Create new database
+    php bin/console doctrine:database:create
+
+Step 3: Run migrations (creates all tables)
+    php bin/console doctrine:migrations:migrate --no-interaction
+
+Step 4: Clear cache
+    php bin/console cache:clear
+
+Step 5: Create admin account
+    php bin/console app:create-admin
+
+═══════════════════════════════════════════════════════════════
+
+WHAT GETS CREATED:
+───────────────────────────────────────────────────────────────
+The migrations will create these tables:
+
+✓ utilisateurs          - Users/Admin accounts
+✓ vehicules             - Vehicles
+✓ techniciens           - Technicians
+✓ factures_maintenance  - NEW: Maintenance invoices
+✓ factures              - Delivery invoices
+✓ livraisons            - Deliveries
+✓ colis                 - Packages
+✓ publications          - Forum posts
+✓ commentaires          - Comments
+✓ notifications         - Notifications
+✓ recompenses           - Rewards
+✓ password_reset_tokens - Password reset
+✓ messenger_messages    - Message queue
+
+═══════════════════════════════════════════════════════════════
+
+AFTER SETUP:
+───────────────────────────────────────────────────────────────
+
+1. Start the server:
+   php -S localhost:8000 -t public
+
+2. Open browser:
+   http://localhost:8000/login
+
+3. Login with admin credentials you created
+
+4. Navigate to:
+   Vehicles → Liste (to see vehicle list)
+   Vehicles → Factures Maintenance (to see invoice history)
+
+═══════════════════════════════════════════════════════════════
+
+TESTING THE NEW FEATURE:
+───────────────────────────────────────────────────────────────
+
+1. Go to: Vehicles → Liste
+2. Click "Edit" on any vehicle with status "en_maintenance"
+3. Change status to "disponible"
+4. You'll be redirected to create maintenance invoice
+5. Fill the form and submit
+6. View invoice history: Vehicles → Factures Maintenance
+
+═══════════════════════════════════════════════════════════════
+
+TROUBLESHOOTING:
+───────────────────────────────────────────────────────────────
+
+Error: "Access denied for user"
+→ Check .env file, update DATABASE_URL with correct credentials
+
+Error: "Database does not exist"  
+→ This is normal, continue to create database step
+
+Error: "Dependencies are missing"
+→ Run: composer install
+
+Error: "Command not found"
+→ Run: php bin/console cache:clear
+
+Can't login?
+→ Make sure you created admin with: php bin/console app:create-admin
+→ Check email/password are correct
+→ Verify role is 'ADMIN' in database
+
+═══════════════════════════════════════════════════════════════
+
+HELPFUL FILES:
+───────────────────────────────────────────────────────────────
+
+COMPLETE_SETUP.bat          - Complete automated setup
+DATABASE_RESET_GUIDE.md     - Detailed reset instructions
+QUICK_COMMANDS.txt          - All useful commands
+CREATE_ADMIN_INSTRUCTIONS.md - Admin account creation guide
+ADMIN_QUICK_START.txt       - Quick start guide
+
+═══════════════════════════════════════════════════════════════
+
+NEED HELP?
+───────────────────────────────────────────────────────────────
+
+Check these files for more details:
+- DATABASE_RESET_GUIDE.md (detailed steps)
+- QUICK_COMMANDS.txt (all commands)
+- WORKFLOW_DIAGRAM.txt (how the feature works)
+
+═══════════════════════════════════════════════════════════════
+
+READY TO START?
+───────────────────────────────────────────────────────────────
+
+Just run:  COMPLETE_SETUP.bat
+
+That's it! Everything will be set up automatically.
+
+═══════════════════════════════════════════════════════════════

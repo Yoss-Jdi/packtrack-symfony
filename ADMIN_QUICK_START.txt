@@ -1,0 +1,96 @@
+╔══════════════════════════════════════════════════════════════╗
+║           PACKTRACK - ADMIN QUICK START GUIDE               ║
+╚══════════════════════════════════════════════════════════════╝
+
+STEP 1: CREATE ADMIN ACCOUNT
+─────────────────────────────────────────────────────────────
+Option A - Symfony Command (Easiest):
+  php bin/console app:create-admin
+
+Option B - SQL Script:
+  mysql -u root -p PackTrackDB < add_admin_account.sql
+  
+  Default credentials:
+  Email: admin@packtrack.com
+  Password: Admin123!
+
+
+STEP 2: LOGIN
+─────────────────────────────────────────────────────────────
+URL: http://localhost:8000/login
+Email: admin@packtrack.com
+Password: (your password)
+
+
+STEP 3: ACCESS VEHICLE LIST
+─────────────────────────────────────────────────────────────
+After login, in the left sidebar:
+  Click: Vehicles → Liste
+
+Or direct URL:
+  http://localhost:8000/admin/vehicles
+
+
+STEP 4: TEST MAINTENANCE INVOICE FEATURE
+─────────────────────────────────────────────────────────────
+1. Go to Vehicles → Liste
+2. Click "Edit" on a vehicle with status "en_maintenance"
+3. Change status to "disponible"
+4. Fill the maintenance invoice form
+5. Submit
+6. View invoice history: Vehicles → Factures Maintenance
+
+
+ADMIN MENU STRUCTURE
+─────────────────────────────────────────────────────────────
+📦 PackTrack
+├── 📊 Dashboard
+├── 📦 Colis
+├── 📄 Factures
+│   ├── Liste
+│   └── Statistiques
+├── 🏆 Récompenses
+├── 🚛 Vehicles
+│   ├── Liste ← Vehicle list here
+│   ├── Nouveau
+│   ├── Export PDF
+│   └── Factures Maintenance ← NEW: Invoice history
+├── 💬 Forum
+├── 👥 Utilisateurs
+│   ├── Liste
+│   ├── Ajout
+│   └── Statistiques
+└── 🔔 Notifications
+
+
+AVAILABLE ROLES
+─────────────────────────────────────────────────────────────
+- ADMIN       → Full access to admin panel
+- CLIENT      → Customer access
+- ENTREPRISE  → Business access
+- LIVREUR     → Delivery person access
+- TECHNICIEN  → Technician access
+
+
+TROUBLESHOOTING
+─────────────────────────────────────────────────────────────
+Can't run command?
+  → Run: composer install
+  → Then: php bin/console cache:clear
+
+Can't login?
+  → Check email/password are correct
+  → Verify role is 'ADMIN' in database
+  → Clear browser cache
+
+Can't see vehicles?
+  → Ensure you're logged in as ADMIN
+  → Check URL: /admin/vehicles
+  → Verify route exists in controller
+
+
+SECURITY REMINDER
+─────────────────────────────────────────────────────────────
+⚠️  Change default password after first login!
+⚠️  Use strong passwords (8+ chars, mixed case, numbers)
+⚠️  Don't share admin credentials

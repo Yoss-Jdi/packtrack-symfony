@@ -1,0 +1,134 @@
+╔══════════════════════════════════════════════════════════════╗
+║            ADMIN ACCOUNT CREATED SUCCESSFULLY                ║
+╚══════════════════════════════════════════════════════════════╝
+
+ADMIN CREDENTIALS:
+═══════════════════════════════════════════════════════════════
+
+Email:    admin@packtrack.com
+Password: Admin123!
+Role:     ADMIN
+Name:     System Admin
+Phone:    +216 12345678
+
+⚠️  IMPORTANT: Change this password after first login!
+
+LOGIN INSTRUCTIONS:
+═══════════════════════════════════════════════════════════════
+
+1. START THE SERVER:
+   php -S localhost:8000 -t public
+
+2. OPEN YOUR BROWSER:
+   http://localhost:8000/login
+
+3. ENTER CREDENTIALS:
+   Email:    admin@packtrack.com
+   Password: Admin123!
+
+4. CLICK LOGIN
+
+AFTER LOGIN:
+═══════════════════════════════════════════════════════════════
+
+You'll see the admin dashboard with the sidebar menu:
+
+📦 PackTrack
+├── 📊 Dashboard
+├── 📦 Colis
+├── 📄 Factures
+├── 🏆 Récompenses
+├── 🚛 Vehicles ← Click here to access vehicles
+│   ├── Liste ← Vehicle list
+│   ├── Nouveau ← Add new vehicle
+│   ├── Export PDF
+│   └── Factures Maintenance ← NEW: Invoice history
+├── 💬 Forum
+├── 👥 Utilisateurs
+└── 🔔 Notifications
+
+TO ACCESS VEHICLE LIST:
+═══════════════════════════════════════════════════════════════
+
+Method 1: Click Vehicles → Liste in sidebar
+Method 2: Direct URL: http://localhost:8000/admin/vehicles
+
+TEST MAINTENANCE INVOICE FEATURE:
+═══════════════════════════════════════════════════════════════
+
+1. Go to: Vehicles → Liste
+2. Create or edit a vehicle with status "en_maintenance"
+3. Change status to "disponible"
+4. System will redirect to invoice creation form
+5. Fill in:
+   - Numero: MAINT-2024-001
+   - Montant HT: 500.00
+   - Taux TVA: 19%
+   - Description: Maintenance work description
+   - Fournisseur: (optional)
+   - Pieces changees: (optional)
+6. Submit to create invoice
+7. View history: Vehicles → Factures Maintenance
+
+ACCOUNT DETAILS:
+═══════════════════════════════════════════════════════════════
+
+User ID:      1
+Email:        admin@packtrack.com
+First Name:   System
+Last Name:    Admin
+Role:         ADMIN
+Phone:        +216 12345678
+Created:      2026-03-04 02:45:26
+
+SECURITY NOTES:
+═══════════════════════════════════════════════════════════════
+
+⚠️  This is a default password - CHANGE IT IMMEDIATELY!
+⚠️  Use a strong password (8+ chars, mixed case, numbers, symbols)
+⚠️  Don't share admin credentials
+⚠️  Consider enabling 2FA if available
+
+QUICK START COMMANDS:
+═══════════════════════════════════════════════════════════════
+
+Start server:
+  php -S localhost:8000 -t public
+
+Check admin exists:
+  php bin/console doctrine:query:sql "SELECT * FROM utilisateurs WHERE role='ADMIN'"
+
+Reset password (if needed):
+  php bin/console security:hash-password "YourNewPassword"
+  Then update in database
+
+TROUBLESHOOTING:
+═══════════════════════════════════════════════════════════════
+
+Can't login?
+  ✓ Check email is exactly: admin@packtrack.com
+  ✓ Check password is exactly: Admin123!
+  ✓ Clear browser cache/cookies
+  ✓ Try incognito/private window
+
+Server not starting?
+  ✓ Check port 8000 is not in use
+  ✓ Try different port: php -S localhost:8080 -t public
+
+Can't see vehicles?
+  ✓ Make sure you're logged in as ADMIN
+  ✓ Check URL: /admin/vehicles
+  ✓ Clear cache: php bin/console cache:clear
+
+EVERYTHING IS READY!
+═══════════════════════════════════════════════════════════════
+
+✅ Database created
+✅ All tables created (15 tables)
+✅ Migrations applied
+✅ Admin account created
+✅ Ready to login and use
+
+Just start the server and login!
+
+═══════════════════════════════════════════════════════════════

@@ -1,0 +1,112 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Facture {{ facture.numero }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fas fa-file-invoice"></i> Facture {{ facture.numero }}</h4>
+                    <div>
+                        <a href="{{ path('admin_factures_maintenance_pdf', {id: facture.id}) }}" 
+                           class="btn btn-light btn-sm" target="_blank">
+                            <i class="fas fa-file-pdf"></i> Télécharger PDF
+                        </a>
+                        <a href="{{ path('admin_factures_maintenance_index') }}" class="btn btn-light btn-sm">
+                            <i class="fas fa-arrow-left"></i> Retour
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5 class="text-primary">Informations générales</h5>
+                            <table class="table table-sm">
+                                <tr>
+                                    <th width="40%">Numéro:</th>
+                                    <td><strong>{{ facture.numero }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>Date d'émission:</th>
+                                    <td>{{ facture.dateEmission|date('d/m/Y à H:i') }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Fournisseur:</th>
+                                    <td>{{ facture.fournisseur ?? 'Non spécifié' }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="text-primary">Véhicule</h5>
+                            <table class="table table-sm">
+                                <tr>
+                                    <th width="40%">Marque/Modèle:</th>
+                                    <td>{{ facture.vehicule.marque }} {{ facture.vehicule.modele }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Immatriculation:</th>
+                                    <td><strong>{{ facture.vehicule.immatriculation }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>Type:</th>
+                                    <td>{{ facture.vehicule.typeVehicule }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    {% if facture.technician %}
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <h5 class="text-primary">Technicien</h5>
+                            <p>{{ facture.technician.prenom }} {{ facture.technician.nom }} - {{ facture.technician.email }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <h5 class="text-primary">Description des travaux</h5>
+                            <div class="alert alert-light">
+                                {{ facture.descriptionTravaux|nl2br }}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if facture.pieceChangees %}
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <h5 class="text-primary">Pièces changées</h5>
+                            <div class="alert alert-light">
+                                {{ facture.pieceChangees|nl2br }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="row">
+                        <div class="col-md-6 offset-md-6">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Montant HT:</th>
+                                    <td class="text-end">{{ facture.montantHT|number_format(2, '.', ' ') }} TND</td>
+                                </tr>
+                                <tr>
+                                    <th>TVA ({{ facture.tauxTVA }}%):</th>
+                                    <td class="text-end">{{ ((facture.montantTTC - facture.montantHT))|number_format(2, '.', ' ') }} TND</td>
+                                </tr>
+                                <tr class="table-success">
+                                    <th>Montant TTC:</th>
+                                    <td class="text-end"><strong>{{ facture.montantTTC|number_format(2, '.', ' ') }} TND</strong></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

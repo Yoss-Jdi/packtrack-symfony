@@ -118,6 +118,9 @@
             <li>
                 <a href="{{ path('admin_vehicles_export_pdf') }}"><i class="fa-solid fa-file-pdf"></i> Export PDF</a>
             </li>
+            <li class="{{ app.request.get('_route') starts with 'admin_factures_maintenance' ? 'active' }}">
+                <a href="{{ path('admin_factures_maintenance_index') }}"><i class="fa-solid fa-file-invoice-dollar"></i> Factures Maintenance</a>
+            </li>
         </ul>
     </li>
 

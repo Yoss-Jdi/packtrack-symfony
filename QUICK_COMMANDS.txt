@@ -1,0 +1,149 @@
+╔══════════════════════════════════════════════════════════════╗
+║              PACKTRACK - QUICK COMMAND REFERENCE             ║
+╚══════════════════════════════════════════════════════════════╝
+
+COMPLETE SETUP (Recommended)
+─────────────────────────────────────────────────────────────
+Windows:
+  COMPLETE_SETUP.bat
+
+This will:
+  ✓ Install dependencies (if needed)
+  ✓ Drop old database
+  ✓ Create new database
+  ✓ Run all migrations
+  ✓ Validate schema
+  ✓ Clear cache
+  ✓ Create admin account
+
+
+MANUAL COMMANDS
+─────────────────────────────────────────────────────────────
+
+1. Install Dependencies:
+   composer install
+
+2. Drop Database:
+   php bin/console doctrine:database:drop --force --if-exists
+
+3. Create Database:
+   php bin/console doctrine:database:create
+
+4. Run Migrations:
+   php bin/console doctrine:migrations:migrate --no-interaction
+
+5. Validate Schema:
+   php bin/console doctrine:schema:validate
+
+6. Clear Cache:
+   php bin/console cache:clear
+
+7. Create Admin:
+   php bin/console app:create-admin
+
+
+DATABASE COMMANDS
+─────────────────────────────────────────────────────────────
+Check migration status:
+  php bin/console doctrine:migrations:status
+
+List all migrations:
+  php bin/console doctrine:migrations:list
+
+Execute specific migration:
+  php bin/console doctrine:migrations:execute Version20260304032623
+
+Rollback last migration:
+  php bin/console doctrine:migrations:migrate prev
+
+
+TROUBLESHOOTING COMMANDS
+─────────────────────────────────────────────────────────────
+Check database connection:
+  php bin/console doctrine:query:sql "SELECT 1"
+
+Show all tables:
+  php bin/console doctrine:query:sql "SHOW TABLES"
+
+Check table structure:
+  php bin/console doctrine:query:sql "DESCRIBE factures_maintenance"
+
+Clear all caches:
+  php bin/console cache:clear
+  php bin/console cache:warmup
+
+
+SERVER COMMANDS
+─────────────────────────────────────────────────────────────
+Start Symfony server:
+  symfony server:start
+
+Start PHP built-in server:
+  php -S localhost:8000 -t public
+
+Stop Symfony server:
+  symfony server:stop
+
+
+VERIFICATION COMMANDS
+─────────────────────────────────────────────────────────────
+List all routes:
+  php bin/console debug:router
+
+Check specific route:
+  php bin/console debug:router admin_vehicles_index
+
+List all services:
+  php bin/console debug:container
+
+Check entity mapping:
+  php bin/console doctrine:mapping:info
+
+
+USEFUL QUERIES (MySQL)
+─────────────────────────────────────────────────────────────
+Connect to database:
+  mysql -u root -p PackTrackDB
+
+Show all tables:
+  SHOW TABLES;
+
+Check factures_maintenance table:
+  DESCRIBE factures_maintenance;
+  SELECT * FROM factures_maintenance;
+
+Check users:
+  SELECT id_utilisateur, email, nom, prenom, role FROM utilisateurs;
+
+Check vehicles:
+  SELECT ID_Vehicule, marque, modele, immatriculation, statut FROM vehicules;
+
+
+QUICK TEST SEQUENCE
+─────────────────────────────────────────────────────────────
+1. COMPLETE_SETUP.bat
+2. php -S localhost:8000 -t public
+3. Open: http://localhost:8000/login
+4. Login with admin credentials
+5. Go to: Vehicles → Liste
+6. Test maintenance invoice feature
+
+
+FILE LOCATIONS
+─────────────────────────────────────────────────────────────
+Entities:          src/Entity/
+Controllers:       src/Controller/
+Forms:             src/Form/
+Templates:         templates/
+Migrations:        migrations/
+Config:            config/
+Environment:       .env
+
+
+IMPORTANT FILES
+─────────────────────────────────────────────────────────────
+Database config:   .env (DATABASE_URL)
+Routes:            config/routes.yaml
+Services:          config/services.yaml
+Security:          config/packages/security.yaml
+Doctrine:          config/packages/doctrine.yaml

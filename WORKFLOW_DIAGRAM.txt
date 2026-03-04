@@ -1,0 +1,96 @@
+VEHICLE MAINTENANCE INVOICE WORKFLOW
+=====================================
+
+SCENARIO: Admin wants to change vehicle status from maintenance to disponible
+
+┌─────────────────────────────────────────────────────────────────┐
+│ STEP 1: Admin edits vehicle                                     │
+│ Route: /admin/vehicles/{id}/edit                                │
+│ Current Status: en_maintenance OR hors_service                  │
+│ Action: Change status to "disponible"                           │
+└────────────────────┬────────────────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ STEP 2: System detects status change                            │
+│ Logic: VehicleController::edit()                                │
+│ Check: originalStatut in [en_maintenance, hors_service]         │
+│        AND newStatut === disponible                             │
+│ Result: Redirect to facture creation                            │
+└────────────────────┬────────────────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ STEP 3: Invoice creation form                                   │
+│ Route: /admin/vehicles/{id}/create-facture                      │
+│ Form Fields:                                                     │
+│   - Numero (required, unique)                                   │
+│   - Montant HT (required, positive)                             │
+│   - Taux TVA (required, 0-100%, default 19%)                    │
+│   - Description travaux (required)                              │
+│   - Fournisseur (optional)                                      │
+│   - Pieces changees (optional)                                  │
+│ Auto-calculation: Montant TTC = HT * (1 + TVA/100)             │
+└────────────────────┬────────────────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ STEP 4: Form submission & validation                            │
+│ Validation:                                                      │
+│   ✓ All required fields filled                                  │
+│   ✓ Numero is unique                                            │
+│   ✓ Montant HT is positive                                      │
+│   ✓ Taux TVA between 0-100                                      │
+└────────────────────┬────────────────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ STEP 5: Database operations                                     │
+│ Actions:                                                         │
+│   1. Create FactureMaintenance record                           │
+│   2. Link to Vehicule                                           │
+│   3. Link to Technician (if assigned)                           │
+│   4. Update vehicle status to "disponible"                      │
+│   5. Set technician status to "disponible"                      │
+│   6. Remove technician assignment from vehicle                  │
+└────────────────────┬────────────────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ STEP 6: Success & redirect                                      │
+│ Message: "Facture créée et véhicule mis à jour avec succès"    │
+│ Redirect: /admin/vehicles (vehicle list)                        │
+└─────────────────────────────────────────────────────────────────┘
+
+
+VIEW INVOICE HISTORY
+====================
+
+Route: /admin/vehicles → Factures Maintenance
+Path: /admin/factures-maintenance
+
+Features:
+- Paginated list of all maintenance invoices
+- Display: numero, date, vehicle, technician, amounts
+- Actions: View details, Generate PDF, Delete
+- Statistics: Total invoices, Total maintenance cost
+
+INVOICE DETAILS
+===============
+
+Route: /admin/factures-maintenance/{id}
+Features:
+- Full invoice information
+- Vehicle details
+- Technician details
+- Work description
+- Parts changed
+- Amount breakdown (HT, TVA, TTC)
+- PDF download button
+
+PDF GENERATION
+==============
+
+Route: /admin/factures-maintenance/{id}/pdf
+Output: PDF document with complete invoice details
+Format: A4 portrait

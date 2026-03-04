@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Vehicule;
+use App\Entity\FactureMaintenance;
 use App\Form\VehiculeType;
+use App\Form\FactureMaintenanceType;
 use App\Repository\VehiculeRepository;
 use App\Service\VehicleProblemAnalyzer;
 use Dompdf\Dompdf;
@@ -140,6 +142,17 @@ class VehicleController extends AbstractController
             $newTechnician = $vehicule->getTechnician();
             $newStatut = $vehicule->getStatut();
 
+            // Check if status is changing from maintenance/hors_service to disponible
+            $needsFacture = in_array($originalStatut, ['en_maintenance', 'hors_service']) 
+                && $newStatut === 'disponible';
+
+            if ($needsFacture) {
+                // Redirect to facture creation form
+                $request->getSession()->set('vehicle_to_update', $vehicule->getId());
+                $request->getSession()->set('vehicle_original_technician', $originalTechnician?->getId());
+                return $this->redirectToRoute('admin_vehicles_create_facture', ['id' => $vehicule->getId()]);
+            }
+
             // Handle technician status changes
             // If technician was removed or changed, set old technician to disponible
             if ($originalTechnician && $originalTechnician !== $newTechnician) {
@@ -189,6 +202,69 @@ class VehicleController extends AbstractController
         }
 
         return $this->render('admin/vehicles/form.html.twig', [
+            'form' => $form->createView(),
+            'vehicule' => $vehicule,
+        ]);
+    }
+
+    #[Route('/{id}/create-facture', name: 'admin_vehicles_create_facture')]
+    public function createFacture(
+        Vehicule $vehicule,
+        Request $request,
+        EntityManagerInterface $em
+    ): Response
+    {
+        // Verify vehicle is in session and status change is valid
+        $vehicleId = $request->getSession()->get('vehicle_to_update');
+        if ($vehicleId !== $vehicule->getId()) {
+            $this->addFlash('error', 'Session invalide. Veuillez réessayer.');
+            return $this->redirectToRoute('admin_vehicles_edit', ['id' => $vehicule->getId()]);
+        }
+
+        $facture = new FactureMaintenance();
+        $facture->setVehicule($vehicule);
+        $facture->setTechnician($vehicule->getTechnician());
+        
+        $form = $this->createForm(FactureMaintenanceType::class, $facture);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Calculate TTC
+            $montantHT = (float) $facture->getMontantHT();
+            $tauxTVA = (float) $facture->getTauxTVA();
+            $montantTTC = $montantHT * (1 + $tauxTVA / 100);
+            $facture->setMontantTTC((string) $montantTTC);
+
+            // Save facture
+            $em->persist($facture);
+
+            // Update vehicle status to disponible
+            $originalTechnicianId = $request->getSession()->get('vehicle_original_technician');
+            if ($originalTechnicianId) {
+                $originalTechnician = $em->getRepository('App\Entity\Technician')->find($originalTechnicianId);
+                if ($originalTechnician) {
+                    $originalTechnician->setStatut('disponible');
+                }
+            }
+
+            if ($vehicule->getTechnician()) {
+                $vehicule->getTechnician()->setStatut('disponible');
+            }
+            
+            $vehicule->setStatut('disponible');
+            $vehicule->setTechnician(null);
+
+            $em->flush();
+
+            // Clear session
+            $request->getSession()->remove('vehicle_to_update');
+            $request->getSession()->remove('vehicle_original_technician');
+
+            $this->addFlash('success', 'Facture créée et véhicule mis à jour avec succès.');
+            return $this->redirectToRoute('admin_vehicles_index');
+        }
+
+        return $this->render('admin/vehicles/create_facture.html.twig', [
             'form' => $form->createView(),
             'vehicule' => $vehicule,
         ]);

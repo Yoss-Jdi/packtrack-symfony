@@ -1,0 +1,55 @@
+FACTURE MAINTENANCE - SETUP INSTRUCTIONS
+========================================
+
+STEP 1: Database Migration
+---------------------------
+Option A - Using Doctrine (recommended):
+  php bin/console doctrine:migrations:migrate
+
+Option B - Manual SQL:
+  mysql -u root -p PackTrackDB < factures_maintenance_table.sql
+
+STEP 2: Clear Cache
+--------------------
+  php bin/console cache:clear
+
+STEP 3: Test the Feature
+-------------------------
+1. Login as admin
+2. Go to Vehicles menu
+3. Edit a vehicle with status "en_maintenance" or "hors_service"
+4. Change status to "disponible"
+5. You will be redirected to create a maintenance invoice
+6. Fill the form with:
+   - Numero (e.g., MAINT-2024-001)
+   - Montant HT (e.g., 500.00)
+   - Taux TVA (default 19%)
+   - Description des travaux (required)
+   - Fournisseur (optional)
+   - Pieces changees (optional)
+7. Submit to create invoice and update vehicle
+
+STEP 4: View Invoice History
+-----------------------------
+Navigate to: Vehicles > Factures Maintenance
+
+FEATURES IMPLEMENTED:
+- ✓ FactureMaintenance entity with validation
+- ✓ Automatic invoice requirement when status changes to disponible
+- ✓ Form with input validation
+- ✓ Auto-calculation of TTC from HT and TVA
+- ✓ Invoice history page with pagination
+- ✓ PDF generation for invoices
+- ✓ Navigation link in admin sidebar
+- ✓ Database migration file
+- ✓ Manual SQL script
+
+VALIDATION RULES:
+- Numero: Required, unique
+- MontantHT: Required, positive decimal
+- TauxTVA: Required, 0-100%
+- Description: Required text
+- Fournisseur: Optional
+- Pieces changees: Optional
+
+NOTE: Do not commit changes as requested.

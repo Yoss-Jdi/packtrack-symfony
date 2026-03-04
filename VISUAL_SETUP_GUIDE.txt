@@ -1,0 +1,178 @@
+╔══════════════════════════════════════════════════════════════╗
+║           PACKTRACK - VISUAL SETUP GUIDE                     ║
+╚══════════════════════════════════════════════════════════════╝
+
+
+CURRENT SITUATION:
+┌────────────────────────────────────────────────────────────┐
+│  ❌ Old Database (outdated schema)                         │
+│  ❌ No admin account                                        │
+│  ❌ Can't access vehicle list                              │
+└────────────────────────────────────────────────────────────┘
+
+
+SOLUTION - RUN THIS:
+┌────────────────────────────────────────────────────────────┐
+│                                                             │
+│  >  COMPLETE_SETUP.bat                                     │
+│                                                             │
+└────────────────────────────────────────────────────────────┘
+
+
+WHAT HAPPENS:
+┌────────────────────────────────────────────────────────────┐
+│                                                             │
+│  [1/6] 🗑️  Dropping old database...                        │
+│            ✓ Old database deleted                          │
+│                                                             │
+│  [2/6] 🆕 Creating new database...                         │
+│            ✓ Fresh database created                        │
+│                                                             │
+│  [3/6] 📋 Running migrations...                            │
+│            ✓ Creating utilisateurs table                   │
+│            ✓ Creating vehicules table                      │
+│            ✓ Creating techniciens table                    │
+│            ✓ Creating factures_maintenance table (NEW!)    │
+│            ✓ Creating colis, livraisons, factures...       │
+│            ✓ Creating publications, commentaires...        │
+│            ✓ Creating notifications, recompenses...        │
+│            ✓ All 13 tables created                         │
+│                                                             │
+│  [4/6] ✅ Validating schema...                             │
+│            ✓ Schema is valid                               │
+│                                                             │
+│  [5/6] 🧹 Clearing cache...                                │
+│            ✓ Cache cleared                                 │
+│                                                             │
+│  [6/6] 👤 Creating admin account...                        │
+│            Email: [you enter]                              │
+│            Password: [you enter]                           │
+│            Name: [you enter]                               │
+│            ✓ Admin created                                 │
+│                                                             │
+└────────────────────────────────────────────────────────────┘
+
+
+RESULT:
+┌────────────────────────────────────────────────────────────┐
+│  ✅ Fresh database with all tables                         │
+│  ✅ Admin account created                                  │
+│  ✅ Ready to use                                           │
+└────────────────────────────────────────────────────────────┘
+
+
+DATABASE STRUCTURE:
+┌────────────────────────────────────────────────────────────┐
+│                                                             │
+│  PackTrackDB                                               │
+│  ├── utilisateurs (users & admins)                        │
+│  ├── vehicules (vehicles)                                 │
+│  ├── techniciens (technicians)                            │
+│  ├── factures_maintenance ⭐ NEW                          │
+│  │   ├── ID_Facture_Maintenance                           │
+│  │   ├── numero (unique)                                  │
+│  │   ├── dateEmission                                     │
+│  │   ├── montantHT                                        │
+│  │   ├── montantTTC                                       │
+│  │   ├── tauxTVA                                          │
+│  │   ├── descriptionTravaux                               │
+│  │   ├── fournisseur                                      │
+│  │   ├── pieceChangees                                    │
+│  │   ├── vehicule_id → vehicules                         │
+│  │   └── technicien_id → techniciens                     │
+│  ├── factures (delivery invoices)                         │
+│  ├── livraisons (deliveries)                              │
+│  ├── colis (packages)                                     │
+│  ├── publications (forum)                                 │
+│  ├── commentaires (comments)                              │
+│  ├── notifications                                         │
+│  ├── recompenses (rewards)                                │
+│  └── password_reset_tokens                                │
+│                                                             │
+└────────────────────────────────────────────────────────────┘
+
+
+AFTER SETUP - START SERVER:
+┌────────────────────────────────────────────────────────────┐
+│                                                             │
+│  >  php -S localhost:8000 -t public                       │
+│                                                             │
+│  Server started at: http://localhost:8000                  │
+│                                                             │
+└────────────────────────────────────────────────────────────┘
+
+
+LOGIN:
+┌────────────────────────────────────────────────────────────┐
+│                                                             │
+│  URL: http://localhost:8000/login                          │
+│                                                             │
+│  ┌──────────────────────────────────────────────┐         │
+│  │  Email:    [admin@packtrack.com]             │         │
+│  │  Password: [your password]                   │         │
+│  │                                               │         │
+│  │           [ Login ]                           │         │
+│  └──────────────────────────────────────────────┘         │
+│                                                             │
+└────────────────────────────────────────────────────────────┘
+
+
+NAVIGATION:
+┌────────────────────────────────────────────────────────────┐
+│                                                             │
+│  📦 PackTrack                                              │
+│  ├── 📊 Dashboard                                          │
+│  ├── 📦 Colis                                              │
+│  ├── 📄 Factures                                           │
+│  ├── 🏆 Récompenses                                        │
+│  ├── 🚛 Vehicles ◄── CLICK HERE                           │
+│  │   ├── Liste ◄── THEN HERE (vehicle list)              │
+│  │   ├── Nouveau                                          │
+│  │   ├── Export PDF                                       │
+│  │   └── Factures Maintenance ⭐ NEW                     │
+│  ├── 💬 Forum                                              │
+│  ├── 👥 Utilisateurs                                       │
+│  └── 🔔 Notifications                                      │
+│                                                             │
+└────────────────────────────────────────────────────────────┘
+
+
+TEST MAINTENANCE INVOICE:
+┌────────────────────────────────────────────────────────────┐
+│                                                             │
+│  1. Go to: Vehicles → Liste                               │
+│                                                             │
+│  2. Edit vehicle with status "en_maintenance"             │
+│                                                             │
+│  3. Change status to "disponible"                         │
+│                                                             │
+│  4. System redirects to invoice form                      │
+│     ┌────────────────────────────────────────┐            │
+│     │ Numero: MAINT-2024-001                 │            │
+│     │ Montant HT: 500.00                     │            │
+│     │ Taux TVA: 19%                          │            │
+│     │ Montant TTC: 595.00 (auto-calculated)  │            │
+│     │ Description: [work description]        │            │
+│     │ Fournisseur: [optional]                │            │
+│     │ Pieces: [optional]                     │            │
+│     │                                         │            │
+│     │        [ Create Invoice ]               │            │
+│     └────────────────────────────────────────┘            │
+│                                                             │
+│  5. Invoice created! Vehicle now disponible               │
+│                                                             │
+│  6. View history: Vehicles → Factures Maintenance         │
+│                                                             │
+└────────────────────────────────────────────────────────────┘
+
+
+SUMMARY:
+═══════════════════════════════════════════════════════════════
+  
+  ✅ Run: COMPLETE_SETUP.bat
+  ✅ Start server: php -S localhost:8000 -t public  
+  ✅ Login: http://localhost:8000/login
+  ✅ Access: Vehicles → Liste
+  ✅ Test: Maintenance invoice feature
+
+═══════════════════════════════════════════════════════════════
