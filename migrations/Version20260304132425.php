@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260304000941 extends AbstractMigration
+final class Version20260304132425 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -23,6 +23,7 @@ final class Version20260304000941 extends AbstractMigration
         $this->addSql('CREATE TABLE colis (ID_Colis INT AUTO_INCREMENT NOT NULL, description LONGTEXT DEFAULT NULL, articles LONGTEXT DEFAULT NULL, adresseDestination LONGTEXT NOT NULL, adresseDepart LONGTEXT NOT NULL, dateCreation TIMESTAMP DEFAULT CURRENT_TIMESTAMP, dateExpedition TIMESTAMP NULL DEFAULT NULL, poids DOUBLE PRECISION DEFAULT NULL, dimensions VARCHAR(100) DEFAULT NULL, statut VARCHAR(50) DEFAULT NULL, qrCode LONGTEXT DEFAULT NULL, expediteur_id INT NOT NULL, destinataire_id INT NOT NULL, INDEX IDX_470BDFF910335F61 (expediteur_id), INDEX IDX_470BDFF9A4F84F6E (destinataire_id), PRIMARY KEY (ID_Colis)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE commentaires (ID_Commentaire INT AUTO_INCREMENT NOT NULL, contenu LONGTEXT NOT NULL, dateCreation DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL, publication_id INT NOT NULL, auteur_id INT NOT NULL, INDEX IDX_D9BEC0C438B217A7 (publication_id), INDEX IDX_D9BEC0C460BB6FE6 (auteur_id), PRIMARY KEY (ID_Commentaire)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE factures (ID_Facture INT AUTO_INCREMENT NOT NULL, numero VARCHAR(50) NOT NULL, dateEmission DATETIME DEFAULT NULL, montantHT DOUBLE PRECISION NOT NULL, montantTTC DOUBLE PRECISION NOT NULL, tva DOUBLE PRECISION DEFAULT NULL, statut VARCHAR(50) DEFAULT NULL, pdfUrl VARCHAR(500) DEFAULT NULL, livraison_id INT NOT NULL, UNIQUE INDEX UNIQ_647590BF55AE19E (numero), INDEX IDX_647590B8E54FB25 (livraison_id), PRIMARY KEY (ID_Facture)) DEFAULT CHARACTER SET utf8mb4');
+        $this->addSql('CREATE TABLE factures_maintenance (ID_Facture_Maintenance INT AUTO_INCREMENT NOT NULL, numero VARCHAR(100) NOT NULL, date_emission DATETIME NOT NULL, montant_ht NUMERIC(10, 2) NOT NULL, montant_ttc NUMERIC(10, 2) NOT NULL, taux_tva NUMERIC(5, 2) NOT NULL, description_travaux LONGTEXT NOT NULL, fournisseur VARCHAR(255) DEFAULT NULL, piece_changees LONGTEXT DEFAULT NULL, vehicule_id INT NOT NULL, technicien_id INT DEFAULT NULL, UNIQUE INDEX UNIQ_C2468EBF55AE19E (numero), INDEX IDX_C2468EB4A4A3511 (vehicule_id), INDEX IDX_C2468EB13457256 (technicien_id), PRIMARY KEY (ID_Facture_Maintenance)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE livraisons (ID_Livraison INT AUTO_INCREMENT NOT NULL, statut VARCHAR(50) DEFAULT NULL, dateDebut TIMESTAMP DEFAULT CURRENT_TIMESTAMP, dateFin TIMESTAMP NULL DEFAULT NULL, distanceKm DOUBLE PRECISION DEFAULT NULL, payment NUMERIC(10, 2) DEFAULT NULL, total NUMERIC(10, 2) DEFAULT NULL, methodePaiement VARCHAR(50) DEFAULT NULL, dureeEstimeeMinutes DOUBLE PRECISION DEFAULT NULL, colis_id INT NOT NULL, livreur_id INT NOT NULL, INDEX IDX_96A0CE614D268D70 (colis_id), INDEX IDX_96A0CE61F8646701 (livreur_id), PRIMARY KEY (ID_Livraison)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE notifications (id INT AUTO_INCREMENT NOT NULL, message LONGTEXT NOT NULL, type VARCHAR(50) NOT NULL, date_creation DATETIME NOT NULL, lu TINYINT NOT NULL, utilisateur_id INT NOT NULL, colis_id INT DEFAULT NULL, INDEX IDX_6000B0D3FB88E14F (utilisateur_id), INDEX IDX_6000B0D34D268D70 (colis_id), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE password_reset_tokens (id BINARY(16) NOT NULL, email VARCHAR(255) NOT NULL, token VARCHAR(255) NOT NULL, expires_at DATETIME NOT NULL, created_at DATETIME NOT NULL, used TINYINT NOT NULL, UNIQUE INDEX UNIQ_3967A2165F37A13B (token), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
@@ -38,6 +39,8 @@ final class Version20260304000941 extends AbstractMigration
         $this->addSql('ALTER TABLE commentaires ADD CONSTRAINT FK_D9BEC0C438B217A7 FOREIGN KEY (publication_id) REFERENCES publications (ID_Publication) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE commentaires ADD CONSTRAINT FK_D9BEC0C460BB6FE6 FOREIGN KEY (auteur_id) REFERENCES utilisateurs (id_utilisateur) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE factures ADD CONSTRAINT FK_647590B8E54FB25 FOREIGN KEY (livraison_id) REFERENCES livraisons (ID_Livraison)');
+        $this->addSql('ALTER TABLE factures_maintenance ADD CONSTRAINT FK_C2468EB4A4A3511 FOREIGN KEY (vehicule_id) REFERENCES vehicules (ID_Vehicule) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE factures_maintenance ADD CONSTRAINT FK_C2468EB13457256 FOREIGN KEY (technicien_id) REFERENCES techniciens (ID_Technicien) ON DELETE SET NULL');
         $this->addSql('ALTER TABLE livraisons ADD CONSTRAINT FK_96A0CE614D268D70 FOREIGN KEY (colis_id) REFERENCES colis (ID_Colis)');
         $this->addSql('ALTER TABLE livraisons ADD CONSTRAINT FK_96A0CE61F8646701 FOREIGN KEY (livreur_id) REFERENCES utilisateurs (id_utilisateur)');
         $this->addSql('ALTER TABLE notifications ADD CONSTRAINT FK_6000B0D3FB88E14F FOREIGN KEY (utilisateur_id) REFERENCES utilisateurs (id_utilisateur)');
@@ -58,6 +61,8 @@ final class Version20260304000941 extends AbstractMigration
         $this->addSql('ALTER TABLE commentaires DROP FOREIGN KEY FK_D9BEC0C438B217A7');
         $this->addSql('ALTER TABLE commentaires DROP FOREIGN KEY FK_D9BEC0C460BB6FE6');
         $this->addSql('ALTER TABLE factures DROP FOREIGN KEY FK_647590B8E54FB25');
+        $this->addSql('ALTER TABLE factures_maintenance DROP FOREIGN KEY FK_C2468EB4A4A3511');
+        $this->addSql('ALTER TABLE factures_maintenance DROP FOREIGN KEY FK_C2468EB13457256');
         $this->addSql('ALTER TABLE livraisons DROP FOREIGN KEY FK_96A0CE614D268D70');
         $this->addSql('ALTER TABLE livraisons DROP FOREIGN KEY FK_96A0CE61F8646701');
         $this->addSql('ALTER TABLE notifications DROP FOREIGN KEY FK_6000B0D3FB88E14F');
@@ -71,6 +76,7 @@ final class Version20260304000941 extends AbstractMigration
         $this->addSql('DROP TABLE colis');
         $this->addSql('DROP TABLE commentaires');
         $this->addSql('DROP TABLE factures');
+        $this->addSql('DROP TABLE factures_maintenance');
         $this->addSql('DROP TABLE livraisons');
         $this->addSql('DROP TABLE notifications');
         $this->addSql('DROP TABLE password_reset_tokens');

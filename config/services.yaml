@@ -26,3 +26,4 @@ services:
     App\Service\FileUploader:
         arguments:
             $targetDirectory: '%kernel.project_dir%/public/uploads/profils'
+    

@@ -13,6 +13,7 @@ class FactureMaintenance
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'ID_Facture_Maintenance')]
+    /** @phpstan-ignore property.unusedType */
     private ?int $id = null;
 
     #[ORM\Column(length: 100, unique: true)]

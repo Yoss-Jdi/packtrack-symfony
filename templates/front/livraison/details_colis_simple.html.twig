@@ -239,9 +239,14 @@
         <div class="actions">
             <a href="{{ path('app_livraison_mes_livraisons') }}" class="btn btn-secondary">← Retour à mes livraisons</a>
             {% if livraison.statut == 'en_cours' %}
-                <a href="{{ path('app_livraison_terminer', {id: livraison.id}) }}" class="btn btn-success">
-                    ✅ Terminer la livraison
-                </a>
+                <form method="post" action="{{ path('app_livraison_terminer', {id: livraison.id}) }}"
+                    style="display: inline;"
+                    onsubmit="return confirm('Confirmer la fin de cette livraison ?')">
+                    <input type="hidden" name="_token" value="{{ csrf_token('terminer' ~ livraison.id) }}">
+                    <button type="submit" class="btn btn-success">
+                        ✅ Terminer la livraison
+                    </button>
+                </form>
             {% endif %}
         </div>
     </div>

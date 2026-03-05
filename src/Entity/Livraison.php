@@ -54,7 +54,7 @@ class Livraison
     #[ORM\Column(name: 'dureeEstimeeMinutes', nullable: true)]
     private ?float $dureeEstimeeMinutes = null;
 
-    #[ORM\ManyToOne(targetEntity: Colis::class, inversedBy: 'livraisons')]
+    #[ORM\ManyToOne(targetEntity: Colis::class)]
     #[ORM\JoinColumn(name: 'colis_id', referencedColumnName: 'ID_Colis', nullable: false)]
     #[Assert\NotNull(message: "Le colis est obligatoire")]
     private ?Colis $colis = null;

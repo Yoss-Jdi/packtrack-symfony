@@ -29,13 +29,12 @@ class CreateAdminCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $helper = $this->getHelper('question');
 
         $io->title('Create Admin Account');
 
         // Ask for email
         $emailQuestion = new Question('Email address: ', 'admin@packtrack.com');
-        $email = $helper->ask($input, $output, $emailQuestion);
+        $email = $io->askQuestion($emailQuestion);
 
         // Check if user already exists
         $existingUser = $this->entityManager->getRepository(Utilisateurs::class)
@@ -50,7 +49,7 @@ class CreateAdminCommand extends Command
         $passwordQuestion = new Question('Password: ');
         $passwordQuestion->setHidden(true);
         $passwordQuestion->setHiddenFallback(false);
-        $password = $helper->ask($input, $output, $passwordQuestion);
+        $password = $io->askQuestion($passwordQuestion);
 
         if (empty($password)) {
             $io->error('Password cannot be empty!');
@@ -59,15 +58,15 @@ class CreateAdminCommand extends Command
 
         // Ask for first name
         $prenomQuestion = new Question('First name: ', 'Admin');
-        $prenom = $helper->ask($input, $output, $prenomQuestion);
+        $prenom = $io->askQuestion($prenomQuestion);
 
         // Ask for last name
         $nomQuestion = new Question('Last name: ', 'System');
-        $nom = $helper->ask($input, $output, $nomQuestion);
+        $nom = $io->askQuestion($nomQuestion);
 
         // Ask for phone (optional)
         $phoneQuestion = new Question('Phone (optional): ', null);
-        $phone = $helper->ask($input, $output, $phoneQuestion);
+        $phone = $io->askQuestion($phoneQuestion);
 
         // Create admin user
         $admin = new Utilisateurs();

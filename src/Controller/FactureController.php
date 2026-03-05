@@ -246,12 +246,12 @@ final class FactureController extends AbstractController
         $livraison = $entityManager->getRepository(Livraison::class)
             ->findOneBy(['colis' => $id]);
 
-        if (!$livraison || !$livraison->getTotal()) {
+        if (!$livraison || $livraison->getTotal() === null || (float) $livraison->getTotal() <= 0) {
             return $this->json(['montant' => null, 'error' => 'Aucune livraison trouvée']);
         }
 
         return $this->json([
-            'montant' => $livraison->getTotal(),
+            'montant' => (float) $livraison->getTotal(),
             'statut'  => $livraison->getStatut(),
         ]);
     }
@@ -424,7 +424,7 @@ final class FactureController extends AbstractController
     // ─────────────────────────────────────────
     //  🔏 VERIFIER FRAUDE IA  ← NOUVEAU
     // ─────────────────────────────────────────
-    #[Route('/{id}/verifier-fraude', name: 'app_facture_verifier_fraude', methods: ['POST'])]
+    #[Route('/{id}/verifier-fraude', name: 'app_facture_verifier_fraude', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function verifierFraude(
         int $id,
         FactureRepository $factureRepository,
@@ -453,7 +453,7 @@ final class FactureController extends AbstractController
     // ─────────────────────────────────────────
     //  SHOW → redirige vers EDIT
     // ─────────────────────────────────────────
-    #[Route('/{id}', name: 'app_facture_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'app_facture_show', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function show(?Facture $facture): Response
     {
         if ($redirect = $this->checkAdminAccess()) return $redirect;
@@ -469,7 +469,7 @@ final class FactureController extends AbstractController
     // ─────────────────────────────────────────
     //  EDIT
     // ─────────────────────────────────────────
-    #[Route('/{id}/edit', name: 'app_facture_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'app_facture_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function edit(
         Request $request,
         Facture $facture,
@@ -524,7 +524,7 @@ final class FactureController extends AbstractController
     // ─────────────────────────────────────────
     //  PDF
     // ─────────────────────────────────────────
-    #[Route('/{id}/pdf', name: 'app_facture_pdf', methods: ['GET'])]
+    #[Route('/{id}/pdf', name: 'app_facture_pdf', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function pdf(
         Facture $facture,
         EntityManagerInterface $entityManager,
@@ -570,7 +570,7 @@ final class FactureController extends AbstractController
     // ─────────────────────────────────────────
     //  DELETE
     // ─────────────────────────────────────────
-    #[Route('/{id}', name: 'app_facture_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'app_facture_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function delete(
         Request $request,
         Facture $facture,

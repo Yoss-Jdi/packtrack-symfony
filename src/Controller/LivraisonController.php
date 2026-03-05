@@ -90,7 +90,6 @@ class LivraisonController extends AbstractController
         return $this->redirectToRoute('app_livraison_mes_livraisons');
     }
 
-    // ✅ Terminer : plus de formulaire, juste un POST
     #[Route('/terminer/{id}', name: 'app_livraison_terminer', methods: ['POST'])]
     public function terminer(
         Livraison $livraison,

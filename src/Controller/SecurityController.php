@@ -139,11 +139,13 @@ class SecurityController extends AbstractController
         }
 
         if (!empty($errors)) {
-            return $this->render('security/login.html.twig', [
-                'registration_errors' => $errors,
-                'registration_data'   => compact('email', 'nom', 'prenom', 'telephone'),
-            ]);
-        }
+        return $this->render('security/login.html.twig', [
+            'registration_errors' => $errors,
+            'registration_data'   => compact('email', 'nom', 'prenom', 'telephone'),
+            'error'               => null,        
+            'last_username'       => $email,     
+        ]);
+    }
 
         // Créer l'utilisateur
         $utilisateur = new Utilisateurs();
