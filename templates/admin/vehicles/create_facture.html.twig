@@ -16,7 +16,10 @@
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle"></i>
                         <strong>Véhicule:</strong> {{ vehicule.marque }} {{ vehicule.modele }} ({{ vehicule.immatriculation }})<br>
-                        <strong>Statut actuel:</strong> <span class="badge bg-warning">{{ vehicule.statut }}</span><br>
+                        <strong>Statut actuel:</strong>
+                        <span class="badge {{ vehicule.disponible ? 'bg-success' : 'bg-warning' }}">
+                            {{ vehicule.disponible ? 'Disponible' : 'Indisponible' }}
+                        </span><br>
                         <strong>Nouveau statut:</strong> <span class="badge bg-success">Disponible</span>
                     </div>
 

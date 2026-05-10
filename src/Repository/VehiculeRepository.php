@@ -25,11 +25,11 @@ class VehiculeRepository extends ServiceEntityRepository
 
         if ($term) {
             $qb
-                ->andWhere('v.marque LIKE :term OR v.modele LIKE :term OR v.immatriculation LIKE :term OR t.nom LIKE :term OR t.prenom LIKE :term')
+                ->andWhere('v.marque LIKE :term OR v.modele LIKE :term OR v.immatriculation LIKE :term OR v.couleur LIKE :term OR t.nom LIKE :term OR t.prenom LIKE :term')
                 ->setParameter('term', '%' . $term . '%');
         }
 
-        $allowedSorts = ['marque', 'modele', 'immatriculation', 'statut'];
+        $allowedSorts = ['marque', 'modele', 'immatriculation', 'couleur', 'prixLocation', 'disponible'];
         if ($sortField && \in_array($sortField, $allowedSorts, true)) {
             $direction = \strtoupper($direction ?? 'ASC');
             if (!\in_array($direction, ['ASC', 'DESC'], true)) {
@@ -54,14 +54,14 @@ class VehiculeRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array<int, array{type: string|null, total: int}>
+     * Statistiques par disponibilité
+     * @return array<int, array{disponible: bool, total: int}>
      */
-    public function getStatsByType(): array
+    public function getStatsByDisponibilite(): array
     {
         return $this->createQueryBuilder('v')
-            ->select('v.typeVehicule AS type', 'COUNT(v.id) AS total')
-            ->groupBy('v.typeVehicule')
-            ->orderBy('total', 'DESC')
+            ->select('v.disponible AS disponible', 'COUNT(v.id) AS total')
+            ->groupBy('v.disponible')
             ->getQuery()
             ->getArrayResult();
     }

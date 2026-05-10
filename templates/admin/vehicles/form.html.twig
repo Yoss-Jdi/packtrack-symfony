@@ -287,111 +287,93 @@
             <div class="form-card-body">
                 {{ form_start(form) }}
 
-                {# Marque et Modèle #}
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i class="fa-solid fa-tag"></i>
-                            {{ form_label(form.marque) }}
-                            <span class="required-asterisk">*</span>
-                        </label>
-                        {{ form_widget(form.marque, {'attr': {'placeholder': 'Mercedes, Ford, etc.'}}) }}
-                        {{ form_errors(form.marque) }}
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i class="fa-solid fa-car-side"></i>
-                            {{ form_label(form.modele) }}
-                            <span class="required-asterisk">*</span>
-                        </label>
-                        {{ form_widget(form.modele, {'attr': {'placeholder': 'Sprinter, Transit, etc.'}}) }}
-                        {{ form_errors(form.modele) }}
-                    </div>
-                </div>
-
-                {# Immatriculation #}
-                <div class="form-group">
-                    <label class="form-label">
-                        <i class="fa-solid fa-id-card"></i>
-                        {{ form_label(form.immatriculation) }}
-                        <span class="required-asterisk">*</span>
-                    </label>
-                    {{ form_widget(form.immatriculation) }}
-                    {{ form_errors(form.immatriculation) }}
-                    {{ form_help(form.immatriculation) }}
-                </div>
-
-                {# Type et Capacité #}
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i class="fa-solid fa-truck-moving"></i>
-                            {{ form_label(form.typeVehicule) }}
-                            <span class="required-asterisk">*</span>
-                        </label>
-                        {{ form_widget(form.typeVehicule, {'attr': {'placeholder': 'Van, Truck, etc.'}}) }}
-                        {{ form_errors(form.typeVehicule) }}
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i class="fa-solid fa-weight-hanging"></i>
-                            {{ form_label(form.capacite) }}
-                            <span class="required-asterisk">*</span>
-                        </label>
-                        {{ form_widget(form.capacite, {'attr': {'placeholder': 'Poids en kg'}}) }}
-                        {{ form_errors(form.capacite) }}
-                    </div>
-                </div>
-
-                {# Statut et Technicien #}
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i class="fa-solid fa-circle-info"></i>
-                            {{ form_label(form.statut) }}
-                            <span class="required-asterisk">*</span>
-                        </label>
-                        {{ form_widget(form.statut) }}
-                        {{ form_errors(form.statut) }}
-                    </div>
-
-                    <div class="form-group" id="technician-container">
-                        <label class="form-label">
-                            <i class="fa-solid fa-user-gear"></i>
-                            {{ form_label(form.technician) }}
-                        </label>
-                        {{ form_widget(form.technician) }}
-                        {{ form_errors(form.technician) }}
-                        <div class="form-help">
-                            <i class="fa-solid fa-info-circle"></i>
-                            Seuls les techniciens disponibles sont affichés
+                {# Marque et Modèle — inchangé #}
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fa-solid fa-tag"></i>
+                                {{ form_label(form.marque) }}
+                                <span class="required-asterisk">*</span>
+                            </label>
+                            {{ form_widget(form.marque, {'attr': {'placeholder': 'Mercedes, Ford, etc.'}}) }}
+                            {{ form_errors(form.marque) }}
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fa-solid fa-car-side"></i>
+                                {{ form_label(form.modele) }}
+                                <span class="required-asterisk">*</span>
+                            </label>
+                            {{ form_widget(form.modele, {'attr': {'placeholder': 'Sprinter, Transit, etc.'}}) }}
+                            {{ form_errors(form.modele) }}
                         </div>
                     </div>
-                </div>
 
-                {# Problem Description #}
-                <div class="form-group" id="problem-description-container">
-                    <label class="form-label">
-                        {{ form_label(form.problemDescription) }}
-                    </label>
-                    {{ form_widget(form.problemDescription) }}
-                    {{ form_errors(form.problemDescription) }}
-                    <div class="form-help">
-                        <i class="fa-solid fa-robot"></i>
-                        Cette description sera analysée par IA pour déterminer les actions nécessaires
+                    {# Immatriculation — inchangé #}
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fa-solid fa-id-card"></i>
+                            {{ form_label(form.immatriculation) }}
+                            <span class="required-asterisk">*</span>
+                        </label>
+                        {{ form_widget(form.immatriculation) }}
+                        {{ form_errors(form.immatriculation) }}
+                        {{ form_help(form.immatriculation) }}
                     </div>
-                </div>
 
-                {# ACTION BUTTONS #}
-                <div class="form-actions">
-                    <a href="{{ path('admin_vehicles_index') }}" class="btn-modern btn-cancel">
-                        <i class="fa-solid fa-xmark"></i>
-                        Annuler
-                    </a>
-                    {{ form_widget(form.save, {'attr': {'class': 'btn-modern btn-submit'}}) }}
-                </div>
+                    {# Couleur et Prix de location — NOUVEAU #}
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fa-solid fa-palette"></i>
+                                {{ form_label(form.couleur) }}
+                                <span class="required-asterisk">*</span>
+                            </label>
+                            {{ form_widget(form.couleur, {'attr': {'placeholder': 'Blanc, Rouge, etc.'}}) }}
+                            {{ form_errors(form.couleur) }}
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fa-solid fa-money-bill"></i>
+                                {{ form_label(form.prixLocation) }}
+                                <span class="required-asterisk">*</span>
+                            </label>
+                            {{ form_widget(form.prixLocation, {'attr': {'placeholder': 'Prix en TND'}}) }}
+                            {{ form_errors(form.prixLocation) }}
+                        </div>
+                    </div>
+
+                    {# Disponible et Technicien #}
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fa-solid fa-circle-check"></i>
+                                {{ form_label(form.disponible) }}
+                            </label>
+                            {{ form_widget(form.disponible) }}
+                            {{ form_errors(form.disponible) }}
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fa-solid fa-user-gear"></i>
+                                {{ form_label(form.technician) }}
+                            </label>
+                            {{ form_widget(form.technician) }}
+                            {{ form_errors(form.technician) }}
+                            <div class="form-help">
+                                <i class="fa-solid fa-info-circle"></i>
+                                Optionnel — assigner un technicien
+                            </div>
+                        </div>
+                    </div>
+
+                    {# ACTION BUTTONS #}
+                    <div class="form-actions">
+                        <a href="{{ path('admin_vehicles_index') }}" class="btn-modern btn-cancel">
+                            <i class="fa-solid fa-xmark"></i> Annuler
+                        </a>
+                        {{ form_widget(form.save, {'attr': {'class': 'btn-modern btn-submit'}}) }}
+                    </div>
 
                 {{ form_end(form) }}
             </div>

@@ -36,12 +36,15 @@
 <body>
 <h1>Vehicles list</h1>
 
+{# Dans la table principale (vehicles/index.html.twig) #}
 <table>
     <thead>
     <tr>
         <th>Plate</th>
         <th>Brand</th>
         <th>Model</th>
+        <th>Color</th>
+        <th>Prix/jour</th>
         <th>Status</th>
         <th>Technician</th>
     </tr>
@@ -52,7 +55,13 @@
             <td>{{ vehicle.immatriculation }}</td>
             <td>{{ vehicle.marque ?? '-' }}</td>
             <td>{{ vehicle.modele ?? '-' }}</td>
-            <td>{{ vehicle.statut }}</td>
+            <td>{{ vehicle.couleur ?? '-' }}</td>
+            <td>{{ vehicle.prixLocation ? vehicle.prixLocation ~ ' TND' : '-' }}</td>
+            <td>
+                <span class="status {{ vehicle.disponible ? 'delivered' : 'processing' }}">
+                    {{ vehicle.disponible ? 'Disponible' : 'Indisponible' }}
+                </span>
+            </td>
             <td>
                 {% if vehicle.technician %}
                     {{ vehicle.technician.prenom }} {{ vehicle.technician.nom }}
@@ -63,7 +72,7 @@
         </tr>
     {% else %}
         <tr>
-            <td colspan="5" style="text-align: center;">No vehicles.</td>
+            <td colspan="7" style="text-align: center;">No vehicles.</td>
         </tr>
     {% endfor %}
     </tbody>

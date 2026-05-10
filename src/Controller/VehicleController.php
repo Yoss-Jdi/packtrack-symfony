@@ -3,22 +3,16 @@
 namespace App\Controller;
 
 use App\Entity\Vehicule;
-use App\Entity\FactureMaintenance;
 use App\Form\VehiculeType;
-use App\Form\FactureMaintenanceType;
 use App\Repository\VehiculeRepository;
-use App\Service\VehicleProblemAnalyzer;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 #[Route('/admin/vehicles')]
 class VehicleController extends AbstractController
@@ -34,16 +28,16 @@ class VehicleController extends AbstractController
         $vehicles = $paginator->paginate(
             $queryBuilder,
             $request->query->getInt('page', 1),
-            3
+            10
         );
-        $statsByType = $repository->getStatsByType();
+        $statsByDisponibilite = $repository->getStatsByDisponibilite();
 
         return $this->render('admin/vehicles/index.html.twig', [
             'vehicles' => $vehicles,
             'search' => $search,
             'sort' => $sort,
             'direction' => $direction,
-            'statsByType' => $statsByType,
+            'statsByDisponibilite' => $statsByDisponibilite,
         ]);
     }
 
@@ -76,39 +70,15 @@ class VehicleController extends AbstractController
     }
 
     #[Route('/new', name: 'admin_vehicles_new')]
-    public function new(
-        Request $request, 
-        EntityManagerInterface $em,
-        VehicleProblemAnalyzer $problemAnalyzer,
-        MailerInterface $mailer,
-        ParameterBagInterface $params
-    ): Response
+    public function new(Request $request, EntityManagerInterface $em): Response
     {
         $vehicule = new Vehicule();
         $form = $this->createForm(VehiculeType::class, $vehicule);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Update technician status if assigned
-            if ($vehicule->getTechnician() && $vehicule->getStatut() !== 'disponible') {
-                $vehicule->getTechnician()->setStatut('occupe');
-            }
-
             $em->persist($vehicule);
             $em->flush();
-
-            // Si le statut est "hors_service" ou "en_maintenance" et qu'il y a une description
-            if (in_array($vehicule->getStatut(), ['hors_service', 'en_maintenance']) 
-                && $vehicule->getProblemDescription() 
-                && $vehicule->getTechnician()) {
-                
-                $this->sendTechnicianNotification(
-                    $vehicule, 
-                    $problemAnalyzer, 
-                    $mailer, 
-                    $params
-                );
-            }
 
             $this->addFlash('success', 'Véhicule créé avec succès.');
 
@@ -122,79 +92,13 @@ class VehicleController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'admin_vehicles_edit')]
-    public function edit(
-        Vehicule $vehicule, 
-        Request $request, 
-        EntityManagerInterface $em,
-        VehicleProblemAnalyzer $problemAnalyzer,
-        MailerInterface $mailer,
-        ParameterBagInterface $params
-    ): Response
+    public function edit(Vehicule $vehicule, Request $request, EntityManagerInterface $em): Response
     {
-        $originalStatut = $vehicule->getStatut();
-        $originalDescription = $vehicule->getProblemDescription();
-        $originalTechnician = $vehicule->getTechnician();
-        
         $form = $this->createForm(VehiculeType::class, $vehicule);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $newTechnician = $vehicule->getTechnician();
-            $newStatut = $vehicule->getStatut();
-
-            // Check if status is changing from maintenance/hors_service to disponible
-            $needsFacture = in_array($originalStatut, ['en_maintenance', 'hors_service']) 
-                && $newStatut === 'disponible';
-
-            if ($needsFacture) {
-                // Redirect to facture creation form
-                $request->getSession()->set('vehicle_to_update', $vehicule->getId());
-                $request->getSession()->set('vehicle_original_technician', $originalTechnician?->getId());
-                return $this->redirectToRoute('admin_vehicles_create_facture', ['id' => $vehicule->getId()]);
-            }
-
-            // Handle technician status changes
-            // If technician was removed or changed, set old technician to disponible
-            if ($originalTechnician && $originalTechnician !== $newTechnician) {
-                $originalTechnician->setStatut('disponible');
-            }
-
-            // If vehicle status changed to disponible, set technician to disponible and remove assignment
-            if ($newStatut === 'disponible') {
-                if ($newTechnician) {
-                    $newTechnician->setStatut('disponible');
-                }
-                $vehicule->setTechnician(null);
-            } 
-            // If new technician assigned and vehicle not disponible, set technician to occupe
-            elseif ($newTechnician && $newTechnician !== $originalTechnician) {
-                $newTechnician->setStatut('occupe');
-            }
-
             $em->flush();
-
-            // Envoyer notification si le statut change vers "hors_service" ou "en_maintenance"
-            // OU si la description change pour un véhicule déjà en maintenance/hors service
-            $statusChanged = in_array($vehicule->getStatut(), ['hors_service', 'en_maintenance']) 
-                && $originalStatut !== $vehicule->getStatut();
-            
-            $descriptionChanged = in_array($vehicule->getStatut(), ['hors_service', 'en_maintenance'])
-                && $vehicule->getProblemDescription() !== $originalDescription
-                && !empty($vehicule->getProblemDescription());
-
-            $technicianChanged = $newTechnician && $newTechnician !== $originalTechnician;
-
-            if (($statusChanged || $descriptionChanged || $technicianChanged) 
-                && $vehicule->getProblemDescription() 
-                && $vehicule->getTechnician()) {
-                
-                $this->sendTechnicianNotification(
-                    $vehicule, 
-                    $problemAnalyzer, 
-                    $mailer, 
-                    $params
-                );
-            }
 
             $this->addFlash('success', 'Véhicule mis à jour avec succès.');
 
@@ -202,69 +106,6 @@ class VehicleController extends AbstractController
         }
 
         return $this->render('admin/vehicles/form.html.twig', [
-            'form' => $form->createView(),
-            'vehicule' => $vehicule,
-        ]);
-    }
-
-    #[Route('/{id}/create-facture', name: 'admin_vehicles_create_facture')]
-    public function createFacture(
-        Vehicule $vehicule,
-        Request $request,
-        EntityManagerInterface $em
-    ): Response
-    {
-        // Verify vehicle is in session and status change is valid
-        $vehicleId = $request->getSession()->get('vehicle_to_update');
-        if ($vehicleId !== $vehicule->getId()) {
-            $this->addFlash('error', 'Session invalide. Veuillez réessayer.');
-            return $this->redirectToRoute('admin_vehicles_edit', ['id' => $vehicule->getId()]);
-        }
-
-        $facture = new FactureMaintenance();
-        $facture->setVehicule($vehicule);
-        $facture->setTechnician($vehicule->getTechnician());
-        
-        $form = $this->createForm(FactureMaintenanceType::class, $facture);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            // Calculate TTC
-            $montantHT = (float) $facture->getMontantHT();
-            $tauxTVA = (float) $facture->getTauxTVA();
-            $montantTTC = $montantHT * (1 + $tauxTVA / 100);
-            $facture->setMontantTTC((string) $montantTTC);
-
-            // Save facture
-            $em->persist($facture);
-
-            // Update vehicle status to disponible
-            $originalTechnicianId = $request->getSession()->get('vehicle_original_technician');
-            if ($originalTechnicianId) {
-                $originalTechnician = $em->getRepository('App\Entity\Technician')->find($originalTechnicianId);
-                if ($originalTechnician) {
-                    $originalTechnician->setStatut('disponible');
-                }
-            }
-
-            if ($vehicule->getTechnician()) {
-                $vehicule->getTechnician()->setStatut('disponible');
-            }
-            
-            $vehicule->setStatut('disponible');
-            $vehicule->setTechnician(null);
-
-            $em->flush();
-
-            // Clear session
-            $request->getSession()->remove('vehicle_to_update');
-            $request->getSession()->remove('vehicle_original_technician');
-
-            $this->addFlash('success', 'Facture créée et véhicule mis à jour avec succès.');
-            return $this->redirectToRoute('admin_vehicles_index');
-        }
-
-        return $this->render('admin/vehicles/create_facture.html.twig', [
             'form' => $form->createView(),
             'vehicule' => $vehicule,
         ]);
@@ -280,41 +121,5 @@ class VehicleController extends AbstractController
         }
 
         return $this->redirectToRoute('admin_vehicles_index');
-    }
-
-    private function sendTechnicianNotification(
-        Vehicule $vehicule,
-        VehicleProblemAnalyzer $problemAnalyzer,
-        MailerInterface $mailer,
-        ParameterBagInterface $params
-    ): void
-    {
-        try {
-            // Analyser le problème avec l'IA
-            $analysis = $problemAnalyzer->analyzeProblem(
-                $vehicule->getProblemDescription(),
-                $vehicule->getMarque(),
-                $vehicule->getModele(),
-                $vehicule->getTypeVehicule()
-            );
-
-            // Envoyer l'email au technicien
-            $email = (new TemplatedEmail())
-                ->from($params->get('app.mailer_from_address'))
-                ->to($vehicule->getTechnician()->getEmail())
-                ->subject('Nouvelle intervention requise - ' . $vehicule->getMarque() . ' ' . $vehicule->getModele())
-                ->htmlTemplate('emails/technician_notification.html.twig')
-                ->context([
-                    'vehicule' => $vehicule,
-                    'technician' => $vehicule->getTechnician(),
-                    'analysis' => $analysis,
-                ]);
-
-            $mailer->send($email);
-
-            $this->addFlash('info', 'Une notification a été envoyée au technicien ' . $vehicule->getTechnician()->getPrenom() . ' ' . $vehicule->getTechnician()->getNom());
-        } catch (\Exception $e) {
-            $this->addFlash('warning', 'Le véhicule a été enregistré mais l\'envoi de l\'email a échoué: ' . $e->getMessage());
-        }
     }
 }

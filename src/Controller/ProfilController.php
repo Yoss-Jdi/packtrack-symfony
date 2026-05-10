@@ -6,9 +6,11 @@ use App\Entity\Utilisateurs;
 use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -115,8 +117,38 @@ class ProfilController extends AbstractController
 
         return $this->json([
             'success'  => true,
-            'photoUrl' => '/uploads/profils/' . $fileName,
+            'photoUrl' => $this->generateUrl('app_profile_image', ['path' => $fileName]),
         ]);
+    }
+
+    #[Route('/profile-image/{path}', name: 'app_profile_image', requirements: ['path' => '.+'])]
+    public function profileImage(string $path): Response
+    {
+        $relativePath = str_replace('\\', '/', ltrim($path, '/'));
+        $fileName = basename($relativePath);
+
+        $candidatePaths = [
+            'C:/Mydocs/Java_esp/Pidev_packtrack/src/main/resources/images/profiles/' . $fileName,
+            $this->getParameter('kernel.project_dir') . '/public/uploads/profils/' . $fileName,
+        ];
+
+        $filePath = null;
+        foreach ($candidatePaths as $candidatePath) {
+            if (is_file($candidatePath)) {
+                $filePath = $candidatePath;
+                break;
+            }
+        }
+
+        if (!$filePath) {
+            throw $this->createNotFoundException('Image introuvable.');
+        }
+
+        $response = new BinaryFileResponse($filePath);
+        $response->headers->set('Content-Type', mime_content_type($filePath) ?: 'application/octet-stream');
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $fileName);
+
+        return $response;
     }
 
     /**
@@ -178,7 +210,7 @@ class ProfilController extends AbstractController
 
         return $this->json([
             'success'  => true,
-            'photoUrl' => '/uploads/profils/' . $fileName,
+            'photoUrl' => $this->generateUrl('app_profile_image', ['path' => $fileName]),
         ]);
     }
 

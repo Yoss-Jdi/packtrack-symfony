@@ -25,5 +25,6 @@ services:
 
     App\Service\FileUploader:
         arguments:
-            $targetDirectory: '%kernel.project_dir%/public/uploads/profils'
+            $targetDirectory: 'C:/Mydocs/Java_esp/Pidev_packtrack/src/main/resources/images/profiles'
+            $legacyDirectory: '%kernel.project_dir%/public/uploads/profils'
     

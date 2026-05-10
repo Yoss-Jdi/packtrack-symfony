@@ -61,7 +61,7 @@ class SecurityController extends AbstractController
 
         $hasPhoto = !empty($user->getPhoto());
         $photoUrl = $hasPhoto
-            ? $request->getSchemeAndHttpHost() . '/uploads/profils/' . $user->getPhoto()
+            ? $this->generateUrl('app_profile_image', ['path' => $user->getPhoto()])
             : null;
 
         return $this->json([
@@ -161,8 +161,7 @@ class SecurityController extends AbstractController
         if ($photoFile) {
             $allowed = ['image/jpeg', 'image/png', 'image/webp'];
             if (in_array($photoFile->getMimeType(), $allowed) && $photoFile->getSize() <= 5 * 1024 * 1024) {
-                $fileName = $fileUploader->upload($photoFile);
-                $utilisateur->setPhoto($fileName);
+                $utilisateur->setPhoto($fileUploader->upload($photoFile));
             }
         }
 

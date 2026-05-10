@@ -9,42 +9,43 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TechnicianRepository::class)]
-#[ORM\Table(name: 'techniciens')]
+#[ORM\Table(name: 'technicien')]  // ✅ Déjà correct
 class Technician
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: 'ID_Technicien')]
-    private ?int $id = null; // @phpstan-ignore property.unusedType
+    #[ORM\Column(name: 'id')]  // ⚠️ CHANGEMENT ICI : 'id' au lieu de 'ID_Technicien'
+    private ?int $id = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 120)]  // ⚠️ CHANGEMENT : 120 au lieu de 100
     #[Assert\NotBlank]
-    #[Assert\Length(max: 100)]
+    #[Assert\Length(max: 120)]  // ⚠️ CHANGEMENT
     private ?string $nom = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 120)]  // ⚠️ CHANGEMENT : 120 au lieu de 100
     #[Assert\NotBlank]
-    #[Assert\Length(max: 100)]
+    #[Assert\Length(max: 120)]  // ⚠️ CHANGEMENT
     private ?string $prenom = null;
 
-    #[ORM\Column(length: 100, nullable: true)]
-    #[Assert\Length(max: 100)]
+    #[ORM\Column(length: 150)]  // ⚠️ CHANGEMENT : 150 au lieu de 100, NOT NULL
+    #[Assert\NotBlank]  // ⚠️ CHANGEMENT : obligatoire maintenant
+    #[Assert\Length(max: 150)]  // ⚠️ CHANGEMENT
     private ?string $specialite = null;
 
-    #[ORM\Column(length: 20, nullable: true)]
-    #[Assert\Length(max: 20)]
+    #[ORM\Column(length: 50)]  // ⚠️ CHANGEMENT : 50 au lieu de 20, NOT NULL
+    #[Assert\NotBlank]  // ⚠️ CHANGEMENT : obligatoire maintenant
+    #[Assert\Length(max: 50)]  // ⚠️ CHANGEMENT
     private ?string $telephone = null;
 
-    #[ORM\Column(length: 180, unique: true)]
+    #[ORM\Column(length: 190, unique: true)]  // ✅ Correct
     #[Assert\NotBlank]
     #[Assert\Email]
-    #[Assert\Length(max: 180)]
+    #[Assert\Length(max: 190)]  // ⚠️ CHANGEMENT : 190 au lieu de 180
     private ?string $email = null;
 
-    #[ORM\Column(length: 50)]
-    #[Assert\NotBlank]
-    #[Assert\Choice(choices: ['disponible', 'occupe', 'en_conge'])]
-    private string $statut = 'disponible';
+    // ⚠️ SUPPRIMER le champ statut - il n'existe pas dans la table technicien
+    // #[ORM\Column(length: 50)]
+    // private string $statut = 'disponible';
 
     /** @var Collection<int, Vehicule> */
     #[ORM\OneToMany(mappedBy: 'technician', targetEntity: Vehicule::class)]
@@ -87,7 +88,7 @@ class Technician
         return $this->specialite;
     }
 
-    public function setSpecialite(?string $specialite): self
+    public function setSpecialite(string $specialite): self  // ⚠️ Plus nullable
     {
         $this->specialite = $specialite;
         return $this;
@@ -98,7 +99,7 @@ class Technician
         return $this->telephone;
     }
 
-    public function setTelephone(?string $telephone): self
+    public function setTelephone(string $telephone): self  // ⚠️ Plus nullable
     {
         $this->telephone = $telephone;
         return $this;
@@ -115,16 +116,9 @@ class Technician
         return $this;
     }
 
-    public function getStatut(): ?string
-    {
-        return $this->statut;
-    }
-
-    public function setStatut(string $statut): self
-    {
-        $this->statut = $statut;
-        return $this;
-    }
+    // ⚠️ SUPPRIMER les méthodes getStatut() et setStatut()
+    // public function getStatut(): ?string { ... }
+    // public function setStatut(string $statut): self { ... }
 
     /**
      * @return Collection<int, Vehicule>

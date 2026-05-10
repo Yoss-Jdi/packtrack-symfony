@@ -25,11 +25,12 @@ class TechnicianRepository extends ServiceEntityRepository
 
         if ($term) {
             $qb
-                ->andWhere('t.nom LIKE :term OR t.prenom LIKE :term OR t.email LIKE :term OR t.specialite LIKE :term')
+                ->andWhere('t.nom LIKE :term OR t.prenom LIKE :term OR t.email LIKE :term OR t.specialite LIKE :term OR t.telephone LIKE :term')
                 ->setParameter('term', '%' . $term . '%');
         }
 
-        $allowedSorts = ['nom', 'prenom', 'email', 'statut'];
+        // ⚠️ CHANGEMENT : 'statut' supprimé de la liste des champs de tri
+        $allowedSorts = ['nom', 'prenom', 'email', 'specialite', 'telephone'];
         if ($sortField && \in_array($sortField, $allowedSorts, true)) {
             $direction = \strtoupper($direction ?? 'ASC');
             if (!\in_array($direction, ['ASC', 'DESC'], true)) {

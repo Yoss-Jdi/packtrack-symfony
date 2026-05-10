@@ -7,54 +7,59 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: VehiculeRepository::class)]
-#[ORM\Table(name: 'vehicules')]
+#[ORM\Table(name: 'vehicule')]  // ⚠️ CHANGEMENT : 'vehicule' au lieu de 'vehicules'
 class Vehicule
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: 'ID_Vehicule')]
-    private ?int $id = null; // @phpstan-ignore property.unusedType
+    #[ORM\Column(name: 'id')]  // ⚠️ CHANGEMENT : 'id' au lieu de 'ID_Vehicule'
+    private ?int $id = null;
 
-    #[ORM\Column(length: 50, nullable: true)]
+    #[ORM\Column(length: 120)]  // ⚠️ CHANGEMENT : 120 au lieu de 50, NOT NULL
     #[Assert\NotBlank(message: 'La marque est obligatoire.')]
-    #[Assert\Length(max: 50)]
+    #[Assert\Length(max: 120)]  // ⚠️ CHANGEMENT
     private ?string $marque = null;
 
-    #[ORM\Column(length: 50, nullable: true)]
+    #[ORM\Column(length: 120)]  // ⚠️ CHANGEMENT : 120 au lieu de 50, NOT NULL
     #[Assert\NotBlank(message: 'Le modèle est obligatoire.')]
-    #[Assert\Length(max: 50)]
+    #[Assert\Length(max: 120)]  // ⚠️ CHANGEMENT
     private ?string $modele = null;
 
-    #[ORM\Column(length: 20, unique: true)]
+    #[ORM\Column(name: 'matricule', length: 120, unique: true)]  // ⚠️ CHANGEMENT : nom de colonne 'matricule' au lieu de 'immatriculation', length 120
     #[Assert\NotBlank(message: "L'immatriculation est obligatoire.")]
-    #[Assert\Length(max: 20)]
+    #[Assert\Length(max: 120)]  // ⚠️ CHANGEMENT
     #[Assert\Regex(
         pattern: '/^[0-9]{3}tun[0-9]{4}$/i',
         message: "Le format de la plaque doit être 3 chiffres, 'tun', puis 4 chiffres (ex: 171tun7896)."
     )]
     private ?string $immatriculation = null;
 
-    #[ORM\Column(name: 'type', length: 50, nullable: true)]
-    #[Assert\NotBlank(message: 'Le type de véhicule est obligatoire.')]
-    #[Assert\Length(max: 50)]
-    private ?string $typeVehicule = null;
+    // ⚠️ SUPPRIMÉ : typeVehicule n'existe pas dans la table vehicule
+    // Le champ 'type' n'existe pas dans votre table vehicule JavaFX
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
-    #[Assert\NotBlank(message: 'La capacité est obligatoire.')]
-    #[Assert\Positive(message: 'La capacité doit être un nombre positif.')]
-    private ?string $capacite = null;
+    // ⚠️ SUPPRIMÉ : capacite n'existe pas dans la table vehicule
+    
+    // ⚠️ NOUVEAU CHAMP : couleur
+    #[ORM\Column(length: 80)]
+    #[Assert\NotBlank(message: 'La couleur est obligatoire.')]
+    #[Assert\Length(max: 80)]
+    private ?string $couleur = null;
 
-    #[ORM\Column(length: 50)]
-    #[Assert\NotBlank]
-    #[Assert\Choice(choices: ['disponible', 'en_maintenance', 'hors_service'])]
-    private string $statut = 'disponible';
+    // ⚠️ NOUVEAU CHAMP : prix_location
+    #[ORM\Column(type: 'float')]
+    #[Assert\NotBlank(message: 'Le prix de location est obligatoire.')]
+    #[Assert\Positive(message: 'Le prix de location doit être un nombre positif.')]
+    private ?float $prixLocation = null;
+
+    // ⚠️ CHANGEMENT : 'disponible' (boolean) au lieu de 'statut' (string)
+    #[ORM\Column(type: 'boolean')]
+    private bool $disponible = true;
 
     #[ORM\ManyToOne(targetEntity: Technician::class, inversedBy: 'vehicules')]
-    #[ORM\JoinColumn(name: 'technicien_id', referencedColumnName: 'ID_Technicien', nullable: true, onDelete: 'SET NULL')]
+    #[ORM\JoinColumn(name: 'technicien_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]  // ⚠️ CHANGEMENT : referencedColumnName='id'
     private ?Technician $technician = null;
 
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $problemDescription = null;
+    // ⚠️ SUPPRIMÉ : problemDescription n'existe pas dans la table vehicule
 
     public function getId(): ?int
     {
@@ -94,36 +99,39 @@ class Vehicule
         return $this;
     }
 
-    public function getTypeVehicule(): ?string
+    // ⚠️ NOUVEAU : getter/setter pour couleur
+    public function getCouleur(): ?string
     {
-        return $this->typeVehicule;
+        return $this->couleur;
     }
 
-    public function setTypeVehicule(?string $typeVehicule): self
+    public function setCouleur(string $couleur): self
     {
-        $this->typeVehicule = $typeVehicule;
+        $this->couleur = $couleur;
         return $this;
     }
 
-    public function getCapacite(): ?string
+    // ⚠️ NOUVEAU : getter/setter pour prixLocation
+    public function getPrixLocation(): ?float
     {
-        return $this->capacite;
+        return $this->prixLocation;
     }
 
-    public function setCapacite(?string $capacite): self
+    public function setPrixLocation(float $prixLocation): self
     {
-        $this->capacite = $capacite;
+        $this->prixLocation = $prixLocation;
         return $this;
     }
 
-    public function getStatut(): ?string
+    // ⚠️ CHANGEMENT : disponible au lieu de statut
+    public function isDisponible(): bool
     {
-        return $this->statut;
+        return $this->disponible;
     }
 
-    public function setStatut(string $statut): self
+    public function setDisponible(bool $disponible): self
     {
-        $this->statut = $statut;
+        $this->disponible = $disponible;
         return $this;
     }
 
@@ -138,14 +146,8 @@ class Vehicule
         return $this;
     }
 
-    public function getProblemDescription(): ?string
+    public function __toString(): string
     {
-        return $this->problemDescription;
-    }
-
-    public function setProblemDescription(?string $problemDescription): self
-    {
-        $this->problemDescription = $problemDescription;
-        return $this;
+        return $this->marque . ' ' . $this->modele . ' (' . $this->immatriculation . ')';
     }
 }

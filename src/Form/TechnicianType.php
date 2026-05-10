@@ -4,7 +4,6 @@ namespace App\Form;
 
 use App\Entity\Technician;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
@@ -27,27 +26,20 @@ class TechnicianType extends AbstractType
             ])
             ->add('specialite', TextType::class, [
                 'label' => 'Spécialité',
-                'required' => false,
+                'required' => true,  // ⚠️ CHANGEMENT : obligatoire maintenant
                 'attr' => ['class' => 'form-control'],
             ])
             ->add('telephone', TelType::class, [
                 'label' => 'Téléphone',
-                'required' => false,
+                'required' => true,  // ⚠️ CHANGEMENT : obligatoire maintenant
                 'attr' => ['class' => 'form-control'],
             ])
             ->add('email', EmailType::class, [
                 'label' => 'Email',
                 'attr' => ['class' => 'form-control'],
             ])
-            ->add('statut', ChoiceType::class, [
-                'label' => 'Statut',
-                'choices' => [
-                    'Disponible' => 'disponible',
-                    'Occupé' => 'occupe',
-                    'En congé' => 'en_conge',
-                ],
-                'attr' => ['class' => 'form-control'],
-            ])
+            // ⚠️ SUPPRIMER le champ statut
+            // ->add('statut', ChoiceType::class, [...])
             ->add('save', SubmitType::class, [
                 'label' => 'Enregistrer',
                 'attr' => ['class' => 'btn btn-primary'],
